@@ -1,7 +1,11 @@
 import path from "node:path";
 import type { SourceEntry, SourceKind } from "./types.js";
 
-export function classifySource(relativePath: string, sizeBytes: number): SourceEntry {
+export function classifySource(
+  relativePath: string,
+  sizeBytes: number,
+  contentSha256: string,
+): SourceEntry {
   const normalized = relativePath.toLowerCase();
   const base = path.posix.basename(normalized);
   const kind = classifyKind(normalized, base);
@@ -11,6 +15,7 @@ export function classifySource(relativePath: string, sizeBytes: number): SourceE
     reason: reasonForKind(kind, relativePath),
     canonical: isCanonical(kind, normalized),
     sizeBytes,
+    contentSha256,
   };
 }
 
@@ -19,9 +24,24 @@ function classifyKind(normalized: string, base: string): SourceKind {
     return "project-manifest";
   if (base === "agents.md" || base === "claude.md") return "agent-adapter";
   if (normalized.startsWith("docs/adr/") || base.startsWith("adr-")) return "adr";
+  if (normalized.startsWith("docs/specs/") || normalized.startsWith("specs/")) return "spec";
+  if (
+    ["design.md", "design.mdx", "architecture.md", "architecture.mdx"].includes(base) ||
+    normalized.startsWith("docs/design/") ||
+    normalized.startsWith("design/")
+  ) {
+    return "design-doc";
+  }
+  if (normalized.startsWith("runbooks/") || normalized.startsWith("docs/runbooks/")) {
+    return "runbook";
+  }
   if (normalized.includes("schema") || normalized.endsWith(".schema.json")) return "schema";
-  if (normalized.startsWith(".github/workflows/") && normalized.endsWith(".yml"))
+  if (
+    normalized.startsWith(".github/workflows/") &&
+    (normalized.endsWith(".yml") || normalized.endsWith(".yaml"))
+  ) {
     return "ci-workflow";
+  }
   if (
     ["package.json", "bun.lock", "pnpm-lock.yaml", "package-lock.json", "yarn.lock"].includes(base)
   ) {
@@ -41,27 +61,44 @@ function classifyKind(normalized: string, base: string): SourceKind {
   }
   if (base === "license" || base.startsWith("license.")) return "license";
   if (base === "security.md") return "security-policy";
-  if (normalized.includes("test") || normalized.includes("spec")) return "test";
+  if (isTestPath(normalized, base)) return "test";
   if (
     normalized.startsWith("docs/") ||
     ["readme.md", "contributing.md", "governance.md"].includes(base)
   ) {
     return "documentation";
   }
-  if (normalized.startsWith("runbooks/") || normalized.includes("runbook")) return "runbook";
   if (normalized.startsWith("src/") || normalized.startsWith("lib/")) return "source";
   if (normalized.startsWith(".groundatlas/")) return "generated-map";
   return "unknown";
 }
 
+function isTestPath(normalized: string, base: string): boolean {
+  return (
+    normalized.startsWith("test/") ||
+    normalized.startsWith("tests/") ||
+    normalized.includes("/test/") ||
+    normalized.includes("/tests/") ||
+    base.includes(".test.") ||
+    base.includes(".spec.")
+  );
+}
+
 function isCanonical(kind: SourceKind, normalized: string): boolean {
   return (
     kind === "project-manifest" ||
+    kind === "agent-adapter" ||
     kind === "adr" ||
+    kind === "design-doc" ||
+    kind === "spec" ||
     kind === "schema" ||
     kind === "package-manifest" ||
     kind === "ci-workflow" ||
+    kind === "runbook" ||
+    kind === "security-policy" ||
     kind === "source" ||
+    kind === "test" ||
+    kind === "license" ||
     normalized === "readme.md"
   );
 }
@@ -74,6 +111,10 @@ function reasonForKind(kind: SourceKind, relativePath: string): string {
       return "Bootstraps agents into repo-local context and central doctrine.";
     case "adr":
       return "Records durable architecture or product decisions.";
+    case "design-doc":
+      return "Explains product or system design intent; durable decisions should graduate into ADRs, specs, schemas, or tests.";
+    case "spec":
+      return "Defines product, behavior, adoption, or operating contracts that implementation must satisfy.";
     case "schema":
       return "Defines machine-checkable contracts.";
     case "ci-workflow":

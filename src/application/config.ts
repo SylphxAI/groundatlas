@@ -1,6 +1,6 @@
 import path from "node:path";
 import {
-  ATLAS_SCHEMA_VERSION,
+  CONFIG_SCHEMA_VERSION,
   DEFAULT_OUTPUT_DIR,
   type GroundAtlasConfig,
 } from "../domain/types.js";
@@ -10,7 +10,7 @@ export const CONFIG_FILE_NAME = "groundatlas.config.json";
 
 export function defaultConfig(): GroundAtlasConfig {
   return {
-    schemaVersion: ATLAS_SCHEMA_VERSION,
+    schemaVersion: CONFIG_SCHEMA_VERSION,
     outputDir: DEFAULT_OUTPUT_DIR,
     include: ["**/*"],
     exclude: [".git", "node_modules", "dist", "build", "coverage", DEFAULT_OUTPUT_DIR],
@@ -29,7 +29,7 @@ export async function loadConfig(
     ...fileConfig,
     outputDir: explicitOutputDir ?? fileConfig?.outputDir ?? DEFAULT_OUTPUT_DIR,
     generatedDocsAreNotSsot: true,
-    schemaVersion: ATLAS_SCHEMA_VERSION,
+    schemaVersion: CONFIG_SCHEMA_VERSION,
   };
 }
 
