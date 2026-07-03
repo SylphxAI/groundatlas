@@ -1,0 +1,47 @@
+{
+  "$schema": "../schemas/project.manifest.schema.json",
+  "schemaVersion": 1,
+  "project": {
+    "id": "example-service",
+    "name": "Example Service",
+    "summary": "A small service demonstrating the vendor-neutral GroundAtlas project control file.",
+    "lifecycle": "production",
+    "visibility": "open-source",
+    "repository": "https://github.com/example/example-service",
+    "tags": ["service", "agents", "docs"]
+  },
+  "truth": {
+    "humanProjectFile": "PROJECT.md",
+    "agentAdapter": "AGENTS.md",
+    "specs": ["docs/specs/"],
+    "adrs": ["docs/adr/"],
+    "source": ["src/"],
+    "tests": ["test/"],
+    "runbooks": ["docs/runbooks/"]
+  },
+  "surfaces": [
+    {
+      "type": "cli",
+      "name": "Service CLI",
+      "path": "package.json",
+      "description": "Package binaries exposed to users."
+    },
+    {
+      "type": "docs",
+      "name": "README",
+      "path": "README.md",
+      "description": "Public start-here guide."
+    }
+  ],
+  "commands": [
+    {
+      "name": "check",
+      "command": "npm run check",
+      "purpose": "Run the complete local validation suite."
+    }
+  ],
+  "adoption": {
+    "status": "adopted",
+    "notes": "Generated maps are non-authoritative and refreshed in CI."
+  }
+}

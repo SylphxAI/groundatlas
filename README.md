@@ -1,5 +1,7 @@
 # GroundAtlas
 
+[![CI](https://github.com/SylphxAI/groundatlas/actions/workflows/ci.yml/badge.svg)](https://github.com/SylphxAI/groundatlas/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+
 **The source-grounded repository control plane for humans and agents.**
 
 GroundAtlas turns a repository into a deterministic, auditable map of where
@@ -13,12 +15,17 @@ and change-control surface that keeps generated context honest.
 > touches production code.
 
 ```sh
+# Public npm install after the first registry publish/readback:
+npm install -g groundatlas
+
+# From source today:
 bun install
-ga init
-ga update
-ga audit
-ga explain "validation commands"
-ga impact --since main
+bun run build
+node dist/cli.js init
+node dist/cli.js update
+node dist/cli.js audit
+node dist/cli.js explain "validation commands"
+node dist/cli.js impact --since main
 ```
 
 The package exposes both `groundatlas` and the short daily-driver command `ga`.
@@ -39,11 +46,114 @@ GroundAtlas takes the third path: generated context is useful, but canonical
 truth stays in the files that own it. Delete `.groundatlas/` and no truth should
 be lost.
 
+
+## Open-source promise
+
+GroundAtlas is built to be useful without buying into any vendor, model provider,
+agent runtime, or company doctrine:
+
+- core scan/audit path is deterministic;
+- no network or model key is required for local/CI use;
+- generated output is deletable and non-authoritative;
+- project identity can live in a neutral `project.manifest.json`;
+- tool-specific files such as `CLAUDE.md`, Cursor rules, or Copilot instructions
+  are optional adapters, not requirements;
+- future AI features must sit on top of source-owned citations, not replace them.
+
+Started by SylphxAI, maintained as an open-source primitive: the best way to show
+engineering quality is to make the useful part general enough for everyone.
+
+## Market position
+
+GroundAtlas is the **source-grounded repository control plane**.
+
+It is not competing to be the prettiest wiki. It is the trust layer underneath
+wikis, agents, docs sites, code search, and CI:
+
+| Category | What it gives you | What GroundAtlas adds |
+| --- | --- | --- |
+| No tool | No new dependency | GroundAtlas removes tribal onboarding and agent guesswork. |
+| Generated wiki | Fast prose | GroundAtlas keeps generated context subordinate to source truth. |
+| Code search | Find text fast | GroundAtlas explains which files own which facts. |
+| Docs site | Polished publishing | GroundAtlas audits repository truth and freshness before publishing. |
+| Agent runtime | Automation | GroundAtlas gives agents a safe read order and non-SSOT boundary. |
+
+## Value by audience
+
+| Audience | Value |
+| --- | --- |
+| Users/new joiners | Start from one map and know what to read first. |
+| Maintainers | Catch stale generated context and missing truth homes in CI. |
+| Developer experience teams | Standardize repository onboarding without forcing a vendor stack. |
+| AI agents | Use JSON/Markdown maps to find canonical files before editing. |
+| Open-source communities | Share a small, inspectable convention instead of a hosted black box. |
+
+## Project control file
+
+For multi-project use, one neutral control file per project is the cleanest
+default:
+
+```text
+project.manifest.json
+```
+
+It records stable project identity, truth-home pointers, public surfaces,
+validation commands, and adoption status. GroundAtlas also recognizes
+`groundatlas.project.json`, `.project/manifest.json`, and ecosystem adapters such as
+`.doctrine/project.json`, but those adapters are not the public default.
+
+See:
+
+- [Project Control File Guide](./docs/guides/manifest-guide.md)
+- [Project manifest schema](./schemas/project.manifest.schema.json)
+- [Example manifest](./examples/project.manifest.json)
+- [Multi-project Control Plane](./docs/specs/multi-project-control-plane.md)
+
+## Guides
+
+- [User Guide](./docs/guides/user-guide.md)
+- [Developer Experience Guide](./docs/guides/dx-guide.md)
+- [Agent Guide](./docs/guides/agent-guide.md)
+- [Open-source Strategy](./docs/specs/open-source-strategy.md)
+- [Static landing page](./docs/website/index.html)
+
+
+## 60-second demo
+
+```sh
+# First run in a repository
+ga init
+# GroundAtlas initialized .groundatlas/
+# - .groundatlas/atlas.json
+# - .groundatlas/README.md
+# - .groundatlas/source-map.md
+# - .groundatlas/change-guide.md
+
+ga audit
+# GroundAtlas audit passed.
+
+ga explain "validation commands" --json
+# [{ "path": "package.json", "kind": "package-manifest", ... }]
+
+ga impact --since main
+# | Status | Changed path | Matched atlas sources |
+
+# If a canonical source changes but the map was not regenerated:
+ga audit
+# - error `stale-atlas`: .groundatlas/atlas.json does not match the current repository scan.
+#   Run ga update and commit or regenerate the output according to repo policy.
+```
+
+The key behavior: GroundAtlas fails stale generated context instead of letting a
+pretty map silently drift away from source truth.
+
 ## Current status
 
 Product-ready initial CLI/library slice:
 
 - deterministic scanner and atlas JSON;
+- vendor-neutral `project.manifest.json` control file schema and example;
+- dependency-free static landing page under `docs/website/`;
 - `ga init`, `ga update`, `ga scan`, `ga audit`, `ga explain`, `ga impact`;
 - explicit fact-scoped SSOT model and repository orientation route;
 - generated Markdown maps with non-SSOT banners;
@@ -91,7 +201,7 @@ asking generated docs to invent authority.
 | --- | --- | --- |
 | `AGENTS.md` | Preferred | Tool-neutral agent adapter and repo hazards. Tool-specific adapters such as `CLAUDE.md`, `.cursor/rules`, or `.github/copilot-instructions.md` are detected when present but are not required. |
 | `PROJECT.md` | Yes | Human project identity, lifecycle, boundary, public surfaces, delivery proof. |
-| `groundatlas.project.json`, `project.manifest.json`, `.project/manifest.json`, or recognized ecosystem adapter | Yes for fleet/commercial governance | Machine-readable project manifest and adoption state. `.doctrine/project.json` is the SylphxAI Doctrine adapter, not the public default. |
+| `project.manifest.json`, `groundatlas.project.json`, `.project/manifest.json`, or recognized ecosystem adapter | Yes for fleet/commercial governance | Machine-readable project manifest and adoption state. `.doctrine/project.json` is the SylphxAI Doctrine adapter, not the public default. |
 | `README.md` | Yes | Public start-here promise and install/use contract. |
 | `docs/specs/**`, `DESIGN.md`, or `design.md` | Yes | Product intent, operating contracts, acceptance criteria. |
 | `docs/adr/**` | Yes once durable decisions exist | Architecture/product/security/commercial decisions. |
@@ -105,15 +215,15 @@ GroundAtlas reads these homes, classifies them, and generates a map. It does not
 replace them.
 
 See [Source Truth Model](./docs/specs/source-truth-model.md), [Fleet Adoption
-Contract](./docs/specs/fleet-adoption-contract.md), and [Multi-project Control
-Plane](./docs/specs/multi-project-control-plane.md).
+Contract](./docs/specs/fleet-adoption-contract.md), [Project Control File Guide](./docs/guides/manifest-guide.md),
+and [Multi-project Control Plane](./docs/specs/multi-project-control-plane.md).
 
 ## SSOT rule
 
 GroundAtlas uses **fact-scoped SSOT**:
 
 - project identity lives in `PROJECT.md` plus a machine-readable project
-  manifest such as `groundatlas.project.json`, `project.manifest.json`,
+  manifest such as `project.manifest.json`, `groundatlas.project.json`,
   `.project/manifest.json`, or a recognized adapter such as
   `.doctrine/project.json`;
 - durable decisions live in ADRs;
@@ -202,21 +312,19 @@ source-grounded substrate is trustworthy.
 
 See [Competitive Positioning](./docs/specs/competitive-positioning.md).
 
-## Final product target
+## Roadmap (not yet shipped)
 
-GroundAtlas is building toward a complete open-source context control plane:
+Current shipped behavior is listed in [Current status](#current-status). The next
+star-worthy slices are deliberately source-grounded rather than AI-magic-first:
 
-- source inventory across code, schemas, tests, specs, ADRs, manifests,
-  workflows, docs, package metadata, runbooks, and release surfaces;
-- deterministic source-grounded atlas generation;
+- first npm publication with provenance and registry readback;
+- richer HTML output and hosted docs/site publishing;
 - claim/citation graph with exact source anchors;
-- query/explain answers that cite canonical files;
-- impact analysis for pull requests and release work;
-- freshness and citation validation gates for CI;
-- Markdown/HTML output for humans and JSON output for agents/tools;
-- optional AI adapters only after the deterministic map is trustworthy;
-- MCP/query surfaces and fleet scorecards;
-- npm library + CLI distribution with provenance and registry readback.
+- query answers that cite canonical files, not generated memory;
+- deeper dependency-aware PR impact analysis;
+- PR comment/report mode for CI;
+- fleet dashboard from neutral `project.manifest.json` files;
+- optional AI adapters only after deterministic citation gates are trustworthy.
 
 See [Final Product Goal](./docs/specs/final-product-goal.md).
 

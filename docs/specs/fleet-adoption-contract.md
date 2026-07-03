@@ -19,7 +19,7 @@ as an internal adapter, but GroundAtlas public adoption must stay vendor-neutral
 | --- | --- | --- |
 | `AGENTS.md` | Preferred | Tool-neutral agent entry point and local hazards. Tool-specific adapters such as `CLAUDE.md`, `.cursor/rules`, or Copilot instructions are optional detected inputs. |
 | `PROJECT.md` | Yes | Human-readable project identity, lifecycle, owner boundary, public surfaces, delivery proof. |
-| Machine project manifest | Yes for fleet/commercial governance | Prefer `groundatlas.project.json`, `project.manifest.json`, or `.project/manifest.json`; ecosystem adapters such as `.doctrine/project.json` are recognized but not required. |
+| Machine project manifest | Yes for fleet/commercial governance | Prefer `project.manifest.json`; `groundatlas.project.json` and `.project/manifest.json` are compatibility aliases; ecosystem adapters such as `.doctrine/project.json` are recognized but not required. |
 | `README.md` | Yes | Public start-here contract. |
 | `docs/specs/**` or `DESIGN.md` | Yes for production/commercial work | Product intent and acceptance contracts. |
 | `docs/adr/**` | Yes once durable decisions exist | Material decisions and trade-offs. |

@@ -19,8 +19,8 @@ Public GroundAtlas must instead speak in terms of a generic capability:
 
 GroundAtlas recognizes these vendor-neutral machine project manifest paths:
 
-- `groundatlas.project.json`
-- `project.manifest.json`
+- `project.manifest.json` (public default)
+- `groundatlas.project.json` (compatibility alias)
 - `.project/manifest.json`
 
 It may also recognize ecosystem adapters, including:

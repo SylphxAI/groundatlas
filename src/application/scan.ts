@@ -152,7 +152,7 @@ function inferRisks(sourcePaths: Set<string>, validationCommands: ValidationComm
       severity: "warning",
       code: "missing-machine-project-manifest",
       message:
-        "No recognized machine project manifest was found. Prefer groundatlas.project.json or project.manifest.json; ecosystem adapters such as .doctrine/project.json are optional.",
+        "No recognized machine project manifest was found. Prefer project.manifest.json; groundatlas.project.json remains a compatibility alias; ecosystem adapters such as .doctrine/project.json are optional.",
     });
   }
   if (!hasAny(sourcePaths, isAgentAdapterPath)) {
@@ -268,8 +268,8 @@ function truthHomeModel(): TruthHome[] {
       owns: "What the project is, lifecycle, owner boundary, public surfaces, adoption state, and delivery proof.",
       examples: [
         "PROJECT.md",
-        "groundatlas.project.json",
         "project.manifest.json",
+        "groundatlas.project.json",
         ".project/manifest.json",
         ".doctrine/project.json",
       ],

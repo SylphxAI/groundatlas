@@ -19,8 +19,8 @@ homes, in the domain they own:
 
 1. `PROJECT.md` plus a machine project manifest for project identity,
    lifecycle, boundary, public surfaces, adoption state, and delivery proof.
-   Preferred neutral manifests are `groundatlas.project.json`,
-   `project.manifest.json`, and `.project/manifest.json`; ecosystem adapters such
+   Preferred neutral manifest is `project.manifest.json`; `groundatlas.project.json`
+   and `.project/manifest.json` are compatibility aliases; ecosystem adapters such
    as `.doctrine/project.json` are detected when present.
 2. `AGENTS.md` as the preferred tool-neutral runtime adapter. Tool-specific
    adapters such as `CLAUDE.md`, `.cursor/rules`, or
