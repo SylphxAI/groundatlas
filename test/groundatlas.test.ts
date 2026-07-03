@@ -436,6 +436,108 @@ test("manifest CLI validates explicit files, discovers manifests, and fails inva
   expect(tooMany.stderr).toContain("manifest accepts at most one path");
 });
 
+test("dogfood report assertion validates pre-npm and post-publish boundaries", async () => {
+  const packageJson = JSON.parse(await readFile(path.resolve("package.json"), "utf8")) as {
+    name: string;
+    version: string;
+  };
+  const baseRepository = {
+    targetRepo: fixtureRoot,
+    claimBoundary: "pre-npm-pilot-only",
+    groundatlasPackageSource: "packed-local-tarball",
+    packageSpec: "/tmp/groundatlas-0.1.0.tgz",
+    packagePublished: false,
+    installedVersion: packageJson.version,
+    scanOk: true,
+    auditOk: true,
+    manifestValidationOk: true,
+    fleetCommandOk: true,
+    mutatedOriginalRepo: false,
+    originalRepoStatusBefore: "",
+    originalRepoStatusAfter: "",
+    detectedProjectManifest: "project.manifest.json",
+    manifestValidation: {
+      path: "project.manifest.json",
+      adapter: false,
+      valid: true,
+    },
+    fleetManifest: {
+      path: "project.manifest.json",
+      adapter: false,
+      valid: true,
+    },
+    fleetManifestAdapters: [{ path: ".doctrine/project.json", adapter: true }],
+    fleetStatus: "adopted",
+    fleetIssues: [],
+  };
+  const preNpmReport = path.join(tempRoot, "pre-npm-dogfood.json");
+  await Bun.write(
+    preNpmReport,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        claimBoundary: "pre-npm-pilot-only",
+        groundatlasPackageSource: "packed-local-tarball",
+        packageSpec: "/tmp/groundatlas-0.1.0.tgz",
+        packagePublished: false,
+        repositories: [baseRepository],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  execFileSync(
+    "node",
+    [
+      path.resolve("scripts/assert-dogfood-report.mjs"),
+      preNpmReport,
+      "--expect-pre-npm",
+      "--expect-adopted",
+      "--expect-neutral-manifest",
+      "--expect-doctrine-adapter",
+    ],
+    { stdio: ["ignore", "pipe", "pipe"] },
+  );
+
+  const postPublishReport = path.join(tempRoot, "post-publish-dogfood.json");
+  const packageSpec = `${packageJson.name}@${packageJson.version}`;
+  await Bun.write(
+    postPublishReport,
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        claimBoundary: "post-publish-package-pilot",
+        groundatlasPackageSource: "npm-registry",
+        packageSpec,
+        packagePublished: true,
+        repositories: [
+          {
+            ...baseRepository,
+            claimBoundary: "post-publish-package-pilot",
+            groundatlasPackageSource: "npm-registry",
+            packageSpec,
+            packagePublished: true,
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  execFileSync(
+    "node",
+    [
+      path.resolve("scripts/assert-dogfood-report.mjs"),
+      postPublishReport,
+      "--expect-post-publish",
+      "--expect-adopted",
+      "--expect-neutral-manifest",
+      "--expect-doctrine-adapter",
+    ],
+    { stdio: ["ignore", "pipe", "pipe"] },
+  );
+});
+
 test("writeAtlas creates generated files with non-SSOT banner and audit passes", async () => {
   const config = await ensureConfig(fixtureRoot);
   const atlas = await scanRepository({

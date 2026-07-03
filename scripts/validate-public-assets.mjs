@@ -91,6 +91,9 @@ if (!readme.includes("GitHub Action gate")) {
 if (!readme.includes("groundatlas-external-dogfood")) {
   errors.push("README must mention external dogfood evidence.");
 }
+if (!readme.includes("groundatlas-release-evidence")) {
+  errors.push("README must mention release evidence artifacts.");
+}
 if (!readme.includes("manifest-report-path") || !readme.includes("fleet-report-path")) {
   errors.push("README must document GitHub Action manifest/fleet report paths.");
 }

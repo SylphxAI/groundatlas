@@ -403,6 +403,11 @@ package and runs the same installed-package fleet smoke. Only after that should
 we run `GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@<version> bun run
 dogfood:external` against copied downstream repositories.
 
+On a real `v*.*.*` tag release, the workflow stores
+`groundatlas-release-evidence` with registry readback JSON and post-publish
+npm-registry dogfood JSON. Workflow dispatch remains preflight-only and cannot
+be used to claim package publication.
+
 See [Publishing Runbook](./docs/runbooks/publishing.md).
 
 ## GitHub Action gate
