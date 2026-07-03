@@ -42,3 +42,38 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Smoke deployed site
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import sys
+          import time
+          import urllib.request
+
+          url = os.environ["PAGE_URL"]
+          required = [
+              "GroundAtlas",
+              "Vendor-neutral by design",
+              "After npm registry publish/readback",
+              "https://github.com/SylphxAI/groundatlas/blob/main/schemas/project.manifest.schema.json",
+          ]
+
+          last_error = None
+          for _ in range(12):
+              try:
+                  with urllib.request.urlopen(url, timeout=20) as response:
+                      body = response.read().decode("utf-8", errors="replace")
+                      missing = [needle for needle in required if needle not in body]
+                      if response.status == 200 and not missing:
+                          print(f"Pages smoke passed: {url}")
+                          sys.exit(0)
+                      last_error = f"status={response.status} missing={missing}"
+              except Exception as error:  # noqa: BLE001 - CI smoke should report any transient failure.
+                  last_error = repr(error)
+              time.sleep(5)
+
+          raise SystemExit(f"Pages smoke failed for {url}: {last_error}")
+          PY
