@@ -308,7 +308,7 @@
     "ciModel": "legacy-ci",
     "requiredContexts": ["CI / check"],
     "deployPath": "Source changes are delivered by GitHub PR/CI. npm packages are published only by the tag-gated .github/workflows/release.yml workflow with provenance, registry readback, post-publish dogfood, and release evidence artifacts.",
-    "productionProof": "Clean checkout runs bun install and bun run check successfully; generated-map audit includes freshness/non-SSOT proof; package release proof is npm registry readback for groundatlas@0.1.1 plus clean installed-package smoke and post-publish dogfood evidence. Public docs/schema/site proof requires validate:public-assets.",
+    "productionProof": "Clean checkout runs bun install and bun run check successfully; generated-map audit includes freshness/non-SSOT proof; package release proof is npm registry readback for groundatlas@0.1.2 plus clean installed-package smoke and post-publish dogfood evidence. Public docs/schema/site proof requires validate:public-assets.",
     "recoveryClass": "source-revertable",
     "deployable": false,
     "packageRelease": {
@@ -339,7 +339,7 @@
         "id": "fleet-ci-rollout",
         "description": "Add package-based GroundAtlas GitHub Action gates to downstream repositories, starting with Doctrine, before claiming mandatory fleet adoption.",
         "owner": "GroundAtlas maintainers and downstream repo owners",
-        "target": "After groundatlas@0.1.1 registry readback and local Doctrine package pilot"
+        "target": "After groundatlas@0.1.2 registry readback and local Doctrine package pilot"
       }
     ]
   }
