@@ -75,8 +75,9 @@ the published package.
 - It is not the canonical source for architecture, API contracts, project
   identity, release status, or implementation behavior.
 - It does not read secrets or `.env` files.
-- It does not mutate `AGENTS.md`, `CLAUDE.md`, source files, schemas, specs,
-  tests, ADRs, workflows, or package manifests.
+- It does not mutate `AGENTS.md`, tool-specific agent adapters such as
+  `CLAUDE.md`, source files, schemas, specs, tests, ADRs, workflows, package
+  manifests, or machine project manifests.
 
 If deleting `.groundatlas/` would remove important project truth, the project is
 using GroundAtlas incorrectly.
@@ -88,9 +89,9 @@ asking generated docs to invent authority.
 
 | Surface | Required for commercial-grade repos | Owns |
 | --- | --- | --- |
-| `AGENTS.md` or `CLAUDE.md` | Yes | Local agent adapter and repo hazards. |
+| `AGENTS.md` | Preferred | Tool-neutral agent adapter and repo hazards. Tool-specific adapters such as `CLAUDE.md`, `.cursor/rules`, or `.github/copilot-instructions.md` are detected when present but are not required. |
 | `PROJECT.md` | Yes | Human project identity, lifecycle, boundary, public surfaces, delivery proof. |
-| `.doctrine/project.json` | Yes | Machine-readable project manifest and adoption state. |
+| `groundatlas.project.json`, `project.manifest.json`, `.project/manifest.json`, or recognized ecosystem adapter | Yes for fleet/commercial governance | Machine-readable project manifest and adoption state. `.doctrine/project.json` is the SylphxAI Doctrine adapter, not the public default. |
 | `README.md` | Yes | Public start-here promise and install/use contract. |
 | `docs/specs/**`, `DESIGN.md`, or `design.md` | Yes | Product intent, operating contracts, acceptance criteria. |
 | `docs/adr/**` | Yes once durable decisions exist | Architecture/product/security/commercial decisions. |
@@ -103,14 +104,18 @@ asking generated docs to invent authority.
 GroundAtlas reads these homes, classifies them, and generates a map. It does not
 replace them.
 
-See [Source Truth Model](./docs/specs/source-truth-model.md) and [Fleet Adoption
-Contract](./docs/specs/fleet-adoption-contract.md).
+See [Source Truth Model](./docs/specs/source-truth-model.md), [Fleet Adoption
+Contract](./docs/specs/fleet-adoption-contract.md), and [Multi-project Control
+Plane](./docs/specs/multi-project-control-plane.md).
 
 ## SSOT rule
 
 GroundAtlas uses **fact-scoped SSOT**:
 
-- project identity lives in `PROJECT.md` and `.doctrine/project.json`;
+- project identity lives in `PROJECT.md` plus a machine-readable project
+  manifest such as `groundatlas.project.json`, `project.manifest.json`,
+  `.project/manifest.json`, or a recognized adapter such as
+  `.doctrine/project.json`;
 - durable decisions live in ADRs;
 - product intent lives in specs/design docs;
 - contracts live in schemas, exported types, package manifests, and migrations;

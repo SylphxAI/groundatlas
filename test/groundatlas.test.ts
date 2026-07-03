@@ -56,6 +56,26 @@ test("scanRepository identifies canonical sources and skips secrets", async () =
   expect(atlas.risks.some((risk) => risk.severity === "error")).toBe(false);
 });
 
+test("recognizes vendor-neutral machine project manifests without requiring doctrine", async () => {
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await Bun.write(
+    path.join(fixtureRoot, "groundatlas.project.json"),
+    `${JSON.stringify({ name: "fixture-basic", lifecycle: "test" }, null, 2)}\n`,
+  );
+  const atlas = await scanRepository({
+    cwd: fixtureRoot,
+    outputDir: ".groundatlas",
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+  expect(
+    atlas.sources.some(
+      (source) => source.path === "groundatlas.project.json" && source.kind === "project-manifest",
+    ),
+  ).toBe(true);
+  expect(atlas.risks.some((risk) => risk.code === "missing-machine-project-manifest")).toBe(false);
+  expect(atlas.risks.some((risk) => risk.severity === "error")).toBe(false);
+});
+
 test("writeAtlas creates generated files with non-SSOT banner and audit passes", async () => {
   const config = await ensureConfig(fixtureRoot);
   const atlas = await scanRepository({

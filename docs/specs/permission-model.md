@@ -18,8 +18,9 @@ The CLI writes only:
 - `groundatlas.config.json` during `ga init`;
 - generated output under the configured `outputDir`, default `.groundatlas/`.
 
-No command writes to `AGENTS.md`, `CLAUDE.md`, source files, tests, schemas,
-specs, ADRs, workflows, package manifests, or runbooks.
+No command writes to `AGENTS.md`, tool-specific agent adapters such as
+`CLAUDE.md`, source files, tests, schemas, specs, ADRs, workflows, package
+manifests, or runbooks.
 
 ## Process/network access
 

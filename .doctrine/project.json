@@ -10,6 +10,7 @@
     "goals": [
       "Generate deterministic source-grounded maps over repository truth surfaces.",
       "Expose a fact-scoped SSOT model and orientation route for humans and AI agents.",
+      "Recognize vendor-neutral machine project manifests and ecosystem-specific manifest adapters without making SylphxAI Doctrine a public requirement.",
       "Help humans and AI agents enter repositories faster while preserving canonical source ownership.",
       "Provide safe CLI operations for init, update, scan, audit, explain, and impact analysis.",
       "Detect stale generated maps through non-secret source fingerprints.",
@@ -137,12 +138,17 @@
         "type": "adr",
         "name": "ADR-0002 source-grounded control plane",
         "location": "docs/adr/ADR-0002-source-grounded-control-plane.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Multi-project control plane",
+        "location": "docs/specs/multi-project-control-plane.md"
       }
     ],
     "allowedDependencies": [
       {
         "repo": "SylphxAI/doctrine",
-        "surface": "engineering doctrine, project manifest schema, and standards routing",
+        "surface": "local SylphxAI adapter, engineering doctrine, project manifest schema, and standards routing",
         "direction": "external"
       }
     ],
@@ -200,7 +206,7 @@
       },
       {
         "id": "fleet-pilot",
-        "description": "Pilot GroundAtlas scan/update/audit on 1-2 internal SylphxAI repositories before making fleet CI gates mandatory.",
+        "description": "Pilot GroundAtlas scan/update/audit on 1-2 internal repositories before making fleet CI gates mandatory.",
         "owner": "GroundAtlas maintainers",
         "target": "After npm package readback and before fleet mandatory adoption"
       }

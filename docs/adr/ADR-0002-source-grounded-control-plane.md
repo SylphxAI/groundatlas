@@ -23,7 +23,7 @@ GroundAtlas will be deterministic-first and SSOT-safe:
 1. Generated artifacts are navigation/read-model outputs, not truth.
 2. Every map must point back to owning repository truth homes.
 3. The scanner must avoid secrets and must not mutate scanned source files,
-   ADRs, specs, schemas, tests, `AGENTS.md`, or `CLAUDE.md`.
+   ADRs, specs, schemas, tests, `AGENTS.md`, or tool-specific agent adapters.
 4. The atlas will expose an explicit fact-scoped truth model and orientation
    route so agents know what to read first.
 5. Optional AI adapters may be added only after deterministic scan/audit/freshness

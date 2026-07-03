@@ -17,10 +17,15 @@ flowchart LR
 GroundAtlas uses a fact-scoped SSOT model. It treats these as canonical truth
 homes, in the domain they own:
 
-1. `PROJECT.md` and `.doctrine/project.json` for project identity, lifecycle,
-   boundary, public surfaces, adoption state, and delivery proof.
-2. `AGENTS.md` / `CLAUDE.md` as local runtime adapters that route agents into
-   project truth and upstream doctrine.
+1. `PROJECT.md` plus a machine project manifest for project identity,
+   lifecycle, boundary, public surfaces, adoption state, and delivery proof.
+   Preferred neutral manifests are `groundatlas.project.json`,
+   `project.manifest.json`, and `.project/manifest.json`; ecosystem adapters such
+   as `.doctrine/project.json` are detected when present.
+2. `AGENTS.md` as the preferred tool-neutral runtime adapter. Tool-specific
+   adapters such as `CLAUDE.md`, `.cursor/rules`, or
+   `.github/copilot-instructions.md` are optional detected inputs, not public
+   requirements.
 3. `README.md` for the public start-here promise.
 4. Specs/design docs (`docs/specs/**`, `DESIGN.md`, `design.md`) for product
    intent, operating contracts, and acceptance criteria.

@@ -8,7 +8,7 @@ source-grounded repository maps for humans and AI agents.
 - State: `active`
 - Layer: `tooling`
 - Policy pool: `agent-tool`
-- Machine manifest: [`.doctrine/project.json`](./.doctrine/project.json)
+- Local machine manifest: [`.doctrine/project.json`](./.doctrine/project.json) (SylphxAI Doctrine adapter; not a public GroundAtlas requirement)
 
 ## Final goals
 
@@ -38,8 +38,7 @@ source-grounded repository maps for humans and AI agents.
 
 GroundAtlas owns the generated map format, fact-scoped SSOT/orientation model,
 CLI behavior, scanner, renderers, audit gate, and documentation for using the
-tool. The repository being scanned
-owns all canonical facts that GroundAtlas points to.
+tool. The repository being scanned owns all canonical facts that GroundAtlas points to.
 
 ## Public surfaces
 
@@ -48,12 +47,12 @@ owns all canonical facts that GroundAtlas points to.
 - Generated map schema shape: [`src/domain/types.ts`](./src/domain/types.ts)
 - User docs: [`README.md`](./README.md)
 - Repo-local agent adapter: [`AGENTS.md`](./AGENTS.md)
-- Project manifest: [`.doctrine/project.json`](./.doctrine/project.json)
+- Local project manifest adapter: [`.doctrine/project.json`](./.doctrine/project.json)
 
 ## Operating principle
 
-GroundAtlas is a derived read-model over repository truth. The scanner reads non-secret source metadata and SHA-256 hashes, the classifier
-identifies truth-home types, the atlas model records source entries, orientation
+GroundAtlas is a derived read-model over repository truth. The scanner reads non-secret source metadata and SHA-256 hashes, the
+classifier identifies truth-home types, the atlas model records source entries, orientation
 routes, truth homes, and risks, renderers create human maps, and audit commands
 enforce freshness plus the non-SSOT boundary.
 
@@ -61,7 +60,8 @@ enforce freshness plus the non-SSOT boundary.
 
 GroundAtlas must use GroundAtlas on itself. `bun run check` builds the product,
 regenerates its own atlas, audits generated-map freshness/non-SSOT boundaries,
-and verifies package dry-run contents plus packed-package smoke. Features that cannot safely run on this repository are not defaults.
+and verifies package dry-run contents plus packed-package smoke. Features that
+cannot safely run on this repository are not defaults.
 
 ## Delivery
 

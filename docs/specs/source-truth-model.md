@@ -14,8 +14,8 @@ GroundAtlas:
 
 | Order | Read | Required | What it owns |
 | --- | --- | --- | --- |
-| 1 | `AGENTS.md` / `CLAUDE.md` | Yes | Local agent adapter and repo-specific operating constraints. |
-| 2 | `PROJECT.md` + `.doctrine/project.json` | Yes | Project identity, lifecycle, owner boundary, public surfaces, adoption state, delivery proof. |
+| 1 | `AGENTS.md` preferred; tool-specific adapters detected when present | Yes | Local agent adapter and repo-specific operating constraints without tying the project to a single AI vendor/tool. |
+| 2 | `PROJECT.md` + machine project manifest (`groundatlas.project.json`, `project.manifest.json`, `.project/manifest.json`, or recognized adapter) | Yes | Project identity, lifecycle, owner boundary, public surfaces, adoption state, delivery proof. |
 | 3 | `README.md` | Yes | Public product promise, install path, and human start-here contract. |
 | 4 | `docs/specs/**`, `DESIGN.md`, `design.md` | Yes for commercial projects | Product intent, operating contracts, adoption rules, design constraints. |
 | 5 | `docs/adr/**` | Yes for durable decisions | Architecture/product/security/commercial decisions and trade-offs. |
@@ -36,7 +36,7 @@ surface the conflict instead of pretending the generated map can decide it.
 
 | Fact type | Canonical owner | GroundAtlas role |
 | --- | --- | --- |
-| Project identity and boundary | `PROJECT.md`, `.doctrine/project.json` | Link, summarize, and flag missing files. |
+| Project identity and boundary | `PROJECT.md`, `groundatlas.project.json`, `project.manifest.json`, `.project/manifest.json`, or recognized adapters such as `.doctrine/project.json` | Link, summarize, and flag missing files. |
 | Durable decisions | `docs/adr/**` | Route humans/agents to the active decision trail. |
 | Product intent and operating rules | `docs/specs/**`, `DESIGN.md` | Make intent discoverable and compare it to implementation surfaces. |
 | Public package/CLI surface | `package.json`, exported types, CLI help | Index commands, exports, and validation scripts. |
@@ -60,7 +60,7 @@ surface the conflict instead of pretending the generated map can decide it.
 
 - GroundAtlas must not read `.env`, private key, secret, or credential-bearing files.
 - GroundAtlas must not mutate source files, ADRs, specs, schemas, tests,
-  `AGENTS.md`, or `CLAUDE.md`.
-- GroundAtlas must not require a model key, network call, or private SylphxAI
+  `AGENTS.md`, tool-specific agent adapters, or machine project manifests.
+- GroundAtlas must not require a model key, network call, or private vendor
   service for the deterministic scan/audit path.
 - Generated output must be safe to delete and regenerate.
