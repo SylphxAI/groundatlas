@@ -35,6 +35,7 @@ for (const deprecated of [
 for (const required of [
   "actions/checkout@v5",
   "actions/setup-node@v5",
+  "actions/upload-artifact@v5",
   "actions/configure-pages@v6",
   "actions/upload-pages-artifact@v4",
   "actions/deploy-pages@v5",
@@ -45,6 +46,18 @@ for (const required of [
   );
 }
 assert(docsText.includes("actions/upload-artifact@v5"), "Docs must use upload-artifact@v5.");
+assert(
+  workflowText.includes("external-dogfood:") &&
+    workflowText.includes("GROUNDATLAS_DOGFOOD_REPORT_PATH") &&
+    workflowText.includes("scripts/assert-dogfood-report.mjs") &&
+    workflowText.includes("name: groundatlas-external-dogfood"),
+  "CI must keep machine-readable external dogfood evidence and assertions.",
+);
+assert(
+  workflowText.includes("repository: SylphxAI/groundatlas") &&
+    workflowText.includes("path: .dogfood-targets/groundatlas"),
+  "CI external dogfood must use a public checkout target instead of a private credentialed repo.",
+);
 assert(
   workflowText.includes("npm publish --access public --provenance"),
   "Release workflow must publish with npm provenance.",

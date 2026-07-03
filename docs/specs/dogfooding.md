@@ -42,6 +42,14 @@ project, copies the target repository before writing generated output, runs the
 installed `groundatlas` / `ga` binaries against the copy, and verifies that the
 original repository status is unchanged.
 
+GroundAtlas CI runs this pilot against a clean public checkout and uploads the
+machine-readable JSON as the `groundatlas-external-dogfood` artifact. The CI
+assertion must prove the source-checkout boundary, selected neutral manifest,
+adapter reporting, adopted fleet status, and original-repository immutability.
+Private internal repositories such as Doctrine may be used as additional local
+or credentialed evidence, but the public CI gate must not depend on private
+repository credentials.
+
 The evidence explicitly reports:
 
 - `groundatlasPackageSource: "packed-local-tarball"`;
@@ -49,6 +57,7 @@ The evidence explicitly reports:
 - whether the npm package is published;
 - detected project manifest and agent adapter;
 - standalone manifest validation result for the detected manifest or adapter;
+- selected fleet manifest and recognized manifest adapters;
 - scan/audit/fleet command results;
 - original repository status before and after.
 

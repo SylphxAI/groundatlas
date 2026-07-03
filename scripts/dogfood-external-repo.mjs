@@ -10,6 +10,7 @@ const packageJson = JSON.parse(await readFile(new URL("../package.json", import.
 const repoRoot = path.resolve(new URL("..", import.meta.url).pathname);
 const registryUrl = process.env.GROUNDATLAS_NPM_REGISTRY ?? "https://registry.npmjs.org";
 const configuredPackageSpec = process.env.GROUNDATLAS_DOGFOOD_PACKAGE_SPEC?.trim() || null;
+const reportPath = process.env.GROUNDATLAS_DOGFOOD_REPORT_PATH?.trim() || null;
 const packageSource = configuredPackageSpec ? "npm-registry" : "packed-local-tarball";
 const claimBoundary = configuredPackageSpec ? "post-publish-package-pilot" : "pre-npm-pilot-only";
 
@@ -54,8 +55,6 @@ try {
     );
   }
 
-  console.log(JSON.stringify(evidence, null, 2));
-
   const failed = evidence.repositories.some(
     (repo) =>
       repo.mutatedOriginalRepo ||
@@ -65,7 +64,11 @@ try {
       !repo.fleetCommandOk,
   );
   process.exitCode = failed ? 1 : 0;
+} catch (error) {
+  evidence.error = error instanceof Error ? error.message : String(error);
+  process.exitCode = 1;
 } finally {
+  await publishEvidence(evidence);
   if (process.env.GROUNDATLAS_KEEP_DOGFOOD_TMP !== "1") {
     await rm(tmpRoot, { force: true, recursive: true });
   }
@@ -162,6 +165,7 @@ async function dogfoodRepository({ repoInput, tmpRoot, groundatlasBin, gaBin, in
     { cwd: installRoot },
   );
   const fleet = JSON.parse(fleetResult.stdout);
+  const fleetProject = fleet.projects[0] ?? null;
 
   const originalStatusAfter = gitStatus(repoInput);
   const mutatedOriginalRepo = originalStatusBefore !== originalStatusAfter;
@@ -207,9 +211,12 @@ async function dogfoodRepository({ repoInput, tmpRoot, groundatlasBin, gaBin, in
           sourcePath,
         ),
       ) ?? null,
+    fleetManifest: fleetProject?.manifest ?? null,
+    fleetDetectedManifests: fleetProject?.detectedManifests ?? [],
+    fleetManifestAdapters: fleetProject?.manifestAdapters ?? [],
     explainMatches: JSON.parse(explain).map((entry) => entry.path),
-    fleetStatus: fleet.projects[0]?.status ?? "unknown",
-    fleetIssues: fleet.projects[0]?.issues ?? [],
+    fleetStatus: fleetProject?.status ?? "unknown",
+    fleetIssues: fleetProject?.issues ?? [],
   };
 }
 
@@ -260,4 +267,13 @@ function runAllowFailure(command, args, options = {}) {
     stdout: result.stdout,
     stderr: result.stderr,
   };
+}
+
+async function publishEvidence(value) {
+  const json = `${JSON.stringify(value, null, 2)}\n`;
+  if (reportPath) {
+    await mkdir(path.dirname(path.resolve(reportPath)), { recursive: true });
+    await writeFile(reportPath, json);
+  }
+  console.log(json.trimEnd());
 }

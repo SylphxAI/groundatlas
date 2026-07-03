@@ -325,6 +325,12 @@ packed-package smoke imports both
 fixture containing both `project.manifest.json` and `.doctrine/project.json`,
 proving the neutral manifest is selected and the Doctrine file stays an adapter.
 
+CI also runs a packed-tarball external dogfood pilot against a clean public
+checkout and uploads `groundatlas-external-dogfood` as external dogfood
+evidence. That report must keep `claimBoundary: "pre-npm-pilot-only"` and
+`groundatlasPackageSource: "packed-local-tarball"` until npm publish plus
+registry readback exists; it is confidence evidence, not fleet package adoption.
+
 See [Dogfooding Contract](./docs/specs/dogfooding.md).
 
 ## Competitive position

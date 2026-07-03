@@ -7,4 +7,5 @@ dist/
 dist-types/
 coverage/
 .groundatlas/
+.dogfood-targets/
 *.tgz
