@@ -19,6 +19,9 @@
   readback, including package-based fleet manifest/adaptor dogfooding.
 - External dogfood pilot package-source mode for post-publish npm registry
   installs, kept separate from pre-publish packed-tarball evidence.
+- CI-gated packed-tarball external dogfood evidence artifact with machine
+  assertions for source-checkout boundary, neutral manifest priority, adapter
+  reporting, and original-repository immutability.
 - Reusable GitHub Action gate contract for downstream `ga update` / `ga audit`
   / `ga fleet` adoption checks after npm publish and version-tag readback.
 - GitHub Action manifest/fleet JSON reports and output paths for CI artifacts.

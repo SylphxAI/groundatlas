@@ -16,6 +16,7 @@ const requiredFiles = [
   "scripts/validate-github-action.mjs",
   "scripts/validate-workflows.mjs",
   "scripts/smoke-github-action.mjs",
+  "scripts/assert-dogfood-report.mjs",
 ];
 
 const errors = [];
@@ -86,6 +87,9 @@ if (!readme.includes("https://sylphxai.github.io/groundatlas/")) {
 }
 if (!readme.includes("GitHub Action gate")) {
   errors.push("README must mention the GitHub Action gate.");
+}
+if (!readme.includes("groundatlas-external-dogfood")) {
+  errors.push("README must mention external dogfood evidence.");
 }
 if (!readme.includes("manifest-report-path") || !readme.includes("fleet-report-path")) {
   errors.push("README must document GitHub Action manifest/fleet report paths.");

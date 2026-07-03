@@ -93,6 +93,11 @@ The public action always executes `ga` through `npm exec --package`. It does not
 accept a local CLI path or private binary override. That keeps downstream
 dogfooding proof aligned with the package users actually install.
 
+GroundAtlas's own pre-publish CI uses a separate packed-tarball external
+dogfood job and stores its JSON evidence as an artifact. That job is source
+confidence only; it is intentionally not the public action contract and must not
+be copied into downstream commercial gates after npm publish/readback exists.
+
 ## Boundary
 
 - Use `project.manifest.json` as the vendor-neutral public manifest.

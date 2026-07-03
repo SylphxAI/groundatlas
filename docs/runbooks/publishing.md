@@ -46,6 +46,11 @@ Record the token exception with owner, expiry, and removal path.
 ```sh
 bun install
 bun run check
+GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo \
+  GROUNDATLAS_DOGFOOD_REPORT_PATH=/tmp/groundatlas-external-dogfood.json \
+  bun run dogfood:external
+node scripts/assert-dogfood-report.mjs /tmp/groundatlas-external-dogfood.json \
+  --expect-pre-npm --expect-adopted --expect-neutral-manifest
 bun run release:preflight
 npm publish --dry-run --access public
 ```
@@ -55,6 +60,13 @@ the packed tarball into a clean temporary project, imports `groundatlas` as a
 library, then runs installed `groundatlas` / `ga` commands against a fixture
 repository. The fixture proves the public neutral manifest is selected while the
 Doctrine file is reported separately under `manifestAdapters`.
+
+The external dogfood report is required pre-publish confidence only. It must
+show `claimBoundary: "pre-npm-pilot-only"` and
+`groundatlasPackageSource: "packed-local-tarball"` until npm registry readback
+has passed. If the target repository contains `.doctrine/project.json`, assert it
+with `--expect-doctrine-adapter`; it must remain adapter evidence, not the public
+default manifest.
 
 ## Manual publish is not done
 
