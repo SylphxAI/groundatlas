@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "outputDir": ".groundatlas",
+  "include": ["**/*"],
+  "exclude": [".git", "node_modules", "dist", "build", "coverage", ".groundatlas"],
+  "generatedDocsAreNotSsot": true
+}

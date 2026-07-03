@@ -3,8 +3,8 @@ import {
   ATLAS_SCHEMA_VERSION,
   DEFAULT_OUTPUT_DIR,
   type GroundAtlasConfig,
-} from "../domain/types.ts";
-import { pathExists, readJsonFile, writeTextFile } from "../infrastructure/fs.ts";
+} from "../domain/types.js";
+import { pathExists, readJsonFile, writeTextFile } from "../infrastructure/fs.js";
 
 export const CONFIG_FILE_NAME = "groundatlas.config.json";
 

@@ -1,5 +1,5 @@
-import type { AtlasMap, ImpactEntry, Risk, SourceEntry } from "../domain/types.ts";
-import { GENERATED_BANNER } from "../domain/types.ts";
+import type { AtlasMap, ImpactEntry, Risk, SourceEntry } from "../domain/types.js";
+import { GENERATED_BANNER } from "../domain/types.js";
 
 export function renderGeneratedHeader(title: string): string {
   return `# ${title}\n\n> ${GENERATED_BANNER}\n> Canonical truth lives in linked source files, schemas, tests, ADRs, manifests, and workflows.\n\n`;

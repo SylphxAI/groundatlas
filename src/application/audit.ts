@@ -6,8 +6,8 @@ import {
   type AuditResult,
   GENERATED_BANNER,
   type Risk,
-} from "../domain/types.ts";
-import { pathExists, readJsonFile } from "../infrastructure/fs.ts";
+} from "../domain/types.js";
+import { pathExists, readJsonFile } from "../infrastructure/fs.js";
 
 export async function auditAtlas(cwd: string, outputDir: string): Promise<AuditResult> {
   const issues: Risk[] = [];

@@ -3,15 +3,15 @@
 import path from "node:path";
 import packageJson from "../package.json" with { type: "json" };
 
-import { auditAtlas } from "./application/audit.ts";
-import { ensureConfig, loadConfig } from "./application/config.ts";
-import { explainQuery } from "./application/explain.ts";
-import { writeAtlas } from "./application/generate.ts";
-import { analyzeImpact } from "./application/impact.ts";
-import { scanRepository } from "./application/scan.ts";
-import { parseArgs } from "./cli/args.ts";
-import { helpText } from "./cli/help.ts";
-import { renderImpact, renderRisks, renderSourceTable } from "./renderers/markdown.ts";
+import { auditAtlas } from "./application/audit.js";
+import { ensureConfig, loadConfig } from "./application/config.js";
+import { explainQuery } from "./application/explain.js";
+import { writeAtlas } from "./application/generate.js";
+import { analyzeImpact } from "./application/impact.js";
+import { scanRepository } from "./application/scan.js";
+import { parseArgs } from "./cli/args.js";
+import { helpText } from "./cli/help.js";
+import { renderImpact, renderRisks, renderSourceTable } from "./renderers/markdown.js";
 
 const { version } = packageJson;
 

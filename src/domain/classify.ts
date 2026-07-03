@@ -1,5 +1,5 @@
 import path from "node:path";
-import type { SourceEntry, SourceKind } from "./types.ts";
+import type { SourceEntry, SourceKind } from "./types.js";
 
 export function classifySource(relativePath: string, sizeBytes: number): SourceEntry {
   const normalized = relativePath.toLowerCase();
@@ -33,7 +33,7 @@ function classifyKind(normalized: string, base: string): SourceKind {
       "biome.json",
       "eslint.config.js",
       "eslint.config.mjs",
-      "vite.config.ts",
+      "vite.config.js",
     ].includes(base) ||
     normalized.startsWith(".github/")
   ) {

@@ -16,7 +16,7 @@ ga explain "validation commands"
 ga impact --since main
 ```
 
-The package exposes both `groundatlas` and the short daily-driver command `ga`.
+The package exposes both `groundatlas` and the short daily-driver command `ga`. It also exports a typed library API from `groundatlas` for tools that want to consume the scanner, audit, renderer, explain, and impact primitives directly.
 
 ## What GroundAtlas is
 
@@ -39,6 +39,51 @@ The package exposes both `groundatlas` and the short daily-driver command `ga`.
 
 If deleting `.groundatlas/` would remove important project truth, the project is
 using GroundAtlas incorrectly.
+
+
+## Final product target
+
+GroundAtlas is building toward a complete open-source context control plane:
+
+- source inventory across code, schemas, tests, ADRs, manifests, workflows, docs, and package metadata;
+- deterministic source-grounded atlas generation;
+- claim/citation graph with exact source anchors;
+- query/explain answers that cite canonical files;
+- impact analysis for pull requests and release work;
+- freshness and citation validation gates for CI;
+- Markdown/HTML output for humans and JSON output for agents/tools;
+- optional AI adapters only after the deterministic map is trustworthy;
+- npm library + CLI distribution with provenance.
+
+See [Final Product Goal](./docs/specs/final-product-goal.md).
+
+## How it works
+
+GroundAtlas reads repository metadata through a safe scanner, classifies files by
+truth-home type, builds an atlas JSON model, renders human docs, and audits the
+result. Generated maps always point back to canonical source files.
+
+```mermaid
+flowchart LR
+  A["Repo truth homes"] --> B["Safe scanner"]
+  B --> C["Source classifier"]
+  C --> D["Atlas JSON"]
+  D --> E["Markdown maps"]
+  D --> F["Audit gate"]
+  D --> G["Explain / impact"]
+```
+
+See [Operating Model](./docs/specs/operating-model.md).
+
+## Dogfooding
+
+GroundAtlas dogfoods itself in `bun run check`: it builds the CLI, runs
+`ga update` against this repository, audits the generated map, and verifies the
+npm package dry-run. The repository carries `groundatlas.config.json`; generated
+`.groundatlas/` output is intentionally ignored and regenerated because it is a
+map, not source truth.
+
+See [Dogfooding Contract](./docs/specs/dogfooding.md).
 
 ## Commands
 
@@ -88,9 +133,16 @@ bun run check
 `bun run check` runs typecheck, tests, Biome, build, CLI help, and the local
 GroundAtlas audit.
 
+## Library publication
+
+The package name `groundatlas` is currently available on npm, and the repository
+contains a release workflow for provenance publishing. Actual npm publication is
+blocked until npm trusted publishing or an npm identity/token is configured.
+
+See [Publishing Runbook](./docs/runbooks/publishing.md).
+
 ## Status
 
-Initial product-ready slice: deterministic CLI, generated maps, audit gate,
-project manifest, governance docs, tests, and CI. LLM-assisted claim extraction,
-MCP, hosted UI, and package publishing are future slices after the deterministic
-core proves the boundary.
+Product-ready initial slice: deterministic CLI, typed library exports, generated
+maps, audit gate, project manifest, governance docs, tests, CI, dogfooding loop,
+and release workflow. npm registry publication is the next external gate.

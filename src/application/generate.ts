@@ -1,7 +1,7 @@
 import path from "node:path";
-import type { AtlasMap } from "../domain/types.ts";
-import { writeTextFile } from "../infrastructure/fs.ts";
-import { renderChangeGuide, renderReadme, renderSourceMap } from "../renderers/markdown.ts";
+import type { AtlasMap } from "../domain/types.js";
+import { writeTextFile } from "../infrastructure/fs.js";
+import { renderChangeGuide, renderReadme, renderSourceMap } from "../renderers/markdown.js";
 
 export async function writeAtlas(outputRoot: string, map: AtlasMap): Promise<string[]> {
   const files = [
