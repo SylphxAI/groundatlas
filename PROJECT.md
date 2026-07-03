@@ -5,7 +5,7 @@ source-grounded repository maps for humans and AI agents.
 
 ## Lifecycle
 
-- State: `active`
+- State: `active`, with public npm package `groundatlas@0.1.1`
 - Layer: `tooling`
 - Policy pool: `agent-tool`
 - Local machine manifest: [`.doctrine/project.json`](./.doctrine/project.json) (SylphxAI Doctrine adapter; not a public GroundAtlas requirement)
@@ -43,6 +43,7 @@ tool. The repository being scanned owns all canonical facts that GroundAtlas poi
 ## Public surfaces
 
 - CLI binaries: `groundatlas`, `ga`
+- Published npm package: [`groundatlas`](https://www.npmjs.com/package/groundatlas)
 - Package manifest: [`package.json`](./package.json)
 - Generated map schema shape: [`src/domain/types.ts`](./src/domain/types.ts)
 - User docs: [`README.md`](./README.md)
@@ -66,6 +67,8 @@ cannot safely run on this repository are not defaults.
 ## Delivery
 
 This repository is delivered through GitHub, CI, and source commits. Package
-publication is prepared through `.github/workflows/release.yml`; actual npm
-publication requires npm trusted publishing or an npm identity/token, then
-registry readback. Manual local publish is not the standard path.
+publication runs through the tag-gated `.github/workflows/release.yml` workflow
+with provenance, registry readback, post-publish dogfood, and release evidence
+artifacts. `groundatlas@0.1.1` is published; the remaining release-infrastructure
+gap is migration from the bounded `NPM_TOKEN` bootstrap fallback to npm trusted
+publishing/OIDC. Manual local publish is not the standard path.

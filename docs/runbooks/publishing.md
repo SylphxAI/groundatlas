@@ -39,7 +39,7 @@ As of the first successful CI/CD publish:
 
 ## Trusted publishing setup
 
-Before the first real npm publish, configure npm trusted publishing for:
+Before removing the bounded token fallback, configure npm trusted publishing for:
 
 - Package: `groundatlas`
 - Repository: `SylphxAI/groundatlas`
@@ -48,9 +48,9 @@ Before the first real npm publish, configure npm trusted publishing for:
 - Environment: none for MVP, or a protected `npm` environment if the org requires
   an explicit environment gate.
 
-If trusted publishing cannot create the first package, use a one-time npm token
-only as a bounded fallback, then immediately move future releases back to OIDC.
-Record the token exception with owner, expiry, and removal path.
+If trusted publishing cannot create or update the package, use an npm token only
+as a bounded fallback, then move future releases back to OIDC. Record the token
+exception with owner, expiry, and removal path.
 
 The release workflow currently passes the organization `NPM_TOKEN` explicitly to
 `npm publish --provenance` so the first package can be bootstrapped through the
