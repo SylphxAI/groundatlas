@@ -24,7 +24,7 @@ repository context substrate.
 | Choice | End state | Strength | Risk |
 | --- | --- | --- | --- |
 | No tool | Humans and agents rediscover structure manually. | No new dependency. | Slow onboarding, tribal knowledge, stale docs, hallucinated agent context, weak impact analysis. |
-| GroundAtlas | Source-grounded map + auditable truth routing + CLI/library surface. | Deterministic, no model key required, no secret reads, no source mutation, generated output not SSOT. | Less magical prose today; must keep building citation/freshness gates and published package proof. |
+| GroundAtlas | Source-grounded map + auditable truth routing + CLI/library surface. | Deterministic, no model key required, no secret reads, no source mutation, generated output not SSOT, public npm package with readback evidence. | Less magical prose today; must keep building citation/freshness gates and downstream fleet CI adoption proof. |
 | OpenWiki | AI-maintained `openwiki/` docs and interactive CLI for documentation generation. | Strong generated-doc experience and model-provider support. | Can become another docs surface; public README says it can append prompts to `AGENTS.md`/`CLAUDE.md` and stores provider secrets under `~/.openwiki/.env`. |
 | OpenClaw | Personal AI assistant/gateway across channels, tools, apps, and skills. | Powerful assistant ecosystem and operator UX. | Different category; does not solve repo SSOT/governed knowledge-map needs by itself. |
 | Repomix/context packers | Flatten/pack repo context for LLM prompts. | Fast context packaging. | Snapshot context, not a durable SSOT/audit/control-plane layer. |

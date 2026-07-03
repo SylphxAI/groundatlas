@@ -40,6 +40,11 @@
         "type": "repo",
         "url": "https://github.com/SylphxAI/groundatlas",
         "title": "GroundAtlas GitHub repository"
+      },
+      {
+        "type": "package",
+        "url": "https://www.npmjs.com/package/groundatlas",
+        "title": "groundatlas npm package"
       }
     ]
   },
@@ -66,22 +71,26 @@
         "description": "Non-secret source fingerprint comparison that fails stale generated maps."
       },
       {
-        "type": "package",
-        "name": "Manifest validator source",
-        "location": "src/manifest.ts"
+        "name": "manifest-validator-source",
+        "description": "Read-only manifest validation source for the CLI, library subpath, and exported schema bridge."
       }
     ],
     "doesNotOwn": [
       "Canonical truth in scanned repositories.",
       "Downstream repository architecture, API, persistence, deployment, or release decisions.",
       "Enterprise doctrine rules owned by SylphxAI/doctrine.",
-      "Package-registry publication until release automation is explicitly added."
+      "npm organization credentials, trusted-publishing settings, and registry administration outside the repository release workflow."
     ],
     "publicSurfaces": [
       {
         "type": "cli",
         "name": "GroundAtlas CLI",
         "location": "package.json bin: groundatlas, ga"
+      },
+      {
+        "type": "package-export",
+        "name": "Published npm package",
+        "location": "https://www.npmjs.com/package/groundatlas"
       },
       {
         "type": "documentation",
@@ -96,8 +105,7 @@
       {
         "type": "schema",
         "name": "Atlas domain types",
-        "location": "src/domain/types.ts",
-        "description": "Atlas schema, truth-home types, orientation route types, and source entries."
+        "location": "src/domain/types.ts"
       },
       {
         "type": "manifest",
@@ -150,7 +158,7 @@
         "location": "docs/specs/competitive-positioning.md"
       },
       {
-        "type": "adr",
+        "type": "documentation",
         "name": "ADR-0002 source-grounded control plane",
         "location": "docs/adr/ADR-0002-source-grounded-control-plane.md"
       },
@@ -200,7 +208,7 @@
         "location": "docs/specs/open-source-strategy.md"
       },
       {
-        "type": "website",
+        "type": "documentation",
         "name": "Static landing page",
         "location": "docs/website/index.html"
       },
@@ -210,12 +218,12 @@
         "location": "docs/specs/control-plane-business-case.md"
       },
       {
-        "type": "script",
+        "type": "cli",
         "name": "External dogfood pilot script",
         "location": "scripts/dogfood-external-repo.mjs"
       },
       {
-        "type": "website",
+        "type": "documentation",
         "name": "Published website",
         "location": "https://sylphxai.github.io/groundatlas/"
       },
@@ -227,8 +235,7 @@
       {
         "type": "workflow",
         "name": "GitHub Action gate",
-        "location": "action.yml",
-        "description": "Reusable composite action that runs update, manifest, audit, and fleet gates and emits artifact-ready JSON report paths."
+        "location": "action.yml"
       },
       {
         "type": "documentation",
@@ -236,32 +243,29 @@
         "location": "docs/guides/github-action.md"
       },
       {
-        "type": "script",
+        "type": "cli",
         "name": "GitHub Action validator",
         "location": "scripts/validate-github-action.mjs"
       },
       {
-        "type": "script",
+        "type": "cli",
         "name": "GitHub Action smoke",
         "location": "scripts/smoke-github-action.mjs"
       },
       {
         "type": "package-export",
         "name": "Manifest validator subpath",
-        "location": "package.json exports: ./manifest -> dist/manifest.js",
-        "description": "Read-only public bridge for vendor-neutral project manifest validation before standalone library extraction."
+        "location": "package.json exports: ./manifest -> dist/manifest.js"
       },
       {
-        "type": "script",
+        "type": "cli",
         "name": "Workflow validator",
-        "location": "scripts/validate-workflows.mjs",
-        "description": "Validates release/CI/Pages workflow contracts and Node 24-compatible GitHub Action references."
+        "location": "scripts/validate-workflows.mjs"
       },
       {
         "type": "schema",
         "name": "Package-exported project manifest schema",
-        "location": "package.json exports: ./schemas/project.manifest.schema.json",
-        "description": "Public package subpath for the vendor-neutral project manifest schema."
+        "location": "package.json exports: ./schemas/project.manifest.schema.json"
       }
     ],
     "allowedDependencies": [
@@ -303,31 +307,39 @@
   "delivery": {
     "ciModel": "legacy-ci",
     "requiredContexts": ["CI / check"],
-    "deployPath": "Source changes are delivered by GitHub PR/CI. npm publication is prepared through .github/workflows/release.yml and requires npm trusted publishing or an npm identity/token before first registry publish.",
-    "productionProof": "Clean checkout runs bun install and bun run check successfully; generated-map audit includes freshness/non-SSOT proof; package release proof requires npm registry readback for groundatlas. Public docs/schema/site proof requires validate:public-assets.",
+    "deployPath": "Source changes are delivered by GitHub PR/CI. npm packages are published only by the tag-gated .github/workflows/release.yml workflow with provenance, registry readback, post-publish dogfood, and release evidence artifacts.",
+    "productionProof": "Clean checkout runs bun install and bun run check successfully; generated-map audit includes freshness/non-SSOT proof; package release proof is npm registry readback for groundatlas@0.1.1 plus clean installed-package smoke and post-publish dogfood evidence. Public docs/schema/site proof requires validate:public-assets.",
     "recoveryClass": "source-revertable",
-    "deployable": false
+    "deployable": false,
+    "packageRelease": {
+      "publishesPackages": true,
+      "ecosystems": ["npm"],
+      "releaseIntent": "Changesets-equivalent protected version PR updates package.json, action.yml defaults, changelog, and release evidence gates before a v*.*.* tag publish.",
+      "versionPr": "Protected GitHub PR path today; future sylphx-release-bot/GitHub App version PR automation is the target before release scale-out.",
+      "publisher": "Tag-gated GitHub Actions workflow publishes with npm provenance using a bounded NPM_TOKEN fallback while npm trusted publishing/OIDC setup remains open.",
+      "requiredContexts": [
+        "CI / check",
+        "Release / publish",
+        "release-evidence/json",
+        "supply-chain:provenance"
+      ],
+      "publishProof": "npm registry readback, gitHead match, provenance publish, installed-package smoke, post-publish dogfood JSON, and groundatlas-release-evidence artifact."
+    }
   },
   "adoption": {
-    "status": "commercial-grade-foundation",
+    "status": "migrating",
     "gaps": [
       {
-        "id": "trusted-publish",
-        "description": "Configure npm trusted publishing or a bounded one-time npm token, then publish and read back groundatlas from npm.",
+        "id": "trusted-publishing-oidc",
+        "description": "Migrate future npm publishes from the bounded NPM_TOKEN fallback to npm trusted publishing/OIDC after npm package settings are configured and a tokenless release path is proven.",
         "owner": "GroundAtlas maintainers",
-        "target": "Before claiming npm package publication complete"
+        "target": "Before treating the token fallback as permanent release infrastructure"
       },
       {
-        "id": "npm-registry-readback",
-        "description": "After first publish, verify npm view groundatlas and smoke install the package in a clean temp project.",
-        "owner": "GroundAtlas maintainers",
-        "target": "Immediately after first npm publish"
-      },
-      {
-        "id": "fleet-pilot",
-        "description": "Run source-checkout dogfood pilots before npm publication, then pilot package-based GroundAtlas scan/update/audit on 1-2 internal repositories after registry readback before making fleet CI gates mandatory.",
-        "owner": "GroundAtlas maintainers",
-        "target": "Source-checkout pilot before npm; package-based pilot after npm registry readback and before fleet mandatory adoption"
+        "id": "fleet-ci-rollout",
+        "description": "Add package-based GroundAtlas GitHub Action gates to downstream repositories, starting with Doctrine, before claiming mandatory fleet adoption.",
+        "owner": "GroundAtlas maintainers and downstream repo owners",
+        "target": "After groundatlas@0.1.1 registry readback and local Doctrine package pilot"
       }
     ]
   }

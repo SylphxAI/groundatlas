@@ -27,6 +27,12 @@
       "description": "Binaries: groundatlas and ga."
     },
     {
+      "type": "package",
+      "name": "Published npm package",
+      "path": "https://www.npmjs.com/package/groundatlas",
+      "description": "Public npm package for the GroundAtlas CLI, library API, GitHub Action package spec, manifest bridge, and exported schema."
+    },
+    {
       "type": "schema",
       "name": "Project control file schema",
       "path": "schemas/project.manifest.schema.json",
@@ -98,16 +104,21 @@
     {
       "name": "release:preflight",
       "command": "GROUNDATLAS_RELEASE_TAG=v0.1.1 bun run release:preflight",
-      "purpose": "Verify local release readiness before npm publication."
+      "purpose": "Verify local release readiness before a tag-gated npm publication."
+    },
+    {
+      "name": "release:readback",
+      "command": "bun run release:readback",
+      "purpose": "Read back groundatlas@0.1.1 from npm and run installed-package smoke evidence."
     },
     {
       "name": "dogfood:external",
-      "command": "GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo bun run dogfood:external",
-      "purpose": "Run a pre-npm, non-mutating source-checkout dogfood pilot against copied target repositories."
+      "command": "GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@0.1.1 GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo bun run dogfood:external",
+      "purpose": "Run a non-mutating package-based dogfood pilot against copied target repositories after npm registry readback."
     }
   ],
   "adoption": {
     "status": "adopted",
-    "notes": "GroundAtlas dogfoods its own vendor-neutral project control file while keeping generated .groundatlas output non-authoritative."
+    "notes": "GroundAtlas dogfoods its vendor-neutral project control file and has a published npm package pilot; generated .groundatlas output remains non-authoritative and downstream fleet adoption still requires repo-local CI gates."
   }
 }

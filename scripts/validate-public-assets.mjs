@@ -79,8 +79,10 @@ for (const requiredWebsiteLink of [
     errors.push(`Website missing required public link: ${requiredWebsiteLink}`);
   }
 }
-if (!website.includes("After npm registry publish/readback")) {
-  errors.push("Website install snippet must not claim npm installation before registry readback.");
+if (!website.includes("Public npm package")) {
+  errors.push(
+    "Website install snippet must advertise the registry-readback-backed public npm package.",
+  );
 }
 if (!readme.includes("https://sylphxai.github.io/groundatlas/")) {
   errors.push("README must expose the public website URL.");

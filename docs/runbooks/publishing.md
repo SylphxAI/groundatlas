@@ -5,15 +5,19 @@ CLI binaries `groundatlas` and `ga`.
 
 ## Current registry state
 
-As of the first publish-prep passes:
+As of the first successful CI/CD publish:
 
-- `npm view groundatlas` returns 404: package name is available.
-- `npm view @sylphxai/groundatlas` returns 404: scoped fallback is available.
-- Local workstation `npm whoami` returns `ENEEDAUTH`: no npm identity is present.
+- `groundatlas@0.1.1` is published on npm as the public unscoped package.
+- `npm view groundatlas@0.1.1 version dist.integrity dist.tarball gitHead --json`
+  must read back `version: "0.1.1"` and the tag commit git head before the
+  package is treated as release evidence.
+- The `v0.1.1` tag workflow is the first successful publish run. It used
+  `npm publish --access public --provenance` through the organization
+  `NPM_TOKEN` fallback while trusted publishing setup remains open.
 - The `v0.1.0` tag workflow reached `npm publish` but did not create a registry
   package because npm returned 404/not-authorized for `groundatlas@0.1.0`.
-  Therefore `v0.1.1` is the next first-publish candidate; do not move the
-  already-pushed `v0.1.0` tag.
+  Do not move the already-pushed `v0.1.0` tag; it is retained as failed release
+  history.
 
 ## Required release path
 
@@ -30,11 +34,12 @@ As of the first publish-prep passes:
    `GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@X.Y.Z bun run dogfood:external`
    before claiming fleet package adoption.
 7. Preserve the `groundatlas-release-evidence` workflow artifact containing
-   `groundatlas-npm-readback.json` and `groundatlas-post-publish-dogfood.json`.
+   parseable JSON files: `groundatlas-npm-readback.json` and
+   `groundatlas-post-publish-dogfood.json`.
 
 ## Trusted publishing setup
 
-Before the first real npm publish, configure npm trusted publishing for:
+Before removing the bounded token fallback, configure npm trusted publishing for:
 
 - Package: `groundatlas`
 - Repository: `SylphxAI/groundatlas`
@@ -43,9 +48,9 @@ Before the first real npm publish, configure npm trusted publishing for:
 - Environment: none for MVP, or a protected `npm` environment if the org requires
   an explicit environment gate.
 
-If trusted publishing cannot create the first package, use a one-time npm token
-only as a bounded fallback, then immediately move future releases back to OIDC.
-Record the token exception with owner, expiry, and removal path.
+If trusted publishing cannot create or update the package, use an npm token only
+as a bounded fallback, then move future releases back to OIDC. Record the token
+exception with owner, expiry, and removal path.
 
 The release workflow currently passes the organization `NPM_TOKEN` explicitly to
 `npm publish --provenance` so the first package can be bootstrapped through the
@@ -63,6 +68,8 @@ GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo \
   bun run dogfood:external
 node scripts/assert-dogfood-report.mjs /tmp/groundatlas-external-dogfood.json \
   --expect-pre-npm --expect-adopted --expect-neutral-manifest
+bun run release:readback > /tmp/groundatlas-npm-readback.json
+node scripts/assert-json-file.mjs /tmp/groundatlas-npm-readback.json
 bun run release:preflight
 npm publish --dry-run --access public
 ```
@@ -101,7 +108,8 @@ The release workflow runs:
 
 The registry readback emits machine-readable evidence including version,
 integrity, tarball URL, `gitHead`, expected Git commit, and installed-package
-smoke results. In GitHub Actions, `gitHead` must match `GITHUB_SHA`.
+smoke results. In GitHub Actions, `gitHead` must match `GITHUB_SHA`, and the
+written artifact must pass `scripts/assert-json-file.mjs` before upload.
 
 On tag runs, the release workflow then installs the just-published npm package
 into the external dogfood pilot and writes

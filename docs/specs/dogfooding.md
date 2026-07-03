@@ -61,8 +61,9 @@ The evidence explicitly reports:
 - scan/audit/fleet command results;
 - original repository status before and after.
 
-This does **not** satisfy fleet package adoption. Fleet package adoption remains
-blocked until npm publication, provenance, and registry readback succeed.
+This does **not** satisfy fleet package adoption. Before `groundatlas@0.1.1`,
+fleet package adoption remained blocked until npm publication, provenance, and
+registry readback succeeded.
 
 After npm publication, `bun run release:readback` must install the immutable
 registry package and run the same installed-package fleet smoke before claiming
@@ -82,6 +83,9 @@ This post-publish mode reports `groundatlasPackageSource: "npm-registry"` and
 for package-based fleet adoption, but mandatory fleet rollout still requires
 repo-local PRs and CI gates in the target projects.
 
+For `groundatlas@0.1.1`, this package/readback layer exists. The remaining
+dogfooding boundary is downstream CI adoption, not package availability.
+
 The release workflow must run this post-publish pilot only on `v*.*.*` tag
 events, after npm publish and registry readback. It uploads the
 `groundatlas-release-evidence` artifact with both registry readback JSON and
@@ -99,8 +103,8 @@ publish, read back, or claim package-based dogfooding.
 - Source-checkout pilots must never mutate the original target repository. They
   may write generated output only inside a copied temp repository.
 - External repositories should use the GitHub Action gate only after npm
-  publish/readback and a version tag are available; before that, action usage is
-  source-ready but not package-adoption proof.
+  publish/readback and a version tag are available; for released versions such as
+  `v0.1.1`, the gate is package-adoption proof for that target repository only.
 - `bun run check` must exercise the reusable GitHub Action run block against a
   packed tarball and verify manifest/fleet report JSON so source-ready action
   claims are backed by behavior, not string validation alone.

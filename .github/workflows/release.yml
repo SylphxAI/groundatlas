@@ -58,6 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/npm-registry-readback.mjs | tee "$RUNNER_TEMP/groundatlas-npm-readback.json"
+          node scripts/assert-json-file.mjs "$RUNNER_TEMP/groundatlas-npm-readback.json"
 
       - name: Check out post-publish dogfood target
         if: startsWith(github.ref, 'refs/tags/v')
@@ -86,6 +87,13 @@ jobs:
           --expect-adopted
           --expect-neutral-manifest
           --expect-doctrine-adapter
+
+      - name: Assert release evidence artifacts are JSON
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          set -euo pipefail
+          node scripts/assert-json-file.mjs "$RUNNER_TEMP/groundatlas-npm-readback.json"
+          node scripts/assert-json-file.mjs "$RUNNER_TEMP/groundatlas-post-publish-dogfood.json"
 
       - name: Upload release evidence
         if: always() && startsWith(github.ref, 'refs/tags/v')

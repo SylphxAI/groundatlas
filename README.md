@@ -15,10 +15,10 @@ and change-control surface that keeps generated context honest.
 > touches production code.
 
 ```sh
-# Public npm install after the first registry publish/readback:
+# Public npm package:
 npm install -g groundatlas
 
-# From source today:
+# From source:
 bun install
 bun run build
 node dist/cli.js init
@@ -183,11 +183,12 @@ Product-ready initial CLI/library slice:
 - typed library exports;
 - tests, CI, dogfooding, package dry-run, packed-package smoke, and
   composite-action smoke against the packed tarball;
-- release workflow prepared for npm provenance publishing.
+- release workflow with npm provenance, registry readback, post-publish dogfood,
+  and JSON evidence artifacts.
 
-External package publication is **not complete** until npm trusted publishing or
-a bounded npm token is configured and `npm view groundatlas ...` readback proves
-the published package.
+`groundatlas@0.1.1` is published on npm and read back from the registry. The
+remaining release-infrastructure gap is to migrate the bounded `NPM_TOKEN`
+fallback to npm trusted publishing/OIDC before treating it as permanent.
 
 ## What GroundAtlas is
 
@@ -394,19 +395,21 @@ packed tarball.
 
 ## Library publication
 
-The package name `groundatlas` is currently available on npm, and the repository
-contains a release workflow for provenance publishing. Actual npm publication is
-blocked until npm trusted publishing or an npm identity/token is configured.
-
-After publish, `bun run release:readback` installs the immutable registry
-package and runs the same installed-package fleet smoke. Only after that should
-we run `GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@<version> bun run
-dogfood:external` against copied downstream repositories.
+`groundatlas@0.1.1` is published on npm as the public package for the CLI,
+library API, GitHub Action package spec, manifest bridge, and exported schema.
+`bun run release:readback` installs the immutable registry package and runs the
+same installed-package fleet smoke. Package-based downstream pilots use
+`GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@<version> bun run
+dogfood:external` against copied repositories.
 
 On a real `v*.*.*` tag release, the workflow stores
 `groundatlas-release-evidence` with registry readback JSON and post-publish
 npm-registry dogfood JSON. Workflow dispatch remains preflight-only and cannot
 be used to claim package publication.
+
+The first successful publish used the organization `NPM_TOKEN` as a bounded
+bootstrap fallback. Future release hardening should migrate to npm trusted
+publishing/OIDC; do not republish an existing npm version.
 
 See [Publishing Runbook](./docs/runbooks/publishing.md).
 
@@ -431,5 +434,6 @@ After npm publish/readback and a version tag, downstream repositories can run:
       ${{ steps.groundatlas.outputs.fleet-report-path }}
 ```
 
-Before npm registry readback, this action is source-ready but not an external
-fleet-adoption proof.
+This proves a target repository is using the released package/action. It still
+does not make `.groundatlas/**` truth, and it does not claim organization-wide
+fleet adoption until each target repository adds its own CI gate.

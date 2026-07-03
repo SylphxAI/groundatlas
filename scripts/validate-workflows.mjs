@@ -63,9 +63,10 @@ assert(
 assert(
   workflowText.includes("groundatlas-npm-readback.json") &&
     workflowText.includes("set -euo pipefail") &&
+    workflowText.includes("scripts/assert-json-file.mjs") &&
     workflowText.includes("groundatlas-post-publish-dogfood.json") &&
     workflowText.includes("name: groundatlas-release-evidence"),
-  "Release workflow must upload npm readback and post-publish dogfood evidence artifacts.",
+  "Release workflow must upload parseable npm readback and post-publish dogfood evidence artifacts.",
 );
 assert(
   workflowText.includes("GROUNDATLAS_DOGFOOD_PACKAGE_SPEC") &&
