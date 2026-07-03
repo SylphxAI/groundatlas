@@ -115,6 +115,7 @@ See:
 - [Developer Experience Guide](./docs/guides/dx-guide.md)
 - [Agent Guide](./docs/guides/agent-guide.md)
 - [Open-source Strategy](./docs/specs/open-source-strategy.md)
+- [Control-plane Business Case](./docs/specs/control-plane-business-case.md)
 - [Static landing page](./docs/website/index.html)
 
 

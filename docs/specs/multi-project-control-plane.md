@@ -56,3 +56,5 @@ manifest schema/adapters, fleet scorecards, and exception records.
 
 GroundAtlas may consume that library once it exists, but GroundAtlas must remain
 usable without it.
+
+See also: [Control-plane Business Case](./control-plane-business-case.md).
