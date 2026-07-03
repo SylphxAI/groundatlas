@@ -14,7 +14,8 @@ it.
 5. Build the CLI.
 6. Run `node dist/cli.js --help`.
 7. Run `node dist/cli.js update` on this repository.
-8. Run `node dist/cli.js audit` on the generated map.
+8. Run `node dist/cli.js audit` on the generated map, including schema,
+   generated/non-SSOT banners, source-owned error risks, and freshness.
 9. Run package dry-run checks before publish workflows.
 10. Install the packed tarball in a clean temp project and run imported library plus installed CLI smoke tests.
 
@@ -32,3 +33,6 @@ it.
 The default `.groundatlas/` directory is generated output. The repo dogfoods the
 CLI by regenerating and auditing it in CI, while canonical project truth remains
 in source files, docs, manifests, and tests.
+
+If a downstream repository chooses to commit generated maps, its CI must run
+`ga update` and then `ga audit` so stale tracked output cannot pass quietly.

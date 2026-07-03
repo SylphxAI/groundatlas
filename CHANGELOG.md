@@ -5,6 +5,9 @@
 - Initial GroundAtlas CLI and library package surface.
 - Deterministic source scanner, map renderer, audit gate, explain, and impact
   commands.
-- Repo-local governance docs, permission model, dogfooding contract, and CI.
+- Fact-scoped SSOT model, orientation route, spec/design classification, and
+  generated-map freshness auditing.
+- Repo-local governance docs, permission model, dogfooding contract, fleet
+  adoption contract, competitive positioning, and CI.
 - Release workflow prepared for npm provenance publishing once trusted publishing
   or npm credentials are configured.

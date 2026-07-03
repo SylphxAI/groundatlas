@@ -6,20 +6,22 @@
     "lifecycle": "active",
     "layer": "tooling",
     "policyPool": "agent-tool",
-    "summary": "Open-source CLI-first knowledge control plane that generates source-grounded repository maps for humans and AI agents without becoming a second source of truth.",
+    "summary": "Open-source CLI-first repository context control plane that generates source-grounded maps, truth routes, and freshness gates for humans and AI agents without becoming a second source of truth.",
     "goals": [
       "Generate deterministic source-grounded maps over repository truth surfaces.",
+      "Expose a fact-scoped SSOT model and orientation route for humans and AI agents.",
       "Help humans and AI agents enter repositories faster while preserving canonical source ownership.",
       "Provide safe CLI operations for init, update, scan, audit, explain, and impact analysis.",
-      "Expose machine-readable outputs suitable for CI gates and future agent/MCP integrations.",
+      "Detect stale generated maps through non-secret source fingerprints.",
+      "Expose machine-readable outputs suitable for CI gates, fleet scorecards, and future agent/MCP integrations.",
       "Expose typed library exports for scanner, audit, explain, impact, and rendering primitives.",
       "Publish the package to npm through CI-owned provenance and registry readback.",
       "Dogfood GroundAtlas on its own repository in every required check."
     ],
     "nonGoals": [
-      "Own or replace downstream project truth such as ADRs, schemas, tests, manifests, workflows, or source code.",
+      "Own or replace downstream project truth such as ADRs, specs, schemas, tests, manifests, workflows, release proof, or source code.",
       "Mutate source files or root agent prompts in scanned repositories.",
-      "Require LLM/provider credentials, hosted tracing, or remote state in the MVP.",
+      "Require LLM/provider credentials, hosted tracing, or remote state in the deterministic scan/audit path.",
       "Publish packages manually from a workstation."
     ],
     "links": [
@@ -43,6 +45,14 @@
       {
         "name": "groundatlas-audit-gate",
         "description": "Local audit rules that verify generated maps exist and declare their non-SSOT boundary."
+      },
+      {
+        "name": "truth-orientation-model",
+        "description": "Fact-scoped SSOT model and read-order route for agents and humans entering a repository."
+      },
+      {
+        "name": "freshness-audit-fingerprint",
+        "description": "Non-secret source fingerprint comparison that fails stale generated maps."
       }
     ],
     "doesNotOwn": [
@@ -70,7 +80,8 @@
       {
         "type": "schema",
         "name": "Atlas domain types",
-        "location": "src/domain/types.ts"
+        "location": "src/domain/types.ts",
+        "description": "Atlas schema, truth-home types, orientation route types, and source entries."
       },
       {
         "type": "manifest",
@@ -106,6 +117,26 @@
         "type": "documentation",
         "name": "Publishing runbook",
         "location": "docs/runbooks/publishing.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Source truth model",
+        "location": "docs/specs/source-truth-model.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Fleet adoption contract",
+        "location": "docs/specs/fleet-adoption-contract.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Competitive positioning",
+        "location": "docs/specs/competitive-positioning.md"
+      },
+      {
+        "type": "adr",
+        "name": "ADR-0002 source-grounded control plane",
+        "location": "docs/adr/ADR-0002-source-grounded-control-plane.md"
       }
     ],
     "allowedDependencies": [
@@ -125,7 +156,7 @@
   "documentation": {
     "adr": {
       "path": "docs/adr/",
-      "status": "planned"
+      "status": "present"
     },
     "specs": {
       "path": "docs/specs/",
@@ -148,19 +179,13 @@
     "ciModel": "legacy-ci",
     "requiredContexts": ["CI / check"],
     "deployPath": "Source changes are delivered by GitHub PR/CI. npm publication is prepared through .github/workflows/release.yml and requires npm trusted publishing or an npm identity/token before first registry publish.",
-    "productionProof": "Clean checkout runs bun install and bun run check successfully; package release proof requires npm registry readback for groundatlas.",
+    "productionProof": "Clean checkout runs bun install and bun run check successfully; generated-map audit includes freshness/non-SSOT proof; package release proof requires npm registry readback for groundatlas.",
     "recoveryClass": "source-revertable",
     "deployable": false
   },
   "adoption": {
-    "status": "baseline",
+    "status": "commercial-grade-foundation",
     "gaps": [
-      {
-        "id": "adr-after-first-pr",
-        "description": "Create the first architecture ADR through the PR-number-based ADR workflow once the repository has a normal PR path.",
-        "owner": "GroundAtlas maintainers",
-        "target": "Before public package release"
-      },
       {
         "id": "trusted-publish",
         "description": "Configure npm trusted publishing or a bounded one-time npm token, then publish and read back groundatlas from npm.",
@@ -172,6 +197,12 @@
         "description": "After first publish, verify npm view groundatlas and smoke install the package in a clean temp project.",
         "owner": "GroundAtlas maintainers",
         "target": "Immediately after first npm publish"
+      },
+      {
+        "id": "fleet-pilot",
+        "description": "Pilot GroundAtlas scan/update/audit on 1-2 internal SylphxAI repositories before making fleet CI gates mandatory.",
+        "owner": "GroundAtlas maintainers",
+        "target": "After npm package readback and before fleet mandatory adoption"
       }
     ]
   }

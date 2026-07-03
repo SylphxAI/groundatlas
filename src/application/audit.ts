@@ -8,6 +8,7 @@ import {
   type Risk,
 } from "../domain/types.js";
 import { pathExists, readJsonFile } from "../infrastructure/fs.js";
+import { scanRepository } from "./scan.js";
 
 export async function auditAtlas(cwd: string, outputDir: string): Promise<AuditResult> {
   const issues: Risk[] = [];
@@ -36,6 +37,7 @@ export async function auditAtlas(cwd: string, outputDir: string): Promise<AuditR
         message: "Atlas policy must state generated docs are not SSOT.",
       });
     }
+    issues.push(...(await auditFreshness(cwd, outputDir, atlas)));
     issues.push(...atlas.risks.filter((risk) => risk.severity === "error"));
   }
 
@@ -60,4 +62,48 @@ export async function auditAtlas(cwd: string, outputDir: string): Promise<AuditR
   }
 
   return { ok: !issues.some((issue) => issue.severity === "error"), issues };
+}
+
+async function auditFreshness(cwd: string, outputDir: string, atlas: AtlasMap): Promise<Risk[]> {
+  try {
+    const current = await scanRepository({ cwd, outputDir });
+    if (freshnessFingerprint(atlas) === freshnessFingerprint(current)) {
+      return [];
+    }
+    return [
+      {
+        severity: "error",
+        code: "stale-atlas",
+        message: `${outputDir}/atlas.json does not match the current repository scan. Run ga update and commit or regenerate the output according to repo policy.`,
+      },
+    ];
+  } catch (error) {
+    return [
+      {
+        severity: "error",
+        code: "freshness-scan-failed",
+        message: `Could not verify generated map freshness: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+      },
+    ];
+  }
+}
+
+function freshnessFingerprint(atlas: AtlasMap): string {
+  return JSON.stringify({
+    schemaVersion: atlas.schemaVersion,
+    generator: atlas.generator,
+    repository: {
+      name: atlas.repository?.name,
+      packageManager: atlas.repository?.packageManager,
+    },
+    policy: atlas.policy,
+    truth: atlas.truth,
+    orientation: atlas.orientation,
+    sources: atlas.sources,
+    publicSurfaces: atlas.publicSurfaces,
+    validationCommands: atlas.validationCommands,
+    risks: atlas.risks,
+  });
 }

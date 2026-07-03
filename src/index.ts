@@ -11,6 +11,7 @@ export type {
   GitState,
   GroundAtlasConfig,
   ImpactEntry,
+  OrientationStep,
   PublicSurface,
   RepoIdentity,
   Risk,
@@ -18,14 +19,22 @@ export type {
   ScanOptions,
   SourceEntry,
   SourceKind,
+  TruthHome,
   ValidationCommand,
 } from "./domain/types.js";
-export { ATLAS_SCHEMA_VERSION, DEFAULT_OUTPUT_DIR, GENERATED_BANNER } from "./domain/types.js";
+export {
+  ATLAS_SCHEMA_VERSION,
+  CONFIG_SCHEMA_VERSION,
+  DEFAULT_OUTPUT_DIR,
+  GENERATED_BANNER,
+} from "./domain/types.js";
 export {
   renderGeneratedHeader,
   renderImpact,
+  renderOrientation,
   renderReadme,
   renderRisks,
   renderSourceMap,
   renderSourceTable,
+  renderTruthHomes,
 } from "./renderers/markdown.js";

@@ -14,11 +14,11 @@ Commands:
   init      Create groundatlas.config.json and generated map files.
   update    Refresh generated map files from current source truth.
   scan      Inspect repository sources without writing files. Alias: ingest.
-  audit     Verify generated maps exist and declare their non-SSOT boundary. Alias: validate.
+  audit     Verify generated maps, freshness, truth boundary, and source-owned error risks. Alias: validate.
   explain   Find source-grounded files related to a query. Alias: query.
   impact    Map git diff paths to known atlas sources.
   map       Refresh exported generated maps. Alias: export/update.
 
 GroundAtlas writes only to its configured output directory, plus groundatlas.config.json during init.
-Generated maps are navigation aids; code, schemas, tests, ADRs, manifests, and workflows remain canonical.`;
+Generated maps are navigation aids; code, schemas, tests, specs, ADRs, manifests, and workflows remain canonical.`;
 }

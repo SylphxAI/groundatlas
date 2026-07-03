@@ -4,9 +4,12 @@ GroundAtlas follows least privilege by default.
 
 ## Read access
 
-The scanner reads repository directory entries and file metadata. It skips common
-build/cache directories and secret-looking files, including `.env`, private key
-extensions, and secret/private directories.
+The scanner reads repository directory entries, file metadata, and SHA-256 hashes
+for non-secret files. Hashes are used to prove generated-map freshness without
+storing source contents in the atlas.
+
+It skips common build/cache directories and secret-looking files, including
+`.env`, private key extensions, and secret/private directories.
 
 ## Write access
 
@@ -16,10 +19,10 @@ The CLI writes only:
 - generated output under the configured `outputDir`, default `.groundatlas/`.
 
 No command writes to `AGENTS.md`, `CLAUDE.md`, source files, tests, schemas,
-ADRs, workflows, or package manifests.
+specs, ADRs, workflows, package manifests, or runbooks.
 
 ## Process/network access
 
-The MVP executes read-only `git` commands and performs no network calls.
-Future adapters that use model providers, tracing, MCP, or remote sources must
-be optional, documented, and separately gated.
+The deterministic path executes read-only `git` commands and performs no network
+calls. Future adapters that use model providers, tracing, MCP, or remote sources
+must be optional, documented, and separately gated.

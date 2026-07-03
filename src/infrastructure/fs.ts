@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { createReadStream } from "node:fs";
 import { mkdir, readdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -73,6 +75,7 @@ export type FileEntry = {
   path: string;
   absolutePath: string;
   sizeBytes: number;
+  contentSha256: string;
 };
 
 export async function walkFiles(root: string, outputDir: string): Promise<FileEntry[]> {
@@ -94,10 +97,26 @@ export async function walkFiles(root: string, outputDir: string): Promise<FileEn
       }
       const absolutePath = path.join(root, relativePath);
       const fileStat = await stat(absolutePath);
-      files.push({ absolutePath, path: relativePath, sizeBytes: fileStat.size });
+      files.push({
+        absolutePath,
+        path: relativePath,
+        sizeBytes: fileStat.size,
+        contentSha256: await sha256File(absolutePath),
+      });
     }
   }
 
   await visit(root, "");
   return files;
+}
+
+async function sha256File(filePath: string): Promise<string> {
+  const hash = createHash("sha256");
+  await new Promise<void>((resolve, reject) => {
+    const stream = createReadStream(filePath);
+    stream.on("data", (chunk) => hash.update(chunk));
+    stream.on("error", reject);
+    stream.on("end", resolve);
+  });
+  return hash.digest("hex");
 }

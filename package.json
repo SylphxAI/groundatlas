@@ -1,7 +1,7 @@
 {
   "name": "groundatlas",
   "version": "0.1.0",
-  "description": "Source-grounded knowledge maps for humans and agents.",
+  "description": "Source-grounded repository control plane for humans and agents.",
   "license": "MIT",
   "type": "module",
   "homepage": "https://github.com/SylphxAI/groundatlas#readme",
@@ -18,7 +18,10 @@
     "knowledge-map",
     "source-grounding",
     "cli",
-    "ssot"
+    "ssot",
+    "repository-map",
+    "control-plane",
+    "agent-tools"
   ],
   "bin": {
     "groundatlas": "dist/cli.js",
@@ -26,6 +29,7 @@
   },
   "files": [
     "dist",
+    "docs",
     "README.md",
     "LICENSE",
     "PROJECT.md",
