@@ -118,6 +118,7 @@ See:
 - [Open-source Strategy](./docs/specs/open-source-strategy.md)
 - [Control-plane Business Case](./docs/specs/control-plane-business-case.md)
 - [Static landing page](./docs/website/index.html)
+- [Published website](https://sylphxai.github.io/groundatlas/)
 
 
 ## 60-second demo

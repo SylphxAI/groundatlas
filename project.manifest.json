@@ -37,6 +37,18 @@
       "name": "Static landing page",
       "path": "docs/website/index.html",
       "description": "Dependency-free public product landing page."
+    },
+    {
+      "type": "website",
+      "name": "Published website",
+      "path": "https://sylphxai.github.io/groundatlas/",
+      "description": "GitHub Pages deployment target for the public landing page."
+    },
+    {
+      "type": "workflow",
+      "name": "Pages deployment workflow",
+      "path": ".github/workflows/pages.yml",
+      "description": "GitHub-owned static site deployment without repository secrets."
     }
   ],
   "commands": [
