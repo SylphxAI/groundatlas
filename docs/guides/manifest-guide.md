@@ -75,6 +75,16 @@ GroundAtlas the SSOT for project identity.
 - GroundAtlas adoption status.
 - Time-bounded exceptions.
 
+Manifest-declared validation commands are first-class GroundAtlas inputs. Use
+them for repos where the correct gate is not a package script, such as Python,
+policy, documentation, infrastructure, or schema-only projects. Do not add a
+fake `package.json` only to satisfy a fleet gate.
+
+If a repo has both package scripts and neutral manifest commands, GroundAtlas
+reports both and de-duplicates exact command strings with package scripts first.
+Only the selected highest-priority valid neutral manifest contributes commands;
+lower-priority aliases and ecosystem adapters cannot silently fill gaps.
+
 ## What does not belong here
 
 - API contracts that should live in schemas/OpenAPI/protobuf/types.

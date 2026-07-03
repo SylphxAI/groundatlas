@@ -102,7 +102,11 @@ project.manifest.json
 ```
 
 It records stable project identity, truth-home pointers, public surfaces,
-validation commands, and adoption status. GroundAtlas also recognizes
+validation commands, and adoption status. Those manifest-declared commands are
+used as the validation-command source for non-package repositories, so Python,
+docs-only, infrastructure, and policy repos do not need a fake `package.json` to
+be dogfooded. Only the selected highest-priority valid neutral manifest
+contributes commands. GroundAtlas also recognizes
 `groundatlas.project.json`, `.project/manifest.json`, and ecosystem adapters such as
 `.doctrine/project.json`, but those adapters are not the public default.
 `ga fleet` validates neutral manifests, selects the highest-priority neutral
@@ -143,7 +147,7 @@ ga audit
 # GroundAtlas audit passed.
 
 ga explain "validation commands" --json
-# [{ "path": "package.json", "kind": "package-manifest", ... }]
+# [{ "path": "project.manifest.json", ... }] or [{ "path": "package.json", ... }]
 
 ga impact --since main
 # | Status | Changed path | Matched atlas sources |

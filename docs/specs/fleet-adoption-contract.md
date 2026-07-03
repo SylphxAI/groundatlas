@@ -23,7 +23,7 @@ as an internal adapter, but GroundAtlas public adoption must stay vendor-neutral
 | `README.md` | Yes | Public start-here contract. |
 | `docs/specs/**` or `DESIGN.md` | Yes for production/commercial work | Product intent and acceptance contracts. |
 | `docs/adr/**` | Yes once durable decisions exist | Material decisions and trade-offs. |
-| `package.json` / equivalent manifest | Yes when the repo has a package/app/runtime | Commands, exports, dependency surface. |
+| `package.json` / `project.manifest.json` commands / equivalent manifest | Yes | Validation commands, exports, dependency surface where applicable. Non-package repos should declare commands in the neutral manifest instead of adding fake package metadata. |
 | Tests/evals | Yes | Behavior proof. |
 | CI workflow | Yes | Machine gate for validation. |
 | `SECURITY.md` | Yes for public or customer-facing repos | Vulnerability reporting and security expectations. |
