@@ -115,6 +115,13 @@ export function smokeInstalledPackage({
             summary: "Installed package fixture for GroundAtlas.",
             lifecycle: "active",
           },
+          commands: [
+            {
+              name: "manifest-check",
+              command: "node scripts/check-manifest.js",
+              purpose: "Prove installed packages read neutral manifest validation commands.",
+            },
+          ],
           adoption: { status: "adopted" },
         },
         null,
@@ -229,6 +236,15 @@ export function smokeInstalledPackage({
     if (project.generatedAtlas?.ok !== true) {
       throw new Error("installed package smoke did not pass generated atlas audit");
     }
+    if (
+      !project.validationCommands?.some(
+        (command) =>
+          command.command === "node scripts/check-manifest.js" &&
+          command.source === "project.manifest.json",
+      )
+    ) {
+      throw new Error("installed package smoke did not read neutral manifest validation commands");
+    }
     execFileSync(ga, ["explain", "project manifest"], { cwd: repoDir, stdio: "ignore" });
 
     const evidence = {
@@ -239,6 +255,7 @@ export function smokeInstalledPackage({
       selectedManifest: project.manifest.path,
       manifestValidation: manifest.report.path,
       adapterPaths: project.manifestAdapters.map((manifest) => manifest.path),
+      manifestCommandSource: "project.manifest.json",
     };
     console.log(JSON.stringify(evidence, null, 2));
     return evidence;

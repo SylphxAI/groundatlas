@@ -6,6 +6,7 @@ import type {
   MachineManifestKind,
   MachineManifestReport,
   Risk,
+  ValidationCommand,
 } from "../domain/types.js";
 
 const NEUTRAL_MANIFEST_PATHS: Record<string, MachineManifestKind> = {
@@ -15,12 +16,12 @@ const NEUTRAL_MANIFEST_PATHS: Record<string, MachineManifestKind> = {
 };
 
 const DOCTRINE_ADAPTER_PATH = ".doctrine/project.json";
-const MANIFEST_PRIORITY = [
+const NEUTRAL_MANIFEST_PRIORITY = [
   "project.manifest.json",
   "groundatlas.project.json",
   ".project/manifest.json",
-  DOCTRINE_ADAPTER_PATH,
 ] as const;
+const MANIFEST_PRIORITY = [...NEUTRAL_MANIFEST_PRIORITY, DOCTRINE_ADAPTER_PATH] as const;
 
 const TOP_LEVEL_KEYS = new Set([
   "$schema",
@@ -121,6 +122,24 @@ export async function validateMachineProjectManifestFile(
 }
 
 export const validateProjectManifestFile = validateMachineProjectManifestFile;
+
+export async function readProjectManifestValidationCommands(
+  cwd: string,
+  sourcePaths: Set<string>,
+): Promise<ValidationCommand[]> {
+  const selectedNeutralManifestPath = NEUTRAL_MANIFEST_PRIORITY.find((manifestPath) =>
+    sourcePaths.has(manifestPath),
+  );
+  if (!selectedNeutralManifestPath) return [];
+
+  const absolutePath = path.join(cwd, selectedNeutralManifestPath);
+  const report = await validateManifestFile(absolutePath, selectedNeutralManifestPath);
+  if (!report.valid) return [];
+
+  const parsed = await readJsonObject(absolutePath);
+  if (!parsed.ok) return [];
+  return readNeutralManifestCommands(parsed.value.commands, selectedNeutralManifestPath);
+}
 
 async function validateManifestPath(
   cwd: string,
@@ -396,6 +415,24 @@ function validateCommands(value: unknown, manifestPath: string, issues: Risk[]):
     assertString(command.command, manifestPath, issues, `commands[${index}].command is required.`);
     assertString(command.purpose, manifestPath, issues, `commands[${index}].purpose is required.`);
   }
+}
+
+function readNeutralManifestCommands(value: unknown, manifestPath: string): ValidationCommand[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((commandValue) => {
+    const command = readRecord(commandValue);
+    const commandText = readString(command?.command);
+    const name = readString(command?.name);
+    const purpose = readString(command?.purpose);
+    if (!commandText || !name || !purpose) return [];
+    return [
+      {
+        command: commandText,
+        source: manifestPath,
+        reason: `project manifest declares the ${name} validation command: ${purpose}`,
+      },
+    ];
+  });
 }
 
 function validateAdoption(

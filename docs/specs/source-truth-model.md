@@ -19,7 +19,7 @@ GroundAtlas:
 | 3 | `README.md` | Yes | Public product promise, install path, and human start-here contract. |
 | 4 | `docs/specs/**`, `DESIGN.md`, `design.md` | Yes for commercial projects | Product intent, operating contracts, adoption rules, design constraints. |
 | 5 | `docs/adr/**` | Yes for durable decisions | Architecture/product/security/commercial decisions and trade-offs. |
-| 6 | `package.json`, schemas, migrations, exported types | Yes when present | Commands, package surface, data/API contracts, machine-checkable boundaries. |
+| 6 | `package.json`, selected neutral project manifest commands, schemas, migrations, exported types | Yes when present | Validation commands, package surface, data/API contracts, machine-checkable boundaries. |
 | 7 | `src/**`, `lib/**`, `test/**`, `tests/**`, evals | Yes | Implemented behavior and behavior proof. |
 | 8 | `.github/workflows/**`, `docs/runbooks/**`, `SECURITY.md`, `CHANGELOG.md` | Yes | Validation automation, release operations, vulnerability reporting, support/release status. |
 | 9 | `.groundatlas/**` | Optional, last | Generated navigation only. Never SSOT. |
@@ -39,7 +39,8 @@ surface the conflict instead of pretending the generated map can decide it.
 | Project identity and boundary | `PROJECT.md`, `project.manifest.json`, `groundatlas.project.json`, `.project/manifest.json`, or recognized adapters such as `.doctrine/project.json` | Link, summarize, and flag missing files. |
 | Durable decisions | `docs/adr/**` | Route humans/agents to the active decision trail. |
 | Product intent and operating rules | `docs/specs/**`, `DESIGN.md` | Make intent discoverable and compare it to implementation surfaces. |
-| Public package/CLI surface | `package.json`, exported types, CLI help | Index commands, exports, and validation scripts. |
+| Public package/CLI surface | `package.json`, exported types, CLI help | Index package commands, exports, and validation scripts. |
+| Non-package validation commands | Selected valid neutral project manifest commands | Index declared gates without requiring a fake package manifest. |
 | Data/API contracts | schemas, migrations, domain types | Classify as machine-checkable truth homes. |
 | Runtime behavior | source code | Point to implementation; do not rewrite or infer hidden behavior. |
 | Expected behavior | tests/evals | Point to proof and regression gates. |

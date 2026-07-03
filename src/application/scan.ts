@@ -16,6 +16,7 @@ import {
 } from "../domain/types.js";
 import { readJsonFile, walkFiles } from "../infrastructure/fs.js";
 import { readGitState } from "../infrastructure/git.js";
+import { readProjectManifestValidationCommands } from "./projectManifest.js";
 
 const { version } = packageJson;
 
@@ -38,7 +39,10 @@ export async function scanRepository(options: ScanOptions): Promise<AtlasMap> {
     classifySource(file.path, file.sizeBytes, file.contentSha256),
   );
   const sourcePaths = new Set(sources.map((source) => source.path));
-  const validationCommands = inferValidationCommands(packageJson);
+  const validationCommands = dedupeValidationCommands([
+    ...inferPackageValidationCommands(packageJson),
+    ...(await readProjectManifestValidationCommands(cwd, sourcePaths)),
+  ]);
   const risks = inferRisks(sourcePaths, validationCommands);
   const publicSurfaces = inferPublicSurfaces(sources, packageJson);
   const truthHomes = truthHomeModel();
@@ -93,7 +97,7 @@ function inferPackageManager(sourcePaths: Set<string>): AtlasMap["repository"]["
   return "unknown";
 }
 
-function inferValidationCommands(packageJson: PackageJson | null): ValidationCommand[] {
+function inferPackageValidationCommands(packageJson: PackageJson | null): ValidationCommand[] {
   const scripts = packageJson?.scripts ?? {};
   const preferred = ["check", "test", "typecheck", "lint", "build", "format"];
   return preferred
@@ -103,6 +107,15 @@ function inferValidationCommands(packageJson: PackageJson | null): ValidationCom
       source: "package.json",
       reason: `package.json defines the ${script} validation script.`,
     }));
+}
+
+function dedupeValidationCommands(commands: ValidationCommand[]): ValidationCommand[] {
+  const seen = new Set<string>();
+  return commands.filter((command) => {
+    if (seen.has(command.command)) return false;
+    seen.add(command.command);
+    return true;
+  });
 }
 
 function inferPublicSurfaces(
@@ -214,7 +227,7 @@ function inferRisks(sourcePaths: Set<string>, validationCommands: ValidationComm
     risks.push({
       severity: "warning",
       code: "missing-validation-commands",
-      message: "No package validation commands were discovered.",
+      message: "No package or neutral manifest validation commands were discovered.",
     });
   }
   if (

@@ -27,7 +27,7 @@ export function renderChangeGuide(map: AtlasMap): string {
     ? map.validationCommands
         .map((command) => `- \`${command.command}\` — ${command.reason}`)
         .join("\n")
-    : "- No validation commands discovered. Add package scripts so GroundAtlas can route agents to the right checks.";
+    : "- No validation commands discovered. Add package scripts or neutral project manifest commands so GroundAtlas can route agents to the right checks.";
   return `${renderGeneratedHeader("Change guide")}## Write boundary\n\nGroundAtlas generated files live under \`${map.policy.writeBoundary}\`. Product source, ADRs, specs, schemas, manifests, and tests remain canonical.\n\n## Truth conflict rule\n\n${map.truth.conflictRule}\n\n## Validation commands\n\n${commands}\n\n## Change workflow\n\n1. Identify the owning canonical source in [source-map.md](./source-map.md).\n2. Change the canonical source, not the generated map.\n3. Run the narrowest relevant validation command above.\n4. Run \`ga update\` to refresh generated navigation.\n5. Run \`ga audit\` to verify the generated map still declares its non-SSOT boundary.\n\n## Agent handoff\n\nFuture agents should use this directory as a map, then inspect the linked source files before making durable decisions.\n`;
 }
 

@@ -98,6 +98,219 @@ test("recognizes vendor-neutral machine project manifests without requiring doct
   expect(atlas.risks.some((risk) => risk.severity === "error")).toBe(false);
 });
 
+test("scanRepository reads validation commands from neutral manifests for non-package repos", async () => {
+  await rm(path.join(fixtureRoot, "package.json"), { force: true });
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture repository for manifest-declared validation commands.",
+          lifecycle: "active",
+        },
+        commands: [
+          {
+            name: "check",
+            command: "python3 tests/test_fixture.py",
+            purpose: "Run the repository validation suite without requiring package.json.",
+          },
+        ],
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const atlas = await scanRepository({
+    cwd: fixtureRoot,
+    outputDir: ".groundatlas",
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(atlas.repository.packageManager).toBe("unknown");
+  expect(atlas.validationCommands).toEqual([
+    {
+      command: "python3 tests/test_fixture.py",
+      source: "project.manifest.json",
+      reason:
+        "project manifest declares the check validation command: Run the repository validation suite without requiring package.json.",
+    },
+  ]);
+  expect(atlas.risks.some((risk) => risk.code === "missing-validation-commands")).toBe(false);
+});
+
+test("scanRepository keeps package validation commands first and dedupes manifest commands", async () => {
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture repository for package and manifest validation commands.",
+          lifecycle: "active",
+        },
+        commands: [
+          {
+            name: "check",
+            command: "bun run check",
+            purpose: "Duplicate package check command.",
+          },
+          {
+            name: "docs",
+            command: "python3 scripts/check_docs.py",
+            purpose: "Validate docs-only repository policy.",
+          },
+        ],
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const atlas = await scanRepository({
+    cwd: fixtureRoot,
+    outputDir: ".groundatlas",
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(atlas.validationCommands.filter((command) => command.command === "bun run check")).toEqual(
+    [
+      {
+        command: "bun run check",
+        source: "package.json",
+        reason: "package.json defines the check validation script.",
+      },
+    ],
+  );
+  expect(atlas.validationCommands).toContainEqual({
+    command: "python3 scripts/check_docs.py",
+    source: "project.manifest.json",
+    reason:
+      "project manifest declares the docs validation command: Validate docs-only repository policy.",
+  });
+});
+
+test("scanRepository uses only the selected valid neutral manifest for commands", async () => {
+  await rm(path.join(fixtureRoot, "package.json"), { force: true });
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Higher-priority manifest with no command declarations.",
+          lifecycle: "active",
+        },
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  await Bun.write(
+    path.join(fixtureRoot, "groundatlas.project.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-lower-priority",
+          name: "Fixture Lower Priority",
+          summary: "Lower-priority alias must not fill selected-manifest gaps.",
+          lifecycle: "active",
+        },
+        commands: [
+          {
+            name: "check",
+            command: "python3 tests/lower_priority.py",
+            purpose: "This must not count while project.manifest.json is selected.",
+          },
+        ],
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const atlas = await scanRepository({
+    cwd: fixtureRoot,
+    outputDir: ".groundatlas",
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(atlas.validationCommands).toEqual([]);
+  expect(atlas.risks.some((risk) => risk.code === "missing-validation-commands")).toBe(true);
+});
+
+test("scanRepository does not trust invalid neutral manifest commands or adapter commands", async () => {
+  await rm(path.join(fixtureRoot, "package.json"), { force: true });
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Invalid command shape must not satisfy validation-command adoption.",
+          lifecycle: "active",
+        },
+        commands: [{ name: "check", command: "python3 tests/test_fixture.py" }],
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  await Bun.write(
+    path.join(fixtureRoot, ".doctrine", "project.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          repo: "SylphxAI/fixture-basic",
+          name: "Fixture Basic",
+          lifecycle: "active",
+        },
+        commands: [
+          {
+            name: "adapter-check",
+            command: "python3 tests/adapter.py",
+            purpose: "Doctrine adapter commands are not the public validation-command default.",
+          },
+        ],
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const validation = await validateProjectManifestFile(
+    path.join(fixtureRoot, "project.manifest.json"),
+    "project.manifest.json",
+  );
+  const atlas = await scanRepository({
+    cwd: fixtureRoot,
+    outputDir: ".groundatlas",
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(validation.valid).toBe(false);
+  expect(atlas.validationCommands).toEqual([]);
+  expect(atlas.risks.some((risk) => risk.code === "missing-validation-commands")).toBe(true);
+});
+
 test("validateProjectManifestFile validates neutral manifests and adapters standalone", async () => {
   await Bun.write(
     path.join(fixtureRoot, "project.manifest.json"),
