@@ -9,7 +9,7 @@ flowchart LR
   C --> D["Atlas model (JSON)"]
   D --> E["Markdown/HTML renderers"]
   D --> F["Audit / freshness gate"]
-  D --> G["Explain / query / impact commands"]
+  D --> G["Explain / query / impact / fleet commands"]
 ```
 
 ## Source hierarchy
@@ -49,6 +49,8 @@ Generated maps link to those homes. They do not override them.
   and is fresh against the current scan.
 - `ga explain` / `ga query` finds relevant source entries for a topic.
 - `ga impact --since <ref>` maps changed files to atlas entries.
+- `ga fleet` / `ga inventory` / `ga score` reports adopted/warning/blocked
+  dogfooding status across local repository checkouts.
 
 ## Design rules
 

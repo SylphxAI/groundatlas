@@ -49,6 +49,11 @@
       "name": "release:preflight",
       "command": "GROUNDATLAS_RELEASE_TAG=v0.1.0 bun run release:preflight",
       "purpose": "Verify local release readiness before npm publication."
+    },
+    {
+      "name": "dogfood:external",
+      "command": "GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo bun run dogfood:external",
+      "purpose": "Run a pre-npm, non-mutating source-checkout dogfood pilot against copied target repositories."
     }
   ],
   "adoption": {

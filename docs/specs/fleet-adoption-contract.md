@@ -38,10 +38,12 @@ as an internal adapter, but GroundAtlas public adoption must stay vendor-neutral
 3. Run `ga init` if the repo has no config.
 4. Run `ga update` to generate `.groundatlas/**`.
 5. Run `ga audit` locally.
-6. Add `ga update && ga audit` or an equivalent package script to CI only after
+6. Run `ga fleet <repo> --require-atlas --json` to produce a machine-readable
+   adopted/warning/blocked report.
+7. Add `ga update && ga audit && ga fleet . --require-atlas` or an equivalent package script to CI only after
    the generated output is reproducible and the repo has clear ownership of all
    required truth homes.
-7. Do not manually edit `.groundatlas/**`; change canonical sources and regenerate.
+8. Do not manually edit `.groundatlas/**`; change canonical sources and regenerate.
 
 ## CI gate policy
 
@@ -51,6 +53,7 @@ A useful fleet gate must be machine-checkable:
 - fail when generated files lose their non-SSOT banner;
 - fail when `atlas.json` uses the wrong schema version;
 - fail when the atlas records error-level source risks;
+- fail when `ga fleet . --require-atlas --json` reports `blocked`;
 - warn, then later fail, on missing specs/ADRs/tests/CI/security as each repo
   reaches commercial-grade lifecycle.
 

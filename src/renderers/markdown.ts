@@ -1,4 +1,4 @@
-import type { AtlasMap, ImpactEntry, Risk, SourceEntry } from "../domain/types.js";
+import type { AtlasMap, FleetReport, ImpactEntry, Risk, SourceEntry } from "../domain/types.js";
 import { GENERATED_BANNER } from "../domain/types.js";
 
 export function renderGeneratedHeader(title: string): string {
@@ -46,6 +46,31 @@ export function renderImpact(entries: ImpactEntry[]): string {
   );
 }
 
+export function renderFleetReport(report: FleetReport): string {
+  return [
+    "# GroundAtlas fleet adoption report",
+    "",
+    `Generated: ${report.generatedAt}`,
+    `Root: ${report.root}`,
+    `Policy: generated atlas ${
+      report.policy.generatedAtlasRequired ? "required" : "optional"
+    }, strict ${report.policy.strict ? "on" : "off"}`,
+    "",
+    `Summary: ${report.summary.adopted} adopted, ${report.summary.warning} warning, ${report.summary.blocked} blocked, ${report.summary.total} total.`,
+    "",
+    table(
+      ["Status", "Project", "Path", "Dogfood signals", "Issues"],
+      report.projects.map((project) => [
+        project.status,
+        project.name,
+        code(project.path),
+        dogfoodSignals(project),
+        issueSummary(project.issues),
+      ]),
+    ),
+  ].join("\n");
+}
+
 export function renderRisks(risks: Risk[]): string {
   return risks.map((risk) => `- **${risk.severity}** \`${risk.code}\`: ${risk.message}`).join("\n");
 }
@@ -87,6 +112,28 @@ export function renderTruthHomes(map: AtlasMap): string {
 
 function code(value: string): string {
   return `\`${value}\``;
+}
+
+function dogfoodSignals(project: FleetReport["projects"][number]): string {
+  return [
+    project.hasProjectFile ? "PROJECT.md" : "missing PROJECT.md",
+    project.hasMachineManifest ? "machine manifest" : "missing machine manifest",
+    project.hasAgentAdapter ? "agent adapter" : "missing agent adapter",
+    project.hasValidationCommands ? "validation commands" : "missing validation commands",
+    project.generatedAtlas.present
+      ? `${project.outputDir}/atlas.json`
+      : `missing ${project.outputDir}`,
+    project.generatedAtlas.checked
+      ? project.generatedAtlas.ok
+        ? "atlas audit ok"
+        : "atlas audit failed"
+      : "atlas audit not checked",
+  ].join("; ");
+}
+
+function issueSummary(issues: Risk[]): string {
+  if (issues.length === 0) return "none";
+  return issues.map((issue) => `${issue.severity}:${issue.code}`).join(", ");
 }
 
 function table(headers: string[], rows: string[][]): string {

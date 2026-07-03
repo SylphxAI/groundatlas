@@ -6,12 +6,18 @@ import packageJson from "../package.json" with { type: "json" };
 import { auditAtlas } from "./application/audit.js";
 import { ensureConfig, loadConfig } from "./application/config.js";
 import { explainQuery } from "./application/explain.js";
+import { inspectFleet } from "./application/fleet.js";
 import { writeAtlas } from "./application/generate.js";
 import { analyzeImpact } from "./application/impact.js";
 import { scanRepository } from "./application/scan.js";
 import { parseArgs } from "./cli/args.js";
 import { helpText } from "./cli/help.js";
-import { renderImpact, renderRisks, renderSourceTable } from "./renderers/markdown.js";
+import {
+  renderFleetReport,
+  renderImpact,
+  renderRisks,
+  renderSourceTable,
+} from "./renderers/markdown.js";
 
 const { version } = packageJson;
 
@@ -92,6 +98,24 @@ async function main(argv: string[]): Promise<number> {
       console.log(renderImpact(impact));
     }
     return 0;
+  }
+
+  if (args.command === "fleet") {
+    const report = await inspectFleet({
+      cwd,
+      paths: args.values,
+      outputDir: args.outputDir,
+      requireAtlas: args.requireAtlas,
+      strict: args.strict,
+    });
+    if (args.json) {
+      console.log(JSON.stringify(report, null, 2));
+    } else {
+      console.log(renderFleetReport(report));
+    }
+    const hasBlocked = report.summary.blocked > 0;
+    const hasWarnings = report.summary.warning > 0;
+    return hasBlocked || (args.strict && hasWarnings) ? 1 : 0;
   }
 
   return 1;

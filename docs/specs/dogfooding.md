@@ -16,8 +16,37 @@ it.
 7. Run `node dist/cli.js update` on this repository.
 8. Run `node dist/cli.js audit` on the generated map, including schema,
    generated/non-SSOT banners, source-owned error risks, and freshness.
-9. Run package dry-run checks before publish workflows.
-10. Install the packed tarball in a clean temp project and run imported library plus installed CLI smoke tests.
+9. Run `node dist/cli.js fleet . --require-atlas --json` so GroundAtlas reports
+   its own adopted/warning/blocked status through the same machine surface that
+   downstream repositories will use.
+10. Run package dry-run checks before publish workflows.
+11. Install the packed tarball in a clean temp project and run imported library plus installed CLI smoke tests.
+
+## External source-checkout pilot
+
+Before npm registry publish/readback exists, GroundAtlas may run a bounded
+external dogfood pilot from the source checkout:
+
+```sh
+GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo bun run dogfood:external
+```
+
+This pilot is evidence only. It installs a locally packed tarball into a temp
+project, copies the target repository before writing generated output, runs the
+installed `groundatlas` / `ga` binaries against the copy, and verifies that the
+original repository status is unchanged.
+
+The evidence explicitly reports:
+
+- `groundatlasPackageSource: "packed-local-tarball"`;
+- `claimBoundary: "pre-npm-pilot-only"`;
+- whether the npm package is published;
+- detected project manifest and agent adapter;
+- scan/audit/fleet command results;
+- original repository status before and after.
+
+This does **not** satisfy fleet package adoption. Fleet package adoption remains
+blocked until npm publication, provenance, and registry readback succeed.
 
 ## Dogfood policy
 
@@ -27,6 +56,8 @@ it.
   default for customers.
 - Any future LLM/MCP adapter must be tested against this repo without exposing
   secrets or requiring private vendor infrastructure.
+- Source-checkout pilots must never mutate the original target repository. They
+  may write generated output only inside a copied temp repository.
 
 ## Why generated maps are ignored
 

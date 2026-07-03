@@ -17,10 +17,12 @@
       "Provide safe CLI operations for init, update, scan, audit, explain, and impact analysis.",
       "Detect stale generated maps through non-secret source fingerprints.",
       "Expose machine-readable outputs suitable for CI gates, fleet scorecards, and future agent/MCP integrations.",
-      "Expose typed library exports for scanner, audit, explain, impact, and rendering primitives.",
+      "Expose typed library exports for scanner, audit, explain, impact, fleet, and rendering primitives.",
       "Publish the package to npm through CI-owned provenance and registry readback.",
       "Dogfood GroundAtlas on its own repository in every required check.",
-      "Use evidence from public developer-tool ecosystems before extracting a standalone project-manifest/control-plane library."
+      "Use evidence from public developer-tool ecosystems before extracting a standalone project-manifest/control-plane library.",
+      "Report adopted, warning, and blocked dogfooding status across local repository checkouts.",
+      "Run bounded source-checkout dogfood pilots against copied target repositories before claiming npm-based fleet adoption."
     ],
     "nonGoals": [
       "Own or replace downstream project truth such as ADRs, specs, schemas, tests, manifests, workflows, release proof, or source code.",
@@ -196,6 +198,11 @@
         "type": "documentation",
         "name": "Control-plane business case",
         "location": "docs/specs/control-plane-business-case.md"
+      },
+      {
+        "type": "script",
+        "name": "External dogfood pilot script",
+        "location": "scripts/dogfood-external-repo.mjs"
       }
     ],
     "allowedDependencies": [
@@ -259,9 +266,9 @@
       },
       {
         "id": "fleet-pilot",
-        "description": "Pilot GroundAtlas scan/update/audit on 1-2 internal repositories before making fleet CI gates mandatory.",
+        "description": "Run source-checkout dogfood pilots before npm publication, then pilot package-based GroundAtlas scan/update/audit on 1-2 internal repositories after registry readback before making fleet CI gates mandatory.",
         "owner": "GroundAtlas maintainers",
-        "target": "After npm package readback and before fleet mandatory adoption"
+        "target": "Source-checkout pilot before npm; package-based pilot after npm registry readback and before fleet mandatory adoption"
       }
     ]
   }

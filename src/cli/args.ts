@@ -1,6 +1,7 @@
 export type CommandName =
   | "audit"
   | "explain"
+  | "fleet"
   | "help"
   | "impact"
   | "init"
@@ -14,7 +15,10 @@ export type ParsedArgs = {
   outputDir?: string;
   json: boolean;
   query?: string;
+  values: string[];
   since: string;
+  strict: boolean;
+  requireAtlas: boolean;
 };
 
 export function parseArgs(argv: string[]): ParsedArgs {
@@ -24,6 +28,8 @@ export function parseArgs(argv: string[]): ParsedArgs {
   let outputDir: string | undefined;
   let json = false;
   let since = "HEAD";
+  let strict = false;
+  let requireAtlas = false;
   const rest: string[] = [];
 
   for (let index = 0; index < args.length; index += 1) {
@@ -44,13 +50,41 @@ export function parseArgs(argv: string[]): ParsedArgs {
       since = requireValue(args, ++index, "--since");
       continue;
     }
+    if (arg === "--strict") {
+      strict = true;
+      continue;
+    }
+    if (arg === "--require-atlas") {
+      requireAtlas = true;
+      continue;
+    }
     if (arg === "--help" || arg === "-h") {
-      return { command: "help", cwd, outputDir, json, since };
+      return {
+        command: "help",
+        cwd,
+        outputDir,
+        json,
+        query: "",
+        values: [],
+        since,
+        strict,
+        requireAtlas,
+      };
     }
     rest.push(arg ?? "");
   }
 
-  return { command, cwd, outputDir, json, query: rest.join(" ").trim(), since };
+  return {
+    command,
+    cwd,
+    outputDir,
+    json,
+    query: rest.join(" ").trim(),
+    values: rest,
+    since,
+    strict,
+    requireAtlas,
+  };
 }
 
 function normalizeCommand(command: string | undefined): CommandName {
@@ -73,8 +107,12 @@ function normalizeCommand(command: string | undefined): CommandName {
       return "update";
     case "ingest":
       return "scan";
+    case "inventory":
+    case "score":
+      return "fleet";
     case "audit":
     case "explain":
+    case "fleet":
     case "impact":
     case "init":
     case "scan":

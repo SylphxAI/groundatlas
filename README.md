@@ -26,6 +26,7 @@ node dist/cli.js update
 node dist/cli.js audit
 node dist/cli.js explain "validation commands"
 node dist/cli.js impact --since main
+node dist/cli.js fleet . --require-atlas
 ```
 
 The package exposes both `groundatlas` and the short daily-driver command `ga`.
@@ -156,6 +157,8 @@ Product-ready initial CLI/library slice:
 - vendor-neutral `project.manifest.json` control file schema and example;
 - dependency-free static landing page under `docs/website/`;
 - `ga init`, `ga update`, `ga scan`, `ga audit`, `ga explain`, `ga impact`;
+- `ga fleet` / `ga inventory` / `ga score` for adopted/warning/blocked
+  dogfooding reports across one or more repositories;
 - explicit fact-scoped SSOT model and repository orientation route;
 - generated Markdown maps with non-SSOT banners;
 - freshness audit using file hashes, not just generated prose;
@@ -268,9 +271,10 @@ See [Operating Model](./docs/specs/operating-model.md).
 | `ga audit` | Verify generated maps, non-SSOT boundary, schema version, error risks, and freshness. |
 | `ga explain <query>` | Find source-grounded files related to a query. |
 | `ga impact --since <ref>` | Map git diff paths to known atlas sources. |
+| `ga fleet [paths...]` | Report adopted/warning/blocked dogfooding status across one or more repositories. |
 
-Aliases: `ingest` → `scan`; `validate` → `audit`; `query` → `explain`; `map` /
-`export` → `update`.
+Aliases: `ingest` → `scan`; `validate` → `audit`; `query` → `explain`;
+`inventory` / `score` → `fleet`; `map` / `export` → `update`.
 
 ## Generated output
 
@@ -292,7 +296,8 @@ not a source of truth.
 GroundAtlas dogfoods itself in `bun run check`: it typechecks, tests, lints,
 validates the project manifest, builds the CLI, runs the CLI against this
 repository, audits generated output freshness/non-SSOT policy, verifies npm
-package dry-run, and smoke-installs the packed tarball.
+package dry-run, checks its own `ga fleet . --require-atlas` adoption report,
+and smoke-installs the packed tarball.
 
 See [Dogfooding Contract](./docs/specs/dogfooding.md).
 

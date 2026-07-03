@@ -142,6 +142,42 @@ export type AuditResult = {
   issues: Risk[];
 };
 
+export type FleetAdoptionStatus = "adopted" | "warning" | "blocked";
+
+export type FleetProjectReport = {
+  path: string;
+  name: string;
+  status: FleetAdoptionStatus;
+  outputDir: string;
+  hasProjectFile: boolean;
+  hasMachineManifest: boolean;
+  hasAgentAdapter: boolean;
+  hasValidationCommands: boolean;
+  generatedAtlas: {
+    required: boolean;
+    checked: boolean;
+    present: boolean;
+    ok: boolean;
+  };
+  validationCommands: ValidationCommand[];
+  issues: Risk[];
+};
+
+export type FleetReport = {
+  schemaVersion: 1;
+  generatedAt: string;
+  root: string;
+  policy: {
+    generatedAtlasRequired: boolean;
+    strict: boolean;
+    generatedArtifactsAre: "navigation-only";
+  };
+  summary: Record<FleetAdoptionStatus, number> & {
+    total: number;
+  };
+  projects: FleetProjectReport[];
+};
+
 export type ImpactEntry = {
   path: string;
   status: string;
