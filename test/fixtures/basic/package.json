@@ -1,0 +1,12 @@
+{
+  "name": "fixture-basic",
+  "type": "module",
+  "scripts": {
+    "check": "bun test",
+    "test": "bun test",
+    "build": "tsc --noEmit"
+  },
+  "bin": {
+    "fixture": "./src/index.ts"
+  }
+}

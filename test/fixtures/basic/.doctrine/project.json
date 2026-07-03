@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "repo": "SylphxAI/fixture-basic",
+    "name": "Fixture Basic",
+    "lifecycle": "active",
+    "layer": "tooling",
+    "summary": "Fixture repository for GroundAtlas scanner tests.",
+    "goals": ["Exercise scanner behavior."],
+    "nonGoals": ["Ship product behavior."]
+  },
+  "boundaries": {
+    "owns": [{ "name": "fixture", "description": "Fixture files for tests." }],
+    "doesNotOwn": ["GroundAtlas production behavior."],
+    "publicSurfaces": [],
+    "allowedDependencies": [],
+    "forbiddenCouplings": ["Do not use as real repo truth."]
+  },
+  "documentation": {
+    "adr": { "path": "docs/adr/", "status": "present" },
+    "specs": { "path": "docs/", "status": "present" },
+    "catalog": { "path": ".doctrine/project.json", "status": "present" },
+    "runbooks": { "path": "README.md", "status": "planned" },
+    "generatedReferences": { "path": ".groundatlas/", "status": "generated" }
+  },
+  "delivery": {
+    "ciModel": "legacy-ci",
+    "requiredContexts": ["test"],
+    "deployPath": "not applicable",
+    "productionProof": "tests pass",
+    "recoveryClass": "source-revertable"
+  },
+  "adoption": { "status": "baseline", "gaps": [] }
+}

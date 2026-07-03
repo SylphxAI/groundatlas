@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "repo": "SylphxAI/groundatlas",
+    "name": "GroundAtlas",
+    "lifecycle": "active",
+    "layer": "tooling",
+    "policyPool": "agent-tool",
+    "summary": "Open-source CLI-first knowledge control plane that generates source-grounded repository maps for humans and AI agents without becoming a second source of truth.",
+    "goals": [
+      "Generate deterministic source-grounded maps over repository truth surfaces.",
+      "Help humans and AI agents enter repositories faster while preserving canonical source ownership.",
+      "Provide safe CLI operations for init, update, scan, audit, explain, and impact analysis.",
+      "Expose machine-readable outputs suitable for CI gates and future agent/MCP integrations."
+    ],
+    "nonGoals": [
+      "Own or replace downstream project truth such as ADRs, schemas, tests, manifests, workflows, or source code.",
+      "Mutate source files or root agent prompts in scanned repositories.",
+      "Require LLM/provider credentials, hosted tracing, or remote state in the MVP.",
+      "Publish packages manually from a workstation."
+    ],
+    "links": [
+      {
+        "type": "repo",
+        "url": "https://github.com/SylphxAI/groundatlas",
+        "title": "GroundAtlas GitHub repository"
+      }
+    ]
+  },
+  "boundaries": {
+    "owns": [
+      {
+        "name": "groundatlas-cli",
+        "description": "CLI commands and deterministic scanner/renderer behavior for source-grounded repository maps."
+      },
+      {
+        "name": "generated-map-format",
+        "description": "Machine-readable atlas JSON and generated Markdown navigation files."
+      },
+      {
+        "name": "groundatlas-audit-gate",
+        "description": "Local audit rules that verify generated maps exist and declare their non-SSOT boundary."
+      }
+    ],
+    "doesNotOwn": [
+      "Canonical truth in scanned repositories.",
+      "Downstream repository architecture, API, persistence, deployment, or release decisions.",
+      "Enterprise doctrine rules owned by SylphxAI/doctrine.",
+      "Package-registry publication until release automation is explicitly added."
+    ],
+    "publicSurfaces": [
+      {
+        "type": "cli",
+        "name": "GroundAtlas CLI",
+        "location": "package.json bin: groundatlas, ga"
+      },
+      {
+        "type": "documentation",
+        "name": "README",
+        "location": "README.md"
+      },
+      {
+        "type": "manifest",
+        "name": "Package manifest",
+        "location": "package.json"
+      },
+      {
+        "type": "schema",
+        "name": "Atlas domain types",
+        "location": "src/domain/types.ts"
+      },
+      {
+        "type": "manifest",
+        "name": "Project manifest",
+        "location": ".doctrine/project.json"
+      }
+    ],
+    "allowedDependencies": [
+      {
+        "repo": "SylphxAI/doctrine",
+        "surface": "engineering doctrine, project manifest schema, and standards routing",
+        "direction": "external"
+      }
+    ],
+    "forbiddenCouplings": [
+      "Generated maps must never become canonical project truth.",
+      "GroundAtlas must not require private Sylphx infrastructure to run as an open-source CLI.",
+      "GroundAtlas must not mutate scanned source files or root agent prompts.",
+      "Future LLM integrations must remain optional adapters over deterministic source manifests."
+    ]
+  },
+  "documentation": {
+    "adr": {
+      "path": "docs/adr/",
+      "status": "planned"
+    },
+    "specs": {
+      "path": "docs/specs/",
+      "status": "present"
+    },
+    "catalog": {
+      "path": ".doctrine/project.json",
+      "status": "present"
+    },
+    "runbooks": {
+      "path": "README.md, CONTRIBUTING.md, SECURITY.md",
+      "status": "present"
+    },
+    "generatedReferences": {
+      "path": ".groundatlas/ and src/domain/types.ts",
+      "status": "present"
+    }
+  },
+  "delivery": {
+    "ciModel": "legacy-ci",
+    "requiredContexts": ["CI / check"],
+    "deployPath": "Source changes are delivered by GitHub commits and CI. Package publication is not enabled in the initial slice.",
+    "productionProof": "Clean checkout runs bun install and bun run check successfully; future package releases require registry readback.",
+    "recoveryClass": "source-revertable",
+    "deployable": false
+  },
+  "adoption": {
+    "status": "baseline",
+    "gaps": [
+      {
+        "id": "adr-after-first-pr",
+        "description": "Create the first architecture ADR through the PR-number-based ADR workflow once the repository has a normal PR path.",
+        "owner": "GroundAtlas maintainers",
+        "target": "Before public package release"
+      },
+      {
+        "id": "trusted-publish",
+        "description": "Add CI-owned trusted publishing and registry readback before npm publication.",
+        "owner": "GroundAtlas maintainers",
+        "target": "Before public package release"
+      }
+    ]
+  }
+}
