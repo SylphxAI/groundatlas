@@ -30,6 +30,8 @@ const smoke = smokeInstalledPackage({
   sourceLabel: "npm-registry",
   expectedVersion: packageJson.version,
   registryUrl,
+  emitEvidence: false,
+  smokeStdio: ["ignore", "ignore", "inherit"],
 });
 const evidence = {
   schemaVersion: 1,

@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.1.1 - pending npm publication
+## Unreleased
+
+- Release evidence artifacts are now JSON-parseability gated, so future npm tag
+  runs cannot upload stdout-contaminated `groundatlas-npm-readback.json` files.
+
+## 0.1.1 - published to npm
 
 - Initial GroundAtlas CLI and library package surface.
 - Deterministic source scanner, map renderer, audit gate, explain, and impact

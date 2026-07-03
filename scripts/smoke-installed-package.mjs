@@ -9,6 +9,8 @@ export function smokeInstalledPackage({
   sourceLabel,
   expectedVersion,
   registryUrl,
+  emitEvidence = true,
+  smokeStdio = "inherit",
 } = {}) {
   if (!packageSpec) throw new Error("packageSpec is required for installed package smoke.");
 
@@ -19,7 +21,7 @@ export function smokeInstalledPackage({
     writeFileSync(path.join(appDir, "package.json"), '{"type":"module"}\n');
     const installArgs = ["install", packageSpec, "--ignore-scripts"];
     if (registryUrl) installArgs.push("--registry", registryUrl);
-    execFileSync("npm", installArgs, { cwd: appDir, stdio: "inherit" });
+    execFileSync("npm", installArgs, { cwd: appDir, stdio: smokeStdio });
 
     const installedPackageJson = JSON.parse(
       readFileSync(path.join(appDir, "node_modules/groundatlas/package.json"), "utf8"),
@@ -42,7 +44,7 @@ export function smokeInstalledPackage({
           "})",
         ].join(" "),
       ],
-      { cwd: appDir, stdio: "inherit" },
+      { cwd: appDir, stdio: smokeStdio },
     );
     execFileSync(
       "node",
@@ -56,7 +58,7 @@ export function smokeInstalledPackage({
           "})",
         ].join(" "),
       ],
-      { cwd: appDir, stdio: "inherit" },
+      { cwd: appDir, stdio: smokeStdio },
     );
     execFileSync(
       "node",
@@ -70,7 +72,7 @@ export function smokeInstalledPackage({
           "console.log('schema export ok')",
         ].join(" "),
       ],
-      { cwd: appDir, stdio: "inherit" },
+      { cwd: appDir, stdio: smokeStdio },
     );
 
     const repoDir = path.join(temp, "repo");
@@ -208,7 +210,7 @@ export function smokeInstalledPackage({
         }
       }
     }
-    execFileSync(ga, ["init"], { cwd: repoDir, stdio: "inherit" });
+    execFileSync(ga, ["init"], { cwd: repoDir, stdio: smokeStdio });
     const manifest = JSON.parse(
       execFileSync(ga, ["manifest", "project.manifest.json", "--json"], {
         cwd: repoDir,
@@ -218,8 +220,8 @@ export function smokeInstalledPackage({
     if (manifest.report?.valid !== true || manifest.report?.adapter !== false) {
       throw new Error(`installed package manifest smoke failed: ${JSON.stringify(manifest)}`);
     }
-    execFileSync(ga, ["update"], { cwd: repoDir, stdio: "inherit" });
-    execFileSync(ga, ["audit"], { cwd: repoDir, stdio: "inherit" });
+    execFileSync(ga, ["update"], { cwd: repoDir, stdio: smokeStdio });
+    execFileSync(ga, ["audit"], { cwd: repoDir, stdio: smokeStdio });
     const fleet = JSON.parse(
       execFileSync(ga, ["fleet", ".", "--require-atlas", "--json"], {
         cwd: repoDir,
@@ -272,7 +274,7 @@ export function smokeInstalledPackage({
       manifestCommandSource: "project.manifest.json",
       schemaExport: "groundatlas/schemas/project.manifest.schema.json",
     };
-    console.log(JSON.stringify(evidence, null, 2));
+    if (emitEvidence) console.log(JSON.stringify(evidence, null, 2));
     return evidence;
   } finally {
     rmSync(temp, { force: true, recursive: true });
