@@ -417,9 +417,9 @@ After npm publish/readback and a version tag, downstream repositories can run:
 
 ```yaml
 - id: groundatlas
-  uses: SylphxAI/groundatlas@v0.1.0
+  uses: SylphxAI/groundatlas@v0.1.1
   with:
-    package-spec: groundatlas@0.1.0
+    package-spec: groundatlas@0.1.1
     require-atlas: "true"
     strict: "true"
 - uses: actions/upload-artifact@v5

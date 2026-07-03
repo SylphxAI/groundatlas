@@ -26,9 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - id: groundatlas
-        uses: SylphxAI/groundatlas@v0.1.0
+        uses: SylphxAI/groundatlas@v0.1.1
         with:
-          package-spec: groundatlas@0.1.0
+          package-spec: groundatlas@0.1.1
           require-atlas: "true"
           strict: "true"
       - uses: actions/upload-artifact@v5
@@ -61,7 +61,7 @@ fleet gate.
 
 | Input | Default | Purpose |
 | --- | --- | --- |
-| `package-spec` | `groundatlas@0.1.0` | npm package spec executed through `npm exec`. The default must match the action tag's package version; production CI should not use `groundatlas@latest`. |
+| `package-spec` | `groundatlas@0.1.1` | npm package spec executed through `npm exec`. The default must match the action tag's package version; production CI should not use `groundatlas@latest`. |
 | `working-directory` | `.` | Repository directory to inspect. |
 | `output-dir` | `.groundatlas` | Generated GroundAtlas output directory. |
 | `update` | `true` | Run `ga update` before checks. |

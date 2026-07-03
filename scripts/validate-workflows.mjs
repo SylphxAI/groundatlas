@@ -21,6 +21,7 @@ const docsText = (await Promise.all(docsPaths.map((path) => readFile(path, "utf8
 const allText = `${workflowText}\n---\n${docsText}`;
 const releaseTagEnvLine = "GROUNDATLAS_RELEASE_TAG: $" + "{{ inputs.release_tag }}";
 const githubShaRefLine = "ref: $" + "{{ github.sha }}";
+const npmTokenEnvLine = "NODE_AUTH_TOKEN: $" + "{{ secrets.NPM_TOKEN }}";
 
 for (const deprecated of [
   "actions/checkout@v4",
@@ -80,6 +81,10 @@ assert(
 assert(
   workflowText.includes("npm publish --access public --provenance"),
   "Release workflow must publish with npm provenance.",
+);
+assert(
+  workflowText.includes(npmTokenEnvLine),
+  "Release workflow must use the org npm publish token until trusted publishing is configured for the first package.",
 );
 assert(
   workflowText.includes("if: startsWith(github.ref, 'refs/tags/v')") &&

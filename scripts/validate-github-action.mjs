@@ -64,7 +64,7 @@ assert(
 
 for (const required of [
   "Publication boundary",
-  "groundatlas@0.1.0",
+  `groundatlas@${packageJson.version}`,
   "project.manifest.json",
   ".doctrine/project.json",
   "pre-publish confidence",

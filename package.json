@@ -1,6 +1,6 @@
 {
   "name": "groundatlas",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Source-grounded repository control plane for humans and agents.",
   "license": "MIT",
   "type": "module",

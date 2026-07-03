@@ -72,7 +72,7 @@ After registry readback, the same external pilot can install from npm instead of
 a packed local tarball:
 
 ```sh
-GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@0.1.0 \
+GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@0.1.1 \
   GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo \
   bun run dogfood:external
 ```
