@@ -8,6 +8,7 @@ const requiredFiles = [
   "docs/guides/agent-guide.md",
   "docs/guides/manifest-guide.md",
   "docs/specs/open-source-strategy.md",
+  "docs/specs/control-plane-business-case.md",
   "docs/specs/multi-project-control-plane.md",
   "docs/website/index.html",
 ];
