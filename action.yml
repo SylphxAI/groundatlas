@@ -1,0 +1,84 @@
+name: GroundAtlas Fleet Gate
+description: Run GroundAtlas update, audit, and fleet adoption checks in GitHub Actions.
+author: SylphxAI
+
+inputs:
+  package-spec:
+    description: npm package spec to execute. Defaults to the package version paired with this action tag.
+    required: false
+    default: groundatlas@0.1.0
+  working-directory:
+    description: Repository directory to inspect.
+    required: false
+    default: .
+  output-dir:
+    description: GroundAtlas generated output directory.
+    required: false
+    default: .groundatlas
+  update:
+    description: Run ga update before audit/fleet checks.
+    required: false
+    default: "true"
+  require-atlas:
+    description: Require generated atlas.json in the fleet gate.
+    required: false
+    default: "true"
+  strict:
+    description: Fail on fleet warnings as well as blocked projects.
+    required: false
+    default: "false"
+  fail-on-diff:
+    description: Fail if tracked or unignored GroundAtlas generated files or config changed.
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Run GroundAtlas gate
+      shell: bash
+      env:
+        GROUNDATLAS_PACKAGE_SPEC: ${{ inputs.package-spec }}
+        GROUNDATLAS_WORKING_DIRECTORY: ${{ inputs.working-directory }}
+        GROUNDATLAS_OUTPUT_DIR: ${{ inputs.output-dir }}
+        GROUNDATLAS_UPDATE: ${{ inputs.update }}
+        GROUNDATLAS_REQUIRE_ATLAS: ${{ inputs.require-atlas }}
+        GROUNDATLAS_STRICT: ${{ inputs.strict }}
+        GROUNDATLAS_FAIL_ON_DIFF: ${{ inputs.fail-on-diff }}
+      run: |
+        set -euo pipefail
+
+        cd "$GROUNDATLAS_WORKING_DIRECTORY"
+
+        node -e 'const [major, minor] = process.versions.node.split(".").map(Number); if (major < 20 || (major === 20 && minor < 11)) { console.error(`GroundAtlas requires Node.js >=20.11; found ${process.version}. Add actions/setup-node before this action.`); process.exit(1); }'
+
+        run_ga() {
+          npm exec --yes --package "$GROUNDATLAS_PACKAGE_SPEC" -- ga "$@"
+        }
+
+        if [[ "$GROUNDATLAS_UPDATE" == "true" ]]; then
+          run_ga update --out "$GROUNDATLAS_OUTPUT_DIR"
+        fi
+
+        run_ga audit --out "$GROUNDATLAS_OUTPUT_DIR"
+
+        fleet_args=(fleet "." --out "$GROUNDATLAS_OUTPUT_DIR")
+        if [[ "$GROUNDATLAS_REQUIRE_ATLAS" == "true" ]]; then
+          fleet_args+=(--require-atlas)
+        fi
+        if [[ "$GROUNDATLAS_STRICT" == "true" ]]; then
+          fleet_args+=(--strict)
+        fi
+        fleet_args+=(--json)
+
+        run_ga "${fleet_args[@]}" | tee "${RUNNER_TEMP:-/tmp}/groundatlas-fleet.json"
+
+        if [[ "$GROUNDATLAS_FAIL_ON_DIFF" == "true" ]]; then
+          changed="$(git status --short -- "$GROUNDATLAS_OUTPUT_DIR" groundatlas.config.json)"
+          if [[ -n "$changed" ]]; then
+            echo "GroundAtlas generated files are not fresh:"
+            echo "$changed"
+            git diff -- "$GROUNDATLAS_OUTPUT_DIR" groundatlas.config.json || true
+            exit 1
+          fi
+        fi

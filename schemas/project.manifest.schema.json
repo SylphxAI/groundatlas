@@ -126,6 +126,7 @@
               "package",
               "docs",
               "schema",
+              "github-action",
               "workflow",
               "service",
               "website",

@@ -57,6 +57,26 @@ test("scanRepository identifies canonical sources and skips secrets", async () =
   expect(atlas.risks.some((risk) => risk.severity === "error")).toBe(false);
 });
 
+test("scanRepository classifies root action.yml as a GitHub Action public surface", async () => {
+  await Bun.write(
+    path.join(fixtureRoot, "action.yml"),
+    "name: Fixture Action\nruns:\n  using: composite\n  steps: []\n",
+  );
+  const atlas = await scanRepository({
+    cwd: fixtureRoot,
+    outputDir: ".groundatlas",
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+  expect(
+    atlas.sources.some((source) => source.path === "action.yml" && source.kind === "github-action"),
+  ).toBe(true);
+  expect(
+    atlas.publicSurfaces.some(
+      (surface) => surface.path === "action.yml" && surface.type === "github-action",
+    ),
+  ).toBe(true);
+});
+
 test("recognizes vendor-neutral machine project manifests without requiring doctrine", async () => {
   await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
   await Bun.write(

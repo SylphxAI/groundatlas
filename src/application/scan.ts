@@ -123,6 +123,8 @@ function inferPublicSurfaces(
       });
     if (source.kind === "ci-workflow")
       surfaces.push({ name: source.path, type: "workflow", path: source.path });
+    if (source.kind === "github-action")
+      surfaces.push({ name: source.path, type: "github-action", path: source.path });
     if (source.kind === "schema")
       surfaces.push({ name: source.path, type: "schema", path: source.path });
     if (source.kind === "spec" || source.kind === "design-doc" || source.kind === "runbook") {

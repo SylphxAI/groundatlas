@@ -79,6 +79,12 @@ repo-local PRs and CI gates in the target projects.
   secrets or requiring private vendor infrastructure.
 - Source-checkout pilots must never mutate the original target repository. They
   may write generated output only inside a copied temp repository.
+- External repositories should use the GitHub Action gate only after npm
+  publish/readback and a version tag are available; before that, action usage is
+  source-ready but not package-adoption proof.
+- `bun run check` must exercise the reusable GitHub Action run block against a
+  packed tarball so source-ready action claims are backed by behavior, not string
+  validation alone.
 
 ## Why generated maps are ignored
 

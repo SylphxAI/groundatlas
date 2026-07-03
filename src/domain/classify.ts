@@ -44,6 +44,9 @@ function classifyKind(normalized: string, base: string): SourceKind {
   ) {
     return "ci-workflow";
   }
+  if (normalized === "action.yml" || normalized === "action.yaml") {
+    return "github-action";
+  }
   if (
     ["package.json", "bun.lock", "pnpm-lock.yaml", "package-lock.json", "yarn.lock"].includes(base)
   ) {
@@ -107,6 +110,7 @@ function isCanonical(kind: SourceKind, normalized: string): boolean {
     kind === "schema" ||
     kind === "package-manifest" ||
     kind === "ci-workflow" ||
+    kind === "github-action" ||
     kind === "runbook" ||
     kind === "security-policy" ||
     kind === "source" ||
@@ -132,6 +136,8 @@ function reasonForKind(kind: SourceKind, relativePath: string): string {
       return "Defines machine-checkable contracts.";
     case "ci-workflow":
       return "Defines validation and automation gates.";
+    case "github-action":
+      return "Defines a reusable GitHub Action contract for downstream CI adoption.";
     case "package-manifest":
       return "Defines package metadata, binaries, scripts, and dependency surface.";
     case "build-config":

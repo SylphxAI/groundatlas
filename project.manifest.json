@@ -49,6 +49,12 @@
       "name": "Pages deployment workflow",
       "path": ".github/workflows/pages.yml",
       "description": "GitHub-owned static site deployment without repository secrets."
+    },
+    {
+      "type": "github-action",
+      "name": "GitHub Action gate",
+      "path": "action.yml",
+      "description": "Reusable composite action for ga update/audit/fleet CI gates after npm publish/readback."
     }
   ],
   "commands": [
@@ -56,6 +62,16 @@
       "name": "check",
       "command": "bun run check",
       "purpose": "Run the complete local validation and dogfooding suite."
+    },
+    {
+      "name": "validate:github-action",
+      "command": "bun run validate:github-action",
+      "purpose": "Validate the reusable GitHub Action gate contract and public boundary wording."
+    },
+    {
+      "name": "smoke:github-action",
+      "command": "bun run smoke:github-action",
+      "purpose": "Run the reusable composite action against a packed tarball in a copied fixture repository."
     },
     {
       "name": "release:preflight",

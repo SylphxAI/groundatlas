@@ -111,6 +111,7 @@ See:
 - [Project Control File Guide](./docs/guides/manifest-guide.md)
 - [Project manifest schema](./schemas/project.manifest.schema.json)
 - [Example manifest](./examples/project.manifest.json)
+- [GitHub Action gate](./docs/guides/github-action.md)
 - [Multi-project Control Plane](./docs/specs/multi-project-control-plane.md)
 
 ## Guides
@@ -160,6 +161,7 @@ Product-ready initial CLI/library slice:
 - deterministic scanner and atlas JSON;
 - vendor-neutral `project.manifest.json` control file schema and example;
 - dependency-free static landing page under `docs/website/`;
+- reusable GitHub Action gate under `action.yml`;
 - `ga init`, `ga update`, `ga scan`, `ga audit`, `ga explain`, `ga impact`;
 - `ga fleet` / `ga inventory` / `ga score` for adopted/warning/blocked
   dogfooding reports and neutral manifest validation across one or more
@@ -169,7 +171,8 @@ Product-ready initial CLI/library slice:
 - freshness audit using file hashes, not just generated prose;
 - secret-path skipping and narrow write boundary;
 - typed library exports;
-- tests, CI, dogfooding, package dry-run, packed-package smoke;
+- tests, CI, dogfooding, package dry-run, packed-package smoke, and
+  composite-action smoke against the packed tarball;
 - release workflow prepared for npm provenance publishing.
 
 External package publication is **not complete** until npm trusted publishing or
@@ -302,8 +305,9 @@ GroundAtlas dogfoods itself in `bun run check`: it typechecks, tests, lints,
 validates the project manifest, builds the CLI, runs the CLI against this
 repository, audits generated output freshness/non-SSOT policy, verifies npm
 package dry-run, checks its own `ga fleet . --require-atlas` adoption report,
-and smoke-installs the packed tarball. The packed-package smoke runs the
-installed CLI against a fixture containing both `project.manifest.json` and
+smoke-runs the reusable GitHub Action against a packed tarball, and
+smoke-installs the packed tarball. The packed-package smoke runs the installed
+CLI against a fixture containing both `project.manifest.json` and
 `.doctrine/project.json`, proving the neutral manifest is selected and the
 Doctrine file stays an adapter.
 
@@ -378,3 +382,19 @@ we run `GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@<version> bun run
 dogfood:external` against copied downstream repositories.
 
 See [Publishing Runbook](./docs/runbooks/publishing.md).
+
+## GitHub Action gate
+
+GroundAtlas includes a reusable composite action in [`action.yml`](./action.yml).
+After npm publish/readback and a version tag, downstream repositories can run:
+
+```yaml
+- uses: SylphxAI/groundatlas@v0.1.0
+  with:
+    package-spec: groundatlas@0.1.0
+    require-atlas: "true"
+    strict: "true"
+```
+
+Before npm registry readback, this action is source-ready but not an external
+fleet-adoption proof.

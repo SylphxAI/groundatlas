@@ -24,7 +24,8 @@
       "Report adopted, warning, and blocked dogfooding status across local repository checkouts.",
       "Run bounded source-checkout dogfood pilots against copied target repositories before claiming npm-based fleet adoption.",
       "Publish the static landing page through GitHub Pages with least-privilege workflow permissions and no repository secrets.",
-      "Validate neutral project manifests in fleet dogfooding gates while reporting ecosystem manifests as adapters."
+      "Validate neutral project manifests in fleet dogfooding gates while reporting ecosystem manifests as adapters.",
+      "Expose a reusable GitHub Action gate for downstream update/audit/fleet adoption after npm publish and version-tag readback."
     ],
     "nonGoals": [
       "Own or replace downstream project truth such as ADRs, specs, schemas, tests, manifests, workflows, release proof, or source code.",
@@ -215,6 +216,26 @@
         "type": "workflow",
         "name": "Pages deployment workflow",
         "location": ".github/workflows/pages.yml"
+      },
+      {
+        "type": "workflow",
+        "name": "GitHub Action gate",
+        "location": "action.yml"
+      },
+      {
+        "type": "documentation",
+        "name": "GitHub Action guide",
+        "location": "docs/guides/github-action.md"
+      },
+      {
+        "type": "script",
+        "name": "GitHub Action validator",
+        "location": "scripts/validate-github-action.mjs"
+      },
+      {
+        "type": "script",
+        "name": "GitHub Action smoke",
+        "location": "scripts/smoke-github-action.mjs"
       }
     ],
     "allowedDependencies": [
