@@ -17,8 +17,14 @@ As of the first publish-prep pass:
 2. Create a release tag `vX.Y.Z` from a green commit.
 3. Publish through `.github/workflows/release.yml` with GitHub OIDC provenance.
 4. Read back the registry package with `npm view groundatlas version dist`.
-5. Smoke install in a temp directory and run `groundatlas --help` plus `ga audit`
-   against a fixture repository.
+5. Smoke install in a temp directory, import the library exports, run
+   `groundatlas --help`, and run `ga init`, `ga update`, `ga audit`,
+   `ga fleet --require-atlas --json`, and `ga explain` against a fixture
+   repository that contains both the neutral `project.manifest.json` and the
+   `.doctrine/project.json` adapter.
+6. Run a copied-repository package pilot with
+   `GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@X.Y.Z bun run dogfood:external`
+   before claiming fleet package adoption.
 
 ## Trusted publishing setup
 
@@ -44,7 +50,11 @@ bun run release:preflight
 npm publish --dry-run --access public
 ```
 
-`bun run check` includes both `pack:dry-run` and `pack:smoke`. The smoke installs the packed tarball into a clean temporary project, imports `groundatlas` as a library, then runs installed `groundatlas` / `ga` commands against a fixture repository.
+`bun run check` includes both `pack:dry-run` and `pack:smoke`. The smoke installs
+the packed tarball into a clean temporary project, imports `groundatlas` as a
+library, then runs installed `groundatlas` / `ga` commands against a fixture
+repository. The fixture proves the public neutral manifest is selected while the
+Doctrine file is reported separately under `manifestAdapters`.
 
 ## Manual publish is not done
 
@@ -61,8 +71,13 @@ The release workflow runs:
 1. `bun run release:preflight` — tag/package version consistency, registry
    availability for the exact version, and the full local check suite.
 2. `npm publish --access public --provenance` — only from `v*.*.*` tag refs.
-3. `bun run release:readback` — `npm view` readback plus fresh registry install
-   and library/CLI smoke.
+3. `bun run release:readback` — `npm view` readback plus the same fresh
+   installed-package smoke used for packed tarballs, but installing from the
+   immutable npm registry package version.
+
+The registry readback emits machine-readable evidence including version,
+integrity, tarball URL, `gitHead`, expected Git commit, and installed-package
+smoke results. In GitHub Actions, `gitHead` must match `GITHUB_SHA`.
 
 Workflow dispatch is dry-run/preflight only. Publishing requires a version tag so
 the release path is auditable and reproducible.

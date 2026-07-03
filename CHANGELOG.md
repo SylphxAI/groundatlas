@@ -15,5 +15,9 @@
   pre-npm external source-checkout pilot script.
 - Fleet gate validation for neutral `project.manifest.json` manifests, with
   ecosystem manifest adapters reported separately.
+- Shared installed-package smoke for both packed tarballs and npm registry
+  readback, including package-based fleet manifest/adaptor dogfooding.
+- External dogfood pilot package-source mode for post-publish npm registry
+  installs, kept separate from pre-publish packed-tarball evidence.
 - Release workflow prepared for npm provenance publishing once trusted publishing
   or npm credentials are configured.

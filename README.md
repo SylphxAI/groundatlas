@@ -302,7 +302,10 @@ GroundAtlas dogfoods itself in `bun run check`: it typechecks, tests, lints,
 validates the project manifest, builds the CLI, runs the CLI against this
 repository, audits generated output freshness/non-SSOT policy, verifies npm
 package dry-run, checks its own `ga fleet . --require-atlas` adoption report,
-and smoke-installs the packed tarball.
+and smoke-installs the packed tarball. The packed-package smoke runs the
+installed CLI against a fixture containing both `project.manifest.json` and
+`.doctrine/project.json`, proving the neutral manifest is selected and the
+Doctrine file stays an adapter.
 
 See [Dogfooding Contract](./docs/specs/dogfooding.md).
 
@@ -360,12 +363,18 @@ bun run check
 ```
 
 `bun run check` runs typecheck, tests, Biome, build, CLI help, local GroundAtlas
-update/audit, npm pack dry-run, and clean packed-package smoke.
+update/audit, npm pack dry-run, and clean installed-package smoke from the
+packed tarball.
 
 ## Library publication
 
 The package name `groundatlas` is currently available on npm, and the repository
 contains a release workflow for provenance publishing. Actual npm publication is
 blocked until npm trusted publishing or an npm identity/token is configured.
+
+After publish, `bun run release:readback` installs the immutable registry
+package and runs the same installed-package fleet smoke. Only after that should
+we run `GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@<version> bun run
+dogfood:external` against copied downstream repositories.
 
 See [Publishing Runbook](./docs/runbooks/publishing.md).
