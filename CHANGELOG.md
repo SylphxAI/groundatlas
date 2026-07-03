@@ -1,10 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.1.2 - published to npm
 
 - Release evidence artifacts are now JSON-parseability gated, so future npm tag
   runs cannot upload stdout-contaminated `groundatlas-npm-readback.json` files.
-- Public docs and Doctrine adapter manifest now record `groundatlas@0.1.1` as
+- Public docs and Doctrine adapter manifest now record `groundatlas@0.1.2` as
   published, with remaining release work scoped to trusted-publishing migration
   and downstream CI adoption.
 
