@@ -167,14 +167,12 @@ async function dogfoodRepository({ repoInput, tmpRoot, groundatlasBin, gaBin, in
   const mutatedOriginalRepo = originalStatusBefore !== originalStatusAfter;
   const sourcePaths = new Set(scan.sources.map((source) => source.path));
   const detectedProjectManifest =
-    [...sourcePaths].find((sourcePath) =>
-      [
-        "project.manifest.json",
-        "groundatlas.project.json",
-        ".project/manifest.json",
-        ".doctrine/project.json",
-      ].includes(sourcePath),
-    ) ?? null;
+    [
+      "project.manifest.json",
+      "groundatlas.project.json",
+      ".project/manifest.json",
+      ".doctrine/project.json",
+    ].find((sourcePath) => sourcePaths.has(sourcePath)) ?? null;
   const manifestValidation = detectedProjectManifest
     ? JSON.parse(
         run(gaBin, ["manifest", detectedProjectManifest, "--cwd", targetCopy, "--json"], {
