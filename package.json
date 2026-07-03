@@ -83,7 +83,8 @@
       "types": "./dist/manifest.d.ts",
       "import": "./dist/manifest.js"
     },
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./schemas/project.manifest.schema.json": "./schemas/project.manifest.schema.json"
   },
   "sideEffects": false,
   "publishConfig": {

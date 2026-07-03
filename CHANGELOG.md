@@ -31,6 +31,8 @@
   tracked `.groundatlas/**` CI diff gates without timestamp-only churn.
 - Standalone `ga manifest` command plus `groundatlas/manifest` package subpath
   for vendor-neutral manifest/adaptor validation before full fleet adoption.
+- Public package export for `groundatlas/schemas/project.manifest.schema.json`,
+  so downstream tools can consume the neutral schema without scraping repo paths.
 - Release workflow prepared for npm provenance publishing once trusted publishing
   or npm credentials are configured.
 - Node 24-compatible GitHub workflow/action references plus workflow contract

@@ -38,6 +38,7 @@ const example = JSON.parse(await readFile("examples/project.manifest.json", "utf
 const readme = await readFile("README.md", "utf8");
 const manifestGuide = await readFile("docs/guides/manifest-guide.md", "utf8");
 const website = await readFile("docs/website/index.html", "utf8");
+const packageJson = JSON.parse(await readFile("package.json", "utf8"));
 
 if (schema.title !== "Project Manifest") {
   errors.push("Project manifest schema title is incorrect.");
@@ -103,6 +104,15 @@ if (!manifestGuide.includes("ga manifest project.manifest.json --json")) {
 }
 if (!manifestGuide.includes(".doctrine/project.json")) {
   errors.push("Manifest guide must preserve the ecosystem adapter boundary.");
+}
+if (
+  packageJson.exports?.["./schemas/project.manifest.schema.json"] !==
+  "./schemas/project.manifest.schema.json"
+) {
+  errors.push("package.json must export the vendor-neutral project manifest schema subpath.");
+}
+if (!manifestGuide.includes("groundatlas/schemas/project.manifest.schema.json")) {
+  errors.push("Manifest guide must document the package schema export.");
 }
 
 if (errors.length > 0) {

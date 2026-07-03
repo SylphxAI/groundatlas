@@ -116,7 +116,7 @@ malformed project metadata cannot be mistaken for adopted dogfooding.
 See:
 
 - [Project Control File Guide](./docs/guides/manifest-guide.md)
-- [Project manifest schema](./schemas/project.manifest.schema.json)
+- [Project manifest schema](./schemas/project.manifest.schema.json) — also exported as `groundatlas/schemas/project.manifest.schema.json`
 - [Example manifest](./examples/project.manifest.json)
 - [GitHub Action gate](./docs/guides/github-action.md)
 - [Multi-project Control Plane](./docs/specs/multi-project-control-plane.md)

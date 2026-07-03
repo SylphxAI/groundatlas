@@ -58,6 +58,20 @@ export function smokeInstalledPackage({
       ],
       { cwd: appDir, stdio: "inherit" },
     );
+    execFileSync(
+      "node",
+      [
+        "-e",
+        [
+          "const { readFileSync } = require('node:fs');",
+          "const schemaPath = require.resolve('groundatlas/schemas/project.manifest.schema.json');",
+          "const schema = JSON.parse(readFileSync(schemaPath, 'utf8'));",
+          "if (schema.title !== 'Project Manifest' || schema.properties?.schemaVersion?.const !== 1) throw new Error('invalid schema export');",
+          "console.log('schema export ok')",
+        ].join(" "),
+      ],
+      { cwd: appDir, stdio: "inherit" },
+    );
 
     const repoDir = path.join(temp, "repo");
     mkdirSync(path.join(repoDir, "src"), { recursive: true });
@@ -256,6 +270,7 @@ export function smokeInstalledPackage({
       manifestValidation: manifest.report.path,
       adapterPaths: project.manifestAdapters.map((manifest) => manifest.path),
       manifestCommandSource: "project.manifest.json",
+      schemaExport: "groundatlas/schemas/project.manifest.schema.json",
     };
     console.log(JSON.stringify(evidence, null, 2));
     return evidence;

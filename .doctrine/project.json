@@ -256,6 +256,12 @@
         "name": "Workflow validator",
         "location": "scripts/validate-workflows.mjs",
         "description": "Validates release/CI/Pages workflow contracts and Node 24-compatible GitHub Action references."
+      },
+      {
+        "type": "schema",
+        "name": "Package-exported project manifest schema",
+        "location": "package.json exports: ./schemas/project.manifest.schema.json",
+        "description": "Public package subpath for the vendor-neutral project manifest schema."
       }
     ],
     "allowedDependencies": [
