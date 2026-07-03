@@ -33,6 +33,12 @@
       "description": "Vendor-neutral project manifest schema."
     },
     {
+      "type": "package",
+      "name": "Manifest validator subpath",
+      "path": "src/manifest.ts",
+      "description": "Bridge export for vendor-neutral manifest validation before standalone library extraction."
+    },
+    {
       "type": "website",
       "name": "Static landing page",
       "path": "docs/website/index.html",
@@ -67,6 +73,11 @@
       "name": "validate:github-action",
       "command": "bun run validate:github-action",
       "purpose": "Validate the reusable GitHub Action gate contract and public boundary wording."
+    },
+    {
+      "name": "manifest",
+      "command": "bun run build && node dist/cli.js manifest project.manifest.json --json",
+      "purpose": "Validate the neutral project manifest through the public CLI without generating maps."
     },
     {
       "name": "smoke:github-action",

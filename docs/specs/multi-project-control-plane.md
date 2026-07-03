@@ -48,6 +48,16 @@ The package should provide:
 7. outputs that GroundAtlas can consume without depending on SylphxAI-private
    doctrine.
 
+GroundAtlas now exposes an interim bridge surface:
+
+- `ga manifest [path] --json` for read-only manifest/adaptor validation without
+  generated maps;
+- `groundatlas/manifest` for typed parser/validator imports from the published
+  package.
+
+This bridge is not the final standalone package. It exists to dogfood the public
+contract and make extraction safer once the package/repo name is decided.
+
 ## Boundary with GroundAtlas
 
 GroundAtlas owns repository scanning, generated maps, truth routing, and audit

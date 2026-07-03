@@ -8,6 +8,7 @@ import { ensureConfig } from "../src/application/config.ts";
 import { explainQuery } from "../src/application/explain.ts";
 import { inspectFleet } from "../src/application/fleet.ts";
 import { writeAtlas } from "../src/application/generate.ts";
+import { validateProjectManifestFile } from "../src/application/projectManifest.ts";
 import { scanRepository } from "../src/application/scan.ts";
 import { ATLAS_SCHEMA_VERSION, GENERATED_BANNER } from "../src/domain/types.ts";
 
@@ -95,6 +96,131 @@ test("recognizes vendor-neutral machine project manifests without requiring doct
   ).toBe(true);
   expect(atlas.risks.some((risk) => risk.code === "missing-machine-project-manifest")).toBe(false);
   expect(atlas.risks.some((risk) => risk.severity === "error")).toBe(false);
+});
+
+test("validateProjectManifestFile validates neutral manifests and adapters standalone", async () => {
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture manifest.",
+          lifecycle: "active",
+        },
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const neutral = await validateProjectManifestFile(
+    path.join(fixtureRoot, "project.manifest.json"),
+    "project.manifest.json",
+  );
+  expect(neutral.valid).toBe(true);
+  expect(neutral.adapter).toBe(false);
+  expect(neutral.projectId).toBe("fixture-basic");
+
+  const adapter = await validateProjectManifestFile(
+    path.join(fixtureRoot, ".doctrine", "project.json"),
+    ".doctrine/project.json",
+  );
+  expect(adapter.valid).toBe(true);
+  expect(adapter.adapter).toBe(true);
+
+  await Bun.write(path.join(fixtureRoot, "broken.manifest.json"), "{not json");
+  const broken = await validateProjectManifestFile(
+    path.join(fixtureRoot, "broken.manifest.json"),
+    "broken.manifest.json",
+  );
+  expect(broken.valid).toBe(false);
+  expect(broken.issues.some((issue) => issue.code === "invalid-project-manifest-json")).toBe(true);
+
+  await Bun.write(
+    path.join(fixtureRoot, "unsupported.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 2,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture manifest.",
+          lifecycle: "unsupported",
+        },
+        adoption: { status: "blocked" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  const unsupported = await validateProjectManifestFile(
+    path.join(fixtureRoot, "unsupported.manifest.json"),
+    "unsupported.manifest.json",
+  );
+  expect(unsupported.valid).toBe(false);
+  expect(unsupported.issues.some((issue) => issue.message.includes("schemaVersion"))).toBe(true);
+  expect(unsupported.issues.some((issue) => issue.message.includes("project.lifecycle"))).toBe(
+    true,
+  );
+  expect(
+    unsupported.issues.some((issue) => issue.code === "project-manifest-adoption-blocked"),
+  ).toBe(true);
+});
+
+test("manifest CLI validates explicit files, discovers manifests, and fails invalid input", async () => {
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture manifest.",
+          lifecycle: "active",
+        },
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const explicit = JSON.parse(sourceCli(["manifest", "project.manifest.json", "--json"]));
+  expect(explicit.report.valid).toBe(true);
+  expect(explicit.report.path).toBe("project.manifest.json");
+
+  const absolute = JSON.parse(
+    sourceCli(["manifest", path.join(fixtureRoot, "project.manifest.json"), "--json"]),
+  );
+  expect(absolute.report.valid).toBe(true);
+  expect(absolute.report.kind).toBe("project.manifest");
+
+  const discovered = JSON.parse(sourceCli(["manifest", "--json"]));
+  expect(discovered.selected.path).toBe("project.manifest.json");
+  expect(
+    discovered.adapters.some(
+      (manifest: { path?: string; adapter?: boolean }) =>
+        manifest.path === ".doctrine/project.json" && manifest.adapter === true,
+    ),
+  ).toBe(true);
+
+  await Bun.write(path.join(fixtureRoot, "broken.manifest.json"), "{not json");
+  const invalid = runFailingSourceCli(["manifest", "broken.manifest.json", "--json"]);
+  expect(invalid.status).toBe(1);
+  expect(JSON.parse(invalid.stdout).report.valid).toBe(false);
+
+  const missing = runFailingSourceCli(["manifest", "missing.manifest.json", "--json"]);
+  expect(missing.status).toBe(1);
+  expect(JSON.parse(missing.stdout).report.issues[0].code).toBe("project-manifest-unreadable");
+
+  const tooMany = runFailingSourceCli(["manifest", "one.json", "two.json"]);
+  expect(tooMany.status).toBe(1);
+  expect(tooMany.stderr).toContain("manifest accepts at most one path");
 });
 
 test("writeAtlas creates generated files with non-SSOT banner and audit passes", async () => {
@@ -547,3 +673,33 @@ test("fleet inspection blocks commercial dogfooding when machine manifest is mis
     report.projects[0]?.issues.some((issue) => issue.code === "missing-machine-project-manifest"),
   ).toBe(true);
 });
+
+function sourceCli(args: string[]): string {
+  return execFileSync("bun", ["run", path.resolve("src/cli.ts"), ...args], {
+    cwd: fixtureRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+}
+
+function runFailingSourceCli(args: string[]): {
+  status: number | null;
+  stdout: string;
+  stderr: string;
+} {
+  try {
+    const stdout = sourceCli(args);
+    return { status: 0, stdout, stderr: "" };
+  } catch (error) {
+    const failure = error as NodeJS.ErrnoException & {
+      status?: number | null;
+      stdout?: Buffer | string;
+      stderr?: Buffer | string;
+    };
+    return {
+      status: failure.status ?? null,
+      stdout: String(failure.stdout ?? ""),
+      stderr: String(failure.stderr ?? ""),
+    };
+  }
+}

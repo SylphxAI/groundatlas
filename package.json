@@ -45,7 +45,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/fix-shebang.mjs",
-    "check": "bun run typecheck && bun test && biome check . && bun run validate:manifest && bun run validate:public-assets && bun run validate:github-action && bun run build && node dist/cli.js --help && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js fleet . --require-atlas --json && bun run smoke:github-action && bun run pack:dry-run && bun run pack:smoke",
+    "check": "bun run typecheck && bun test && biome check . && bun run validate:manifest && bun run validate:public-assets && bun run validate:github-action && bun run build && node dist/cli.js --help && node dist/cli.js manifest project.manifest.json --json && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js fleet . --require-atlas --json && bun run smoke:github-action && bun run pack:dry-run && bun run pack:smoke",
     "validate:manifest": "bun scripts/validate-project-manifest.mjs",
     "dev": "bun run src/cli.ts",
     "format": "biome format --write .",
@@ -77,6 +77,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./manifest": {
+      "types": "./dist/manifest.d.ts",
+      "import": "./dist/manifest.js"
     },
     "./package.json": "./package.json"
   },

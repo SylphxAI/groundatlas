@@ -33,6 +33,7 @@ for (const file of requiredFiles) {
 const schema = JSON.parse(await readFile("schemas/project.manifest.schema.json", "utf8"));
 const example = JSON.parse(await readFile("examples/project.manifest.json", "utf8"));
 const readme = await readFile("README.md", "utf8");
+const manifestGuide = await readFile("docs/guides/manifest-guide.md", "utf8");
 const website = await readFile("docs/website/index.html", "utf8");
 
 if (schema.title !== "Project Manifest") {
@@ -81,6 +82,15 @@ if (!readme.includes("https://sylphxai.github.io/groundatlas/")) {
 }
 if (!readme.includes("GitHub Action gate")) {
   errors.push("README must mention the GitHub Action gate.");
+}
+if (!readme.includes("ga manifest")) {
+  errors.push("README must mention standalone manifest validation.");
+}
+if (!manifestGuide.includes("ga manifest project.manifest.json --json")) {
+  errors.push("Manifest guide must document the standalone manifest validator.");
+}
+if (!manifestGuide.includes(".doctrine/project.json")) {
+  errors.push("Manifest guide must preserve the ecosystem adapter boundary.");
 }
 
 if (errors.length > 0) {

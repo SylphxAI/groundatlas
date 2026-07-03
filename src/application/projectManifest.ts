@@ -113,32 +113,56 @@ export async function inspectMachineProjectManifests(
   };
 }
 
+export async function validateMachineProjectManifestFile(
+  filePath: string,
+  reportPath = filePath,
+): Promise<MachineManifestReport> {
+  return validateManifestFile(path.resolve(filePath), normalizeManifestPath(reportPath));
+}
+
+export const validateProjectManifestFile = validateMachineProjectManifestFile;
+
 async function validateManifestPath(
   cwd: string,
   manifestPath: string,
 ): Promise<MachineManifestReport> {
-  const kind = manifestKind(manifestPath);
-  const parsed = await readJsonObject(path.join(cwd, manifestPath));
+  return validateManifestFile(path.join(cwd, manifestPath), manifestPath);
+}
+
+async function validateManifestFile(
+  filePath: string,
+  manifestPath: string,
+): Promise<MachineManifestReport> {
+  const normalizedManifestPath = normalizeManifestPath(manifestPath);
+  const kind = manifestKind(normalizedManifestPath);
+  const parsed = await readJsonObject(filePath);
   if (!parsed.ok) {
+    const code =
+      parsed.errorCode === "ENOENT"
+        ? "project-manifest-unreadable"
+        : "invalid-project-manifest-json";
     return {
-      path: manifestPath,
+      path: normalizedManifestPath,
       kind,
-      adapter: isAdapter(manifestPath),
+      adapter: isAdapter(normalizedManifestPath),
       valid: false,
       issues: [
         {
           severity: "error",
-          code: "invalid-project-manifest-json",
-          source: manifestPath,
-          message: `${manifestPath} is not valid JSON: ${parsed.error}`,
+          code,
+          source: normalizedManifestPath,
+          message:
+            code === "project-manifest-unreadable"
+              ? `${normalizedManifestPath} could not be read: ${parsed.error}`
+              : `${normalizedManifestPath} is not valid JSON: ${parsed.error}`,
         },
       ],
     };
   }
 
-  return isAdapter(manifestPath)
-    ? validateDoctrineAdapter(parsed.value, manifestPath)
-    : validateNeutralManifest(parsed.value, manifestPath);
+  return isAdapter(normalizedManifestPath)
+    ? validateDoctrineAdapter(parsed.value, normalizedManifestPath)
+    : validateNeutralManifest(parsed.value, normalizedManifestPath);
 }
 
 function emptyManifestReport(): MachineManifestReport {
@@ -156,17 +180,32 @@ function selectManifestPaths(sourcePaths: Set<string>): string[] {
 }
 
 function manifestKind(manifestPath: string): MachineManifestKind {
-  if (manifestPath === DOCTRINE_ADAPTER_PATH) return "doctrine-adapter";
-  return NEUTRAL_MANIFEST_PATHS[manifestPath] ?? "project.manifest";
+  const canonicalPath = canonicalManifestPath(manifestPath);
+  if (canonicalPath === DOCTRINE_ADAPTER_PATH) return "doctrine-adapter";
+  return NEUTRAL_MANIFEST_PATHS[canonicalPath] ?? "project.manifest";
 }
 
 function isAdapter(manifestPath: string): boolean {
-  return manifestPath === DOCTRINE_ADAPTER_PATH;
+  return canonicalManifestPath(manifestPath) === DOCTRINE_ADAPTER_PATH;
+}
+
+function canonicalManifestPath(manifestPath: string): string {
+  const normalized = normalizeManifestPath(manifestPath);
+  for (const candidate of MANIFEST_PRIORITY) {
+    if (normalized === candidate || normalized.endsWith(`/${candidate}`)) return candidate;
+  }
+  return normalized;
+}
+
+function normalizeManifestPath(value: string): string {
+  return value.split(path.sep).join("/");
 }
 
 async function readJsonObject(
   filePath: string,
-): Promise<{ ok: true; value: Record<string, unknown> } | { ok: false; error: string }> {
+): Promise<
+  { ok: true; value: Record<string, unknown> } | { ok: false; error: string; errorCode?: string }
+> {
   try {
     const raw = await readFile(filePath, "utf8");
     const parsed = JSON.parse(raw) as unknown;
@@ -175,7 +214,12 @@ async function readJsonObject(
     }
     return { ok: true, value: parsed };
   } catch (error) {
-    return { ok: false, error: error instanceof Error ? error.message : String(error) };
+    const nodeError = error as NodeJS.ErrnoException;
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+      errorCode: nodeError.code,
+    };
   }
 }
 

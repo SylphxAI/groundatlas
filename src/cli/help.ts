@@ -8,6 +8,7 @@ Usage:
   ga audit|validate [--cwd <dir>] [--out <dir>] [--json]
   ga explain|query <query> [--cwd <dir>] [--out <dir>] [--json]
   ga impact --since <ref> [--cwd <dir>] [--out <dir>] [--json]
+  ga manifest [validate] [path] [--cwd <dir>] [--json]
   ga fleet|inventory|score [paths...] [--cwd <dir>] [--out <dir>] [--require-atlas] [--strict] [--json]
   ga map|export [--cwd <dir>] [--out <dir>]
 
@@ -18,6 +19,7 @@ Commands:
   audit     Verify generated maps, freshness, truth boundary, and source-owned error risks. Alias: validate.
   explain   Find source-grounded files related to a query. Alias: query.
   impact    Map git diff paths to known atlas sources.
+  manifest  Validate a vendor-neutral project manifest or recognized adapter without writing files.
   fleet     Report adopted/warning/blocked dogfooding status and validate neutral manifests. Aliases: inventory, score.
   map       Refresh exported generated maps. Alias: export/update.
 
