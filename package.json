@@ -44,7 +44,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/fix-shebang.mjs",
-    "check": "bun run typecheck && bun test && biome check . && bun run validate:manifest && bun run validate:public-assets && bun run build && node dist/cli.js --help && node dist/cli.js update && node dist/cli.js audit && bun run pack:dry-run && bun run pack:smoke",
+    "check": "bun run typecheck && bun test && biome check . && bun run validate:manifest && bun run validate:public-assets && bun run build && node dist/cli.js --help && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js fleet . --require-atlas --json && bun run pack:dry-run && bun run pack:smoke",
     "validate:manifest": "node scripts/validate-project-manifest.mjs",
     "dev": "bun run src/cli.ts",
     "format": "biome format --write .",
@@ -54,11 +54,12 @@
     "groundatlas:update": "bun run src/cli.ts update",
     "groundatlas:audit": "bun run src/cli.ts audit",
     "pack:dry-run": "npm pack --dry-run",
-    "dogfood": "bun run build && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js explain \"project manifest\"",
+    "dogfood": "bun run build && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js fleet . --require-atlas --json && node dist/cli.js explain \"project manifest\"",
     "pack:smoke": "node scripts/smoke-packed-package.mjs",
     "release:preflight": "node scripts/verify-release-version.mjs && node scripts/npm-registry-preflight.mjs && bun run check",
     "release:readback": "node scripts/npm-registry-readback.mjs",
-    "validate:public-assets": "node scripts/validate-public-assets.mjs"
+    "validate:public-assets": "node scripts/validate-public-assets.mjs",
+    "dogfood:external": "node scripts/dogfood-external-repo.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",

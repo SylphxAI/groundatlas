@@ -11,5 +11,7 @@
   public asset validation, and static landing page.
 - Repo-local governance docs, permission model, dogfooding contract, fleet
   adoption contract, competitive positioning, and CI.
+- Fleet dogfooding report command (`ga fleet` / `ga inventory` / `ga score`) and
+  pre-npm external source-checkout pilot script.
 - Release workflow prepared for npm provenance publishing once trusted publishing
   or npm credentials are configured.

@@ -11,7 +11,8 @@ Recommended package scripts:
   "scripts": {
     "groundatlas:update": "ga update",
     "groundatlas:audit": "ga audit",
-    "check": "npm run test && npm run groundatlas:update && npm run groundatlas:audit"
+    "groundatlas:fleet": "ga fleet . --require-atlas",
+    "check": "npm run test && npm run groundatlas:update && npm run groundatlas:audit && npm run groundatlas:fleet"
   }
 }
 ```
@@ -24,6 +25,7 @@ tracked generated output. If a repo ignores `.groundatlas/**`, CI should still r
 
 ```sh
 ga impact --since origin/main
+ga fleet . --require-atlas
 ga explain "release workflow"
 ga audit
 ```

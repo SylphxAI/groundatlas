@@ -23,7 +23,9 @@ of claiming public package installation.
 3. Inspect the linked canonical files before making decisions.
 4. Run `ga explain "topic"` to find likely owning files.
 5. Run `ga impact --since main` before reviewing a pull request.
-6. Run `ga audit` in CI to catch stale generated maps and missing non-SSOT
+6. Run `ga fleet . --require-atlas` to check adopted/warning/blocked
+   dogfooding status.
+7. Run `ga audit` in CI to catch stale generated maps and missing non-SSOT
    boundaries.
 
 ## Mental model
@@ -34,6 +36,7 @@ GroundAtlas answers:
 - What should I read first?
 - Which files are generated navigation vs canonical sources?
 - Is my generated map fresh enough to trust as a map?
+- Is this repo adopted, warning, or blocked for dogfooding?
 
 GroundAtlas does not answer from generated memory. If the map and source disagree,
 fix the source and regenerate the map.

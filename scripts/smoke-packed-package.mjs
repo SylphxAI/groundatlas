@@ -27,7 +27,7 @@ try {
     "node",
     [
       "-e",
-      "import('groundatlas').then((m)=>{ if (!m.scanRepository || !m.auditAtlas || !m.ATLAS_SCHEMA_VERSION) throw new Error('missing exports'); console.log('library exports ok') })",
+      "import('groundatlas').then((m)=>{ if (!m.scanRepository || !m.auditAtlas || !m.inspectFleet || !m.ATLAS_SCHEMA_VERSION) throw new Error('missing exports'); console.log('library exports ok') })",
     ],
     { cwd: appDir, stdio: "inherit" },
   );
@@ -104,6 +104,7 @@ try {
   execFileSync(ga, ["init"], { cwd: repoDir, stdio: "inherit" });
   execFileSync(ga, ["update"], { cwd: repoDir, stdio: "inherit" });
   execFileSync(ga, ["audit"], { cwd: repoDir, stdio: "inherit" });
+  execFileSync(ga, ["fleet", ".", "--require-atlas", "--json"], { cwd: repoDir, stdio: "ignore" });
   execFileSync(ga, ["explain", "project manifest"], { cwd: repoDir, stdio: "ignore" });
   console.log("Packed package smoke passed.");
 } finally {

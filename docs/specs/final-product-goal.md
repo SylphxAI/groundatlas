@@ -34,7 +34,10 @@ CLI/library surface.
 11. **Machine outputs** — export stable JSON that future MCP/tools/agents can
     query without scraping Markdown.
 12. **Fleet adoption scorecards** — report adopted/warning/blocked/exception
-    status across many repositories.
+    status across many repositories. The initial shipped surface is
+    `ga fleet` / `ga inventory` / `ga score` with adopted/warning/blocked
+    status over local checkouts; exception records and remote dashboards remain
+    build-forward work.
 13. **Optional AI adapters** — use LLMs only as bounded adapters over the
     deterministic source manifest, with cost controls, privacy controls, and
     citation validation.

@@ -6,6 +6,7 @@ import path from "node:path";
 import { auditAtlas } from "../src/application/audit.ts";
 import { ensureConfig } from "../src/application/config.ts";
 import { explainQuery } from "../src/application/explain.ts";
+import { inspectFleet } from "../src/application/fleet.ts";
 import { writeAtlas } from "../src/application/generate.ts";
 import { scanRepository } from "../src/application/scan.ts";
 import { ATLAS_SCHEMA_VERSION, GENERATED_BANNER } from "../src/domain/types.ts";
@@ -152,4 +153,48 @@ test("classifies specs and design docs as product contracts, not tests", async (
   expect(atlas.orientation.find((step) => step.title === "Specs and design intent")?.present).toBe(
     true,
   );
+});
+
+test("fleet inspection reports dogfooding status without mutating source truth", async () => {
+  const config = await ensureConfig(fixtureRoot);
+  const atlas = await scanRepository({
+    cwd: fixtureRoot,
+    outputDir: config.outputDir,
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+  await writeAtlas(path.join(fixtureRoot, config.outputDir), atlas);
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    requireAtlas: true,
+    strict: true,
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.summary.total).toBe(1);
+  expect(report.summary.blocked).toBe(0);
+  expect(report.summary.warning).toBe(1);
+  expect(report.projects[0]?.generatedAtlas.ok).toBe(true);
+  expect(report.projects[0]?.hasProjectFile).toBe(true);
+  expect(report.projects[0]?.hasMachineManifest).toBe(true);
+  expect(report.projects[0]?.hasAgentAdapter).toBe(true);
+  expect(report.projects[0]?.hasValidationCommands).toBe(true);
+});
+
+test("fleet inspection blocks commercial dogfooding when machine manifest is missing", async () => {
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.summary.total).toBe(1);
+  expect(report.summary.blocked).toBe(1);
+  expect(report.projects[0]?.status).toBe("blocked");
+  expect(
+    report.projects[0]?.issues.some((issue) => issue.code === "missing-machine-project-manifest"),
+  ).toBe(true);
 });
