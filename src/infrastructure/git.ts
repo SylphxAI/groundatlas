@@ -1,6 +1,6 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import type { GitState } from "../domain/types.ts";
+import type { GitState } from "../domain/types.js";
 
 const execFileAsync = promisify(execFile);
 

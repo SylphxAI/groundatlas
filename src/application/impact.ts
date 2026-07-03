@@ -1,5 +1,5 @@
-import type { AtlasMap, ImpactEntry } from "../domain/types.ts";
-import { readGitDiff } from "../infrastructure/git.ts";
+import type { AtlasMap, ImpactEntry } from "../domain/types.js";
+import { readGitDiff } from "../infrastructure/git.js";
 
 export async function analyzeImpact(
   cwd: string,

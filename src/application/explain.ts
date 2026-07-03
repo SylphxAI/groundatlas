@@ -1,7 +1,7 @@
 import path from "node:path";
-import type { AtlasMap, SourceEntry } from "../domain/types.ts";
-import { readJsonFile } from "../infrastructure/fs.ts";
-import { scanRepository } from "./scan.ts";
+import type { AtlasMap, SourceEntry } from "../domain/types.js";
+import { readJsonFile } from "../infrastructure/fs.js";
+import { scanRepository } from "./scan.js";
 
 export async function explainQuery(
   cwd: string,

@@ -11,7 +11,10 @@
       "Generate deterministic source-grounded maps over repository truth surfaces.",
       "Help humans and AI agents enter repositories faster while preserving canonical source ownership.",
       "Provide safe CLI operations for init, update, scan, audit, explain, and impact analysis.",
-      "Expose machine-readable outputs suitable for CI gates and future agent/MCP integrations."
+      "Expose machine-readable outputs suitable for CI gates and future agent/MCP integrations.",
+      "Expose typed library exports for scanner, audit, explain, impact, and rendering primitives.",
+      "Publish the package to npm through CI-owned provenance and registry readback.",
+      "Dogfood GroundAtlas on its own repository in every required check."
     ],
     "nonGoals": [
       "Own or replace downstream project truth such as ADRs, schemas, tests, manifests, workflows, or source code.",
@@ -73,6 +76,36 @@
         "type": "manifest",
         "name": "Project manifest",
         "location": ".doctrine/project.json"
+      },
+      {
+        "type": "package-export",
+        "name": "GroundAtlas library API",
+        "location": "package.json exports: . -> dist/index.js"
+      },
+      {
+        "type": "workflow",
+        "name": "Release workflow",
+        "location": ".github/workflows/release.yml"
+      },
+      {
+        "type": "documentation",
+        "name": "Final product goal",
+        "location": "docs/specs/final-product-goal.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Operating model",
+        "location": "docs/specs/operating-model.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Dogfooding contract",
+        "location": "docs/specs/dogfooding.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Publishing runbook",
+        "location": "docs/runbooks/publishing.md"
       }
     ],
     "allowedDependencies": [
@@ -103,19 +136,19 @@
       "status": "present"
     },
     "runbooks": {
-      "path": "README.md, CONTRIBUTING.md, SECURITY.md",
+      "path": "README.md, CONTRIBUTING.md, SECURITY.md, docs/runbooks/publishing.md",
       "status": "present"
     },
     "generatedReferences": {
       "path": ".groundatlas/ and src/domain/types.ts",
-      "status": "present"
+      "status": "generated"
     }
   },
   "delivery": {
     "ciModel": "legacy-ci",
     "requiredContexts": ["CI / check"],
-    "deployPath": "Source changes are delivered by GitHub commits and CI. Package publication is not enabled in the initial slice.",
-    "productionProof": "Clean checkout runs bun install and bun run check successfully; future package releases require registry readback.",
+    "deployPath": "Source changes are delivered by GitHub PR/CI. npm publication is prepared through .github/workflows/release.yml and requires npm trusted publishing or an npm identity/token before first registry publish.",
+    "productionProof": "Clean checkout runs bun install and bun run check successfully; package release proof requires npm registry readback for groundatlas.",
     "recoveryClass": "source-revertable",
     "deployable": false
   },
@@ -130,9 +163,15 @@
       },
       {
         "id": "trusted-publish",
-        "description": "Add CI-owned trusted publishing and registry readback before npm publication.",
+        "description": "Configure npm trusted publishing or a bounded one-time npm token, then publish and read back groundatlas from npm.",
         "owner": "GroundAtlas maintainers",
-        "target": "Before public package release"
+        "target": "Before claiming npm package publication complete"
+      },
+      {
+        "id": "npm-registry-readback",
+        "description": "After first publish, verify npm view groundatlas and smoke install the package in a clean temp project.",
+        "owner": "GroundAtlas maintainers",
+        "target": "Immediately after first npm publish"
       }
     ]
   }

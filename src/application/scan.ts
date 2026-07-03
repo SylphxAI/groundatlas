@@ -1,7 +1,7 @@
 import path from "node:path";
 import packageJson from "../../package.json" with { type: "json" };
 
-import { classifySource } from "../domain/classify.ts";
+import { classifySource } from "../domain/classify.js";
 import {
   ATLAS_SCHEMA_VERSION,
   type AtlasMap,
@@ -9,9 +9,9 @@ import {
   type Risk,
   type ScanOptions,
   type ValidationCommand,
-} from "../domain/types.ts";
-import { readJsonFile, walkFiles } from "../infrastructure/fs.ts";
-import { readGitState } from "../infrastructure/git.ts";
+} from "../domain/types.js";
+import { readJsonFile, walkFiles } from "../infrastructure/fs.js";
+import { readGitState } from "../infrastructure/git.js";
 
 const { version } = packageJson;
 
