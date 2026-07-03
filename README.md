@@ -102,6 +102,9 @@ It records stable project identity, truth-home pointers, public surfaces,
 validation commands, and adoption status. GroundAtlas also recognizes
 `groundatlas.project.json`, `.project/manifest.json`, and ecosystem adapters such as
 `.doctrine/project.json`, but those adapters are not the public default.
+`ga fleet` validates neutral manifests, selects the highest-priority neutral
+manifest when present, and reports ecosystem files under `manifestAdapters` so
+malformed project metadata cannot be mistaken for adopted dogfooding.
 
 See:
 
@@ -159,7 +162,8 @@ Product-ready initial CLI/library slice:
 - dependency-free static landing page under `docs/website/`;
 - `ga init`, `ga update`, `ga scan`, `ga audit`, `ga explain`, `ga impact`;
 - `ga fleet` / `ga inventory` / `ga score` for adopted/warning/blocked
-  dogfooding reports across one or more repositories;
+  dogfooding reports and neutral manifest validation across one or more
+  repositories;
 - explicit fact-scoped SSOT model and repository orientation route;
 - generated Markdown maps with non-SSOT banners;
 - freshness audit using file hashes, not just generated prose;
@@ -272,7 +276,7 @@ See [Operating Model](./docs/specs/operating-model.md).
 | `ga audit` | Verify generated maps, non-SSOT boundary, schema version, error risks, and freshness. |
 | `ga explain <query>` | Find source-grounded files related to a query. |
 | `ga impact --since <ref>` | Map git diff paths to known atlas sources. |
-| `ga fleet [paths...]` | Report adopted/warning/blocked dogfooding status across one or more repositories. |
+| `ga fleet [paths...]` | Report adopted/warning/blocked dogfooding status and validate neutral project manifests across one or more repositories. |
 
 Aliases: `ingest` → `scan`; `validate` → `audit`; `query` → `explain`;
 `inventory` / `score` → `fleet`; `map` / `export` → `update`.

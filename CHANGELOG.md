@@ -13,5 +13,7 @@
   adoption contract, competitive positioning, and CI.
 - Fleet dogfooding report command (`ga fleet` / `ga inventory` / `ga score`) and
   pre-npm external source-checkout pilot script.
+- Fleet gate validation for neutral `project.manifest.json` manifests, with
+  ecosystem manifest adapters reported separately.
 - Release workflow prepared for npm provenance publishing once trusted publishing
   or npm credentials are configured.

@@ -50,6 +50,10 @@ as an internal adapter, but GroundAtlas public adoption must stay vendor-neutral
 A useful fleet gate must be machine-checkable:
 
 - fail on missing `PROJECT.md` or any accepted machine project manifest for repos that opt into fleet/commercial governance;
+- fail when a neutral machine project manifest is malformed or declares
+  `adoption.status: "blocked"`;
+- report recognized ecosystem manifests such as `.doctrine/project.json` under
+  `manifestAdapters`, not as the public default when a neutral manifest exists;
 - fail when generated files lose their non-SSOT banner;
 - fail when `atlas.json` uses the wrong schema version;
 - fail when the atlas records error-level source risks;

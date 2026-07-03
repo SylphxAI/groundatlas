@@ -27,7 +27,7 @@ try {
     "node",
     [
       "-e",
-      "import('groundatlas').then((m)=>{ if (!m.scanRepository || !m.auditAtlas || !m.inspectFleet || !m.ATLAS_SCHEMA_VERSION) throw new Error('missing exports'); console.log('library exports ok') })",
+      "import('groundatlas').then((m)=>{ if (!m.scanRepository || !m.auditAtlas || !m.inspectFleet || !m.inspectMachineProjectManifest || !m.inspectMachineProjectManifests || !m.ATLAS_SCHEMA_VERSION) throw new Error('missing exports'); console.log('library exports ok') })",
     ],
     { cwd: appDir, stdio: "inherit" },
   );
@@ -48,6 +48,23 @@ try {
     "# Packed Smoke\n\nFixture for packed GroundAtlas smoke.\n",
   );
   writeFileSync(path.join(repoDir, "AGENTS.md"), "# Agent Instructions\n\nFixture only.\n");
+  writeFileSync(
+    path.join(repoDir, "project.manifest.json"),
+    JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "packed-smoke",
+          name: "Packed Smoke",
+          summary: "Packed smoke fixture for GroundAtlas.",
+          lifecycle: "active",
+        },
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    ),
+  );
   writeFileSync(
     path.join(repoDir, ".doctrine/project.json"),
     JSON.stringify(
@@ -104,7 +121,22 @@ try {
   execFileSync(ga, ["init"], { cwd: repoDir, stdio: "inherit" });
   execFileSync(ga, ["update"], { cwd: repoDir, stdio: "inherit" });
   execFileSync(ga, ["audit"], { cwd: repoDir, stdio: "inherit" });
-  execFileSync(ga, ["fleet", ".", "--require-atlas", "--json"], { cwd: repoDir, stdio: "ignore" });
+  const fleet = JSON.parse(
+    execFileSync(ga, ["fleet", ".", "--require-atlas", "--json"], {
+      cwd: repoDir,
+      encoding: "utf8",
+    }),
+  );
+  if (fleet.projects?.[0]?.manifest?.path !== "project.manifest.json") {
+    throw new Error("packed smoke did not select the vendor-neutral project manifest");
+  }
+  if (
+    !fleet.projects?.[0]?.manifestAdapters?.some(
+      (manifest) => manifest.path === ".doctrine/project.json",
+    )
+  ) {
+    throw new Error("packed smoke did not report the Doctrine adapter separately");
+  }
   execFileSync(ga, ["explain", "project manifest"], { cwd: repoDir, stdio: "ignore" });
   console.log("Packed package smoke passed.");
 } finally {

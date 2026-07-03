@@ -7,6 +7,10 @@
   "additionalProperties": false,
   "required": ["schemaVersion", "project"],
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional local or remote schema URI/path used by editors and tooling."
+    },
     "schemaVersion": {
       "type": "integer",
       "const": 1

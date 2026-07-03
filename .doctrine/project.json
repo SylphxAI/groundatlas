@@ -23,7 +23,8 @@
       "Use evidence from public developer-tool ecosystems before extracting a standalone project-manifest/control-plane library.",
       "Report adopted, warning, and blocked dogfooding status across local repository checkouts.",
       "Run bounded source-checkout dogfood pilots against copied target repositories before claiming npm-based fleet adoption.",
-      "Publish the static landing page through GitHub Pages with least-privilege workflow permissions and no repository secrets."
+      "Publish the static landing page through GitHub Pages with least-privilege workflow permissions and no repository secrets.",
+      "Validate neutral project manifests in fleet dogfooding gates while reporting ecosystem manifests as adapters."
     ],
     "nonGoals": [
       "Own or replace downstream project truth such as ADRs, specs, schemas, tests, manifests, workflows, release proof, or source code.",
