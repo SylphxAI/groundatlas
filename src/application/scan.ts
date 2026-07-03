@@ -3,8 +3,10 @@ import packageJson from "../../package.json" with { type: "json" };
 
 import { classifySource } from "../domain/classify.js";
 import {
+  AGENT_ADAPTER_PATHS,
   ATLAS_SCHEMA_VERSION,
   type AtlasMap,
+  MACHINE_PROJECT_MANIFEST_PATHS,
   type OrientationStep,
   type PublicSurface,
   type Risk,
@@ -60,7 +62,7 @@ export async function scanRepository(options: ScanOptions): Promise<AtlasMap> {
         "specs/design docs",
         "package manifests",
         "PROJECT.md",
-        ".doctrine/project.json",
+        "machine project manifest adapters",
         "docs/adr/",
         "CI workflows",
       ],
@@ -113,8 +115,12 @@ function inferPublicSurfaces(
       surfaces.push({ name: "README", type: "docs", path: source.path });
     if (source.path === "PROJECT.md")
       surfaces.push({ name: "Project manifest", type: "manifest", path: source.path });
-    if (source.path === ".doctrine/project.json")
-      surfaces.push({ name: "Machine project manifest", type: "manifest", path: source.path });
+    if (isMachineProjectManifestPath(source.path))
+      surfaces.push({
+        name: machineManifestName(source.path),
+        type: "manifest",
+        path: source.path,
+      });
     if (source.kind === "ci-workflow")
       surfaces.push({ name: source.path, type: "workflow", path: source.path });
     if (source.kind === "schema")
@@ -141,18 +147,20 @@ function inferRisks(sourcePaths: Set<string>, validationCommands: ValidationComm
       message: "PROJECT.md is missing; repo-local project identity has no human entry point.",
     });
   }
-  if (!sourcePaths.has(".doctrine/project.json")) {
+  if (!hasMachineProjectManifest(sourcePaths)) {
     risks.push({
-      severity: "error",
-      code: "missing-project-manifest",
-      message: ".doctrine/project.json is missing; repo-local boundary is not machine-readable.",
+      severity: "warning",
+      code: "missing-machine-project-manifest",
+      message:
+        "No recognized machine project manifest was found. Prefer groundatlas.project.json or project.manifest.json; ecosystem adapters such as .doctrine/project.json are optional.",
     });
   }
-  if (!sourcePaths.has("AGENTS.md") && !sourcePaths.has("CLAUDE.md")) {
+  if (!hasAny(sourcePaths, isAgentAdapterPath)) {
     risks.push({
       severity: "warning",
       code: "missing-agent-adapter",
-      message: "No root AGENTS.md or CLAUDE.md adapter was found.",
+      message:
+        "No agent adapter was found. Prefer AGENTS.md as the tool-neutral default; tool-specific adapters are optional.",
     });
   }
   if (!sourcePaths.has("README.md")) {
@@ -232,64 +240,91 @@ function hasAny(sourcePaths: Set<string>, predicate: (sourcePath: string) => boo
   return [...sourcePaths].some(predicate);
 }
 
+function hasMachineProjectManifest(sourcePaths: Set<string>): boolean {
+  return hasAny(sourcePaths, isMachineProjectManifestPath);
+}
+
+function isMachineProjectManifestPath(sourcePath: string): boolean {
+  const normalized = sourcePath.toLowerCase();
+  return MACHINE_PROJECT_MANIFEST_PATHS.some((candidate) => candidate.toLowerCase() === normalized);
+}
+
+function machineManifestName(sourcePath: string): string {
+  if (sourcePath === ".doctrine/project.json") {
+    return "Machine project manifest (Doctrine adapter)";
+  }
+  return "Machine project manifest";
+}
+
+function isAgentAdapterPath(sourcePath: string): boolean {
+  const normalized = sourcePath.toLowerCase();
+  return AGENT_ADAPTER_PATHS.some((candidate) => candidate.toLowerCase() === normalized);
+}
+
 function truthHomeModel(): TruthHome[] {
   return [
     {
       domain: "Project identity and boundaries",
       owns: "What the project is, lifecycle, owner boundary, public surfaces, adoption state, and delivery proof.",
-      examples: ["PROJECT.md", ".doctrine/project.json"],
+      examples: [
+        "PROJECT.md",
+        "groundatlas.project.json",
+        "project.manifest.json",
+        ".project/manifest.json",
+        ".doctrine/project.json",
+      ],
       precedence: 10,
-      requiredForSylphx: true,
+      requiredForCommercialGrade: true,
     },
     {
       domain: "Durable decisions",
       owns: "Architecture, product, data, security, operations, or commercial decisions that must survive beyond one edit.",
       examples: ["docs/adr/"],
       precedence: 20,
-      requiredForSylphx: true,
+      requiredForCommercialGrade: true,
     },
     {
       domain: "Product intent and operating contracts",
       owns: "Requirements, adoption rules, operating models, design intent, and acceptance criteria.",
       examples: ["docs/specs/", "DESIGN.md", "design.md"],
       precedence: 30,
-      requiredForSylphx: true,
+      requiredForCommercialGrade: true,
     },
     {
       domain: "Machine-checkable contracts",
       owns: "Schemas, type contracts, migrations, package exports, command surfaces, and dependency boundaries.",
       examples: ["src/domain/types.ts", "*.schema.json", "package.json"],
       precedence: 40,
-      requiredForSylphx: true,
+      requiredForCommercialGrade: true,
     },
     {
       domain: "Implemented behavior",
       owns: "What the product actually does at runtime.",
       examples: ["src/", "lib/"],
       precedence: 50,
-      requiredForSylphx: true,
+      requiredForCommercialGrade: true,
     },
     {
       domain: "Behavior proof",
       owns: "Expected behavior, regressions, evals, validation commands, and release gates.",
       examples: ["test/", "tests/", "package.json scripts", ".github/workflows/"],
       precedence: 60,
-      requiredForSylphx: true,
+      requiredForCommercialGrade: true,
     },
     {
       domain: "Operations, security, and support",
       owns: "Repeatable procedures, vulnerability reporting, incident handling, and customer support expectations.",
       examples: ["docs/runbooks/", "SECURITY.md", "CHANGELOG.md"],
       precedence: 70,
-      requiredForSylphx: true,
+      requiredForCommercialGrade: true,
     },
   ];
 }
 
 function inferOrientation(sourcePaths: Set<string>): OrientationStep[] {
   const hasProject = sourcePaths.has("PROJECT.md");
-  const hasMachineManifest = sourcePaths.has(".doctrine/project.json");
-  const hasAgentAdapter = sourcePaths.has("AGENTS.md") || sourcePaths.has("CLAUDE.md");
+  const hasMachineManifest = hasMachineProjectManifest(sourcePaths);
+  const hasAgentAdapter = hasAny(sourcePaths, isAgentAdapterPath);
   const hasSpecs = hasAny(sourcePaths, (sourcePath) => sourcePath.startsWith("docs/specs/"));
   const hasDesign = sourcePaths.has("DESIGN.md") || sourcePaths.has("design.md");
   const hasAdr = hasAny(sourcePaths, (sourcePath) => sourcePath.startsWith("docs/adr/"));
@@ -322,18 +357,18 @@ function inferOrientation(sourcePaths: Set<string>): OrientationStep[] {
   return [
     {
       order: 1,
-      title: "Agent and doctrine adapter",
-      paths: ["AGENTS.md", "CLAUDE.md"],
+      title: "Agent adapter",
+      paths: [...AGENT_ADAPTER_PATHS],
       required: true,
       present: hasAgentAdapter,
       reason: "Start with local agent rules so automation follows the repository boundary.",
       ssotRole:
-        "Runtime adapter; it routes to project and doctrine truth rather than replacing it.",
+        "Runtime adapter; prefer AGENTS.md as the tool-neutral entry point and treat tool-specific files as optional adapters.",
     },
     {
       order: 2,
       title: "Project identity and machine manifest",
-      paths: ["PROJECT.md", ".doctrine/project.json"],
+      paths: ["PROJECT.md", ...MACHINE_PROJECT_MANIFEST_PATHS],
       required: true,
       present: hasProject && hasMachineManifest,
       reason:

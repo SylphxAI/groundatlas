@@ -23,10 +23,12 @@ export type {
   ValidationCommand,
 } from "./domain/types.js";
 export {
+  AGENT_ADAPTER_PATHS,
   ATLAS_SCHEMA_VERSION,
   CONFIG_SCHEMA_VERSION,
   DEFAULT_OUTPUT_DIR,
   GENERATED_BANNER,
+  MACHINE_PROJECT_MANIFEST_PATHS,
 } from "./domain/types.js";
 export {
   renderGeneratedHeader,

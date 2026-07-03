@@ -10,7 +10,7 @@ it.
 1. Typecheck the product source.
 2. Run behavior tests against fixture repositories.
 3. Run Biome.
-4. Validate `.doctrine/project.json`.
+4. Validate this repository's local `.doctrine/project.json` adapter.
 5. Build the CLI.
 6. Run `node dist/cli.js --help`.
 7. Run `node dist/cli.js update` on this repository.
@@ -26,7 +26,7 @@ it.
 - If a feature cannot be used on GroundAtlas itself, it is not ready to be the
   default for customers.
 - Any future LLM/MCP adapter must be tested against this repo without exposing
-  secrets or requiring private SylphxAI infrastructure.
+  secrets or requiring private vendor infrastructure.
 
 ## Why generated maps are ignored
 

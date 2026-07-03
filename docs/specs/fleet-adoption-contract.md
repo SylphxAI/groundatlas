@@ -11,14 +11,15 @@ which canonical files to inspect before changing behavior.
 
 ## Repository prerequisites
 
-Every commercial-grade SylphxAI repository should expose these files or explain
-why the capability is not applicable:
+Every commercial-grade repository should expose these files or explain why the
+capability is not applicable. SylphxAI repositories may use `.doctrine/project.json`
+as an internal adapter, but GroundAtlas public adoption must stay vendor-neutral:
 
 | File/surface | Required | Purpose |
 | --- | --- | --- |
-| `AGENTS.md` or `CLAUDE.md` | Yes | Agent entry point and local hazards. |
+| `AGENTS.md` | Preferred | Tool-neutral agent entry point and local hazards. Tool-specific adapters such as `CLAUDE.md`, `.cursor/rules`, or Copilot instructions are optional detected inputs. |
 | `PROJECT.md` | Yes | Human-readable project identity, lifecycle, owner boundary, public surfaces, delivery proof. |
-| `.doctrine/project.json` | Yes | Machine-readable project manifest. |
+| Machine project manifest | Yes for fleet/commercial governance | Prefer `groundatlas.project.json`, `project.manifest.json`, or `.project/manifest.json`; ecosystem adapters such as `.doctrine/project.json` are recognized but not required. |
 | `README.md` | Yes | Public start-here contract. |
 | `docs/specs/**` or `DESIGN.md` | Yes for production/commercial work | Product intent and acceptance contracts. |
 | `docs/adr/**` | Yes once durable decisions exist | Material decisions and trade-offs. |
@@ -46,7 +47,7 @@ why the capability is not applicable:
 
 A useful fleet gate must be machine-checkable:
 
-- fail on missing `PROJECT.md` or `.doctrine/project.json`;
+- fail on missing `PROJECT.md` or any accepted machine project manifest for repos that opt into fleet/commercial governance;
 - fail when generated files lose their non-SSOT banner;
 - fail when `atlas.json` uses the wrong schema version;
 - fail when the atlas records error-level source risks;

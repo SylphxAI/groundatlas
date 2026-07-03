@@ -1,5 +1,6 @@
 import path from "node:path";
 import type { SourceEntry, SourceKind } from "./types.js";
+import { AGENT_ADAPTER_PATHS, MACHINE_PROJECT_MANIFEST_PATHS } from "./types.js";
 
 export function classifySource(
   relativePath: string,
@@ -20,9 +21,10 @@ export function classifySource(
 }
 
 function classifyKind(normalized: string, base: string): SourceKind {
-  if (normalized === "project.md" || normalized === ".doctrine/project.json")
+  if (normalized === "project.md" || isMachineProjectManifestPath(normalized)) {
     return "project-manifest";
-  if (base === "agents.md" || base === "claude.md") return "agent-adapter";
+  }
+  if (isAgentAdapterPath(normalized, base)) return "agent-adapter";
   if (normalized.startsWith("docs/adr/") || base.startsWith("adr-")) return "adr";
   if (normalized.startsWith("docs/specs/") || normalized.startsWith("specs/")) return "spec";
   if (
@@ -73,6 +75,17 @@ function classifyKind(normalized: string, base: string): SourceKind {
   return "unknown";
 }
 
+function isMachineProjectManifestPath(normalized: string): boolean {
+  return MACHINE_PROJECT_MANIFEST_PATHS.some((candidate) => candidate.toLowerCase() === normalized);
+}
+
+function isAgentAdapterPath(normalized: string, base: string): boolean {
+  return (
+    base === "agents.md" ||
+    AGENT_ADAPTER_PATHS.some((candidate) => candidate.toLowerCase() === normalized)
+  );
+}
+
 function isTestPath(normalized: string, base: string): boolean {
   return (
     normalized.startsWith("test/") ||
@@ -108,7 +121,7 @@ function reasonForKind(kind: SourceKind, relativePath: string): string {
     case "project-manifest":
       return "Defines repository identity, lifecycle, boundary, or project-local truth.";
     case "agent-adapter":
-      return "Bootstraps agents into repo-local context and central doctrine.";
+      return "Bootstraps agents into repo-local context; AGENTS.md is preferred and tool-specific adapters are optional.";
     case "adr":
       return "Records durable architecture or product decisions.";
     case "design-doc":
