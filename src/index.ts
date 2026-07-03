@@ -4,6 +4,10 @@ export { explainQuery } from "./application/explain.js";
 export { inspectFleet } from "./application/fleet.js";
 export { writeAtlas } from "./application/generate.js";
 export { analyzeImpact } from "./application/impact.js";
+export {
+  inspectMachineProjectManifest,
+  inspectMachineProjectManifests,
+} from "./application/projectManifest.js";
 export { scanRepository } from "./application/scan.js";
 export { classifySource } from "./domain/classify.js";
 export type {
@@ -15,6 +19,9 @@ export type {
   GitState,
   GroundAtlasConfig,
   ImpactEntry,
+  MachineManifestInspection,
+  MachineManifestKind,
+  MachineManifestReport,
   OrientationStep,
   PublicSurface,
   RepoIdentity,

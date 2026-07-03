@@ -117,7 +117,7 @@ function code(value: string): string {
 function dogfoodSignals(project: FleetReport["projects"][number]): string {
   return [
     project.hasProjectFile ? "PROJECT.md" : "missing PROJECT.md",
-    project.hasMachineManifest ? "machine manifest" : "missing machine manifest",
+    manifestSignal(project),
     project.hasAgentAdapter ? "agent adapter" : "missing agent adapter",
     project.hasValidationCommands ? "validation commands" : "missing validation commands",
     project.generatedAtlas.present
@@ -129,6 +129,27 @@ function dogfoodSignals(project: FleetReport["projects"][number]): string {
         : "atlas audit failed"
       : "atlas audit not checked",
   ].join("; ");
+}
+
+function manifestSignal(project: FleetReport["projects"][number]): string {
+  if (!project.manifest.path) return "missing machine manifest";
+  const adapter = project.manifest.adapter ? " adapter" : "";
+  const status = project.manifest.valid ? "valid" : "invalid";
+  const adoption = project.manifest.adoptionStatus
+    ? `, adoption ${project.manifest.adoptionStatus}`
+    : "";
+  const selected = `${status} ${project.manifest.kind}${adapter}: ${project.manifest.path}${adoption}`;
+  const separateAdapters = project.manifestAdapters.filter(
+    (manifest) => manifest.path !== project.manifest.path,
+  );
+  if (separateAdapters.length === 0) return selected;
+  const adapters = separateAdapters
+    .map((manifest) => {
+      const adapterStatus = manifest.valid ? "valid" : "invalid";
+      return `${adapterStatus} ${manifest.kind} adapter: ${manifest.path}`;
+    })
+    .join(", ");
+  return `${selected}; adapters: ${adapters}`;
 }
 
 function issueSummary(issues: Risk[]): string {

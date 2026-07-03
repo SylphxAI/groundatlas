@@ -18,7 +18,7 @@ Commands:
   audit     Verify generated maps, freshness, truth boundary, and source-owned error risks. Alias: validate.
   explain   Find source-grounded files related to a query. Alias: query.
   impact    Map git diff paths to known atlas sources.
-  fleet     Report adopted/warning/blocked dogfooding status across repositories. Aliases: inventory, score.
+  fleet     Report adopted/warning/blocked dogfooding status and validate neutral manifests. Aliases: inventory, score.
   map       Refresh exported generated maps. Alias: export/update.
 
 GroundAtlas writes only to its configured output directory, plus groundatlas.config.json during init.

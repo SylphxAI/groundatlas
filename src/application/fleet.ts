@@ -7,12 +7,12 @@ import {
   type FleetAdoptionStatus,
   type FleetProjectReport,
   type FleetReport,
-  MACHINE_PROJECT_MANIFEST_PATHS,
   type Risk,
 } from "../domain/types.js";
 import { pathExists } from "../infrastructure/fs.js";
 import { auditAtlas } from "./audit.js";
 import { loadConfig } from "./config.js";
+import { inspectMachineProjectManifests } from "./projectManifest.js";
 import { scanRepository } from "./scan.js";
 
 const DOGFOOD_BLOCKING_RISK_CODES = new Set([
@@ -20,6 +20,9 @@ const DOGFOOD_BLOCKING_RISK_CODES = new Set([
   "missing-machine-project-manifest",
   "missing-agent-adapter",
   "missing-validation-commands",
+  "invalid-project-manifest",
+  "invalid-project-manifest-json",
+  "project-manifest-adoption-blocked",
 ]);
 
 export type InspectFleetOptions = {
@@ -100,12 +103,10 @@ async function inspectFleetProject(
       now: options.now,
     });
     const sourcePaths = new Set(atlas.sources.map((source) => source.path));
+    const manifestInspection = await inspectMachineProjectManifests(projectPath, sourcePaths);
+    const manifest = manifestInspection.selected;
     const hasProjectFile = sourcePaths.has("PROJECT.md");
-    const hasMachineManifest = hasAny(sourcePaths, (sourcePath) =>
-      MACHINE_PROJECT_MANIFEST_PATHS.includes(
-        sourcePath as (typeof MACHINE_PROJECT_MANIFEST_PATHS)[number],
-      ),
-    );
+    const hasMachineManifest = manifestInspection.discovered.length > 0;
     const hasAgentAdapter = hasAny(sourcePaths, (sourcePath) =>
       AGENT_ADAPTER_PATHS.includes(sourcePath as (typeof AGENT_ADAPTER_PATHS)[number]),
     );
@@ -114,6 +115,7 @@ async function inspectFleetProject(
     const generatedAtlasPresent = await pathExists(generatedAtlasPath);
 
     issues.push(...atlas.risks);
+    issues.push(...manifestInspection.discovered.flatMap((candidate) => candidate.issues));
 
     let generatedAtlasChecked = false;
     let generatedAtlasOk = !options.requireAtlas;
@@ -143,9 +145,12 @@ async function inspectFleetProject(
 
     return {
       path: projectPath,
-      name: atlas.repository.name,
+      name: manifest.projectName ?? atlas.repository.name,
       status,
       outputDir: config.outputDir,
+      manifest,
+      detectedManifests: manifestInspection.discovered,
+      manifestAdapters: manifestInspection.adapters,
       hasProjectFile,
       hasMachineManifest,
       hasAgentAdapter,
@@ -181,6 +186,15 @@ function blockedProject(
     name,
     status: "blocked",
     outputDir: outputDir ?? DEFAULT_OUTPUT_DIR,
+    manifest: {
+      path: null,
+      kind: null,
+      adapter: false,
+      valid: false,
+      issues: [issue],
+    },
+    detectedManifests: [],
+    manifestAdapters: [],
     hasProjectFile: false,
     hasMachineManifest: false,
     hasAgentAdapter: false,

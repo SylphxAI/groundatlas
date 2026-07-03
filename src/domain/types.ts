@@ -142,6 +142,30 @@ export type AuditResult = {
   issues: Risk[];
 };
 
+export type MachineManifestKind =
+  | "project.manifest"
+  | "groundatlas.project"
+  | "project-folder-manifest"
+  | "doctrine-adapter";
+
+export type MachineManifestReport = {
+  path: string | null;
+  kind: MachineManifestKind | null;
+  adapter: boolean;
+  valid: boolean;
+  projectId?: string;
+  projectName?: string;
+  lifecycle?: string;
+  adoptionStatus?: string;
+  issues: Risk[];
+};
+
+export type MachineManifestInspection = {
+  selected: MachineManifestReport;
+  discovered: MachineManifestReport[];
+  adapters: MachineManifestReport[];
+};
+
 export type FleetAdoptionStatus = "adopted" | "warning" | "blocked";
 
 export type FleetProjectReport = {
@@ -149,6 +173,9 @@ export type FleetProjectReport = {
   name: string;
   status: FleetAdoptionStatus;
   outputDir: string;
+  manifest: MachineManifestReport;
+  detectedManifests: MachineManifestReport[];
+  manifestAdapters: MachineManifestReport[];
   hasProjectFile: boolean;
   hasMachineManifest: boolean;
   hasAgentAdapter: boolean;

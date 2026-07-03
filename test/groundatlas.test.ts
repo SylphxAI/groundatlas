@@ -178,8 +178,316 @@ test("fleet inspection reports dogfooding status without mutating source truth",
   expect(report.projects[0]?.generatedAtlas.ok).toBe(true);
   expect(report.projects[0]?.hasProjectFile).toBe(true);
   expect(report.projects[0]?.hasMachineManifest).toBe(true);
+  expect(report.projects[0]?.manifest.path).toBe(".doctrine/project.json");
+  expect(report.projects[0]?.manifest.adapter).toBe(true);
+  expect(report.projects[0]?.manifest.valid).toBe(true);
   expect(report.projects[0]?.hasAgentAdapter).toBe(true);
   expect(report.projects[0]?.hasValidationCommands).toBe(true);
+});
+
+test("fleet inspection validates vendor-neutral project manifests", async () => {
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture repository for GroundAtlas scanner tests.",
+          lifecycle: "active",
+          visibility: "open-source",
+          repository: "https://github.com/SylphxAI/fixture-basic",
+        },
+        truth: {
+          humanProjectFile: "PROJECT.md",
+          agentAdapter: "AGENTS.md",
+          source: ["src/"],
+          tests: ["test/"],
+        },
+        surfaces: [{ type: "cli", name: "Fixture CLI", path: "package.json" }],
+        commands: [{ name: "check", command: "bun test", purpose: "Run fixture tests." }],
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.projects[0]?.manifest.path).toBe("project.manifest.json");
+  expect(report.projects[0]?.manifest.kind).toBe("project.manifest");
+  expect(report.projects[0]?.manifest.adapter).toBe(false);
+  expect(report.projects[0]?.manifest.valid).toBe(true);
+  expect(report.projects[0]?.manifest.projectId).toBe("fixture-basic");
+  expect(report.projects[0]?.manifest.adoptionStatus).toBe("adopted");
+  expect(
+    report.projects[0]?.issues.some((issue) => issue.code === "invalid-project-manifest"),
+  ).toBe(false);
+});
+
+test("fleet inspection prefers neutral manifests and reports ecosystem adapters separately", async () => {
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture repository for GroundAtlas scanner tests.",
+          lifecycle: "active",
+        },
+        adoption: { status: "adopted" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.projects[0]?.manifest.path).toBe("project.manifest.json");
+  expect(report.projects[0]?.manifest.adapter).toBe(false);
+  expect(report.projects[0]?.manifestAdapters.map((manifest) => manifest.path)).toContain(
+    ".doctrine/project.json",
+  );
+  expect(report.projects[0]?.detectedManifests.map((manifest) => manifest.path)).toEqual([
+    "project.manifest.json",
+    ".doctrine/project.json",
+  ]);
+});
+
+test("fleet inspection accepts neutral manifest aliases in priority order", async () => {
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await mkdir(path.join(fixtureRoot, ".project"), { recursive: true });
+  await Bun.write(
+    path.join(fixtureRoot, "groundatlas.project.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-groundatlas",
+          name: "Fixture GroundAtlas",
+          summary: "GroundAtlas alias fixture.",
+          lifecycle: "active",
+        },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+  await Bun.write(
+    path.join(fixtureRoot, ".project", "manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-project-folder",
+          name: "Fixture Project Folder",
+          summary: "Project folder alias fixture.",
+          lifecycle: "active",
+        },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.projects[0]?.manifest.path).toBe("groundatlas.project.json");
+  expect(report.projects[0]?.manifest.kind).toBe("groundatlas.project");
+  expect(report.projects[0]?.detectedManifests.map((manifest) => manifest.path)).toEqual([
+    "groundatlas.project.json",
+    ".project/manifest.json",
+  ]);
+});
+
+test("fleet inspection blocks invalid vendor-neutral project manifests", async () => {
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 2,
+        project: {
+          id: "Invalid ID",
+          name: "",
+          summary: "Invalid fixture manifest.",
+          lifecycle: "unknown-lifecycle",
+        },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.summary.blocked).toBe(1);
+  expect(report.projects[0]?.manifest.valid).toBe(false);
+  expect(report.projects[0]?.status).toBe("blocked");
+  expect(
+    report.projects[0]?.issues.some((issue) => issue.code === "invalid-project-manifest"),
+  ).toBe(true);
+});
+
+test("fleet inspection blocks malformed vendor-neutral project manifest JSON", async () => {
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await Bun.write(path.join(fixtureRoot, "project.manifest.json"), "{not-json");
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.summary.blocked).toBe(1);
+  expect(report.projects[0]?.manifest.path).toBe("project.manifest.json");
+  expect(report.projects[0]?.manifest.valid).toBe(false);
+  expect(
+    report.projects[0]?.issues.some((issue) => issue.code === "invalid-project-manifest-json"),
+  ).toBe(true);
+});
+
+test("fleet inspection blocks neutral manifest adoption status blocked", async () => {
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture repository for GroundAtlas scanner tests.",
+          lifecycle: "active",
+        },
+        adoption: { status: "blocked" },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.summary.blocked).toBe(1);
+  expect(report.projects[0]?.manifest.valid).toBe(false);
+  expect(report.projects[0]?.manifest.adoptionStatus).toBe("blocked");
+  expect(
+    report.projects[0]?.issues.some((issue) => issue.code === "project-manifest-adoption-blocked"),
+  ).toBe(true);
+});
+
+test("fleet inspection validates neutral manifest exception records", async () => {
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        $schema: "./schemas/project.manifest.schema.json",
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture repository for GroundAtlas scanner tests.",
+          lifecycle: "active",
+        },
+        adoption: {
+          status: "exception",
+          exceptions: [{ id: "missing-owner", owner: "", reason: "temporary exception" }],
+        },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.summary.blocked).toBe(1);
+  expect(report.projects[0]?.manifest.valid).toBe(false);
+  expect(
+    report.projects[0]?.issues.some(
+      (issue) =>
+        issue.code === "invalid-project-manifest" &&
+        issue.message.includes("adoption.exceptions[0].expiresAt"),
+    ),
+  ).toBe(true);
+});
+
+test("fleet inspection rejects impossible exception expiry dates", async () => {
+  await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
+  await Bun.write(
+    path.join(fixtureRoot, "project.manifest.json"),
+    `${JSON.stringify(
+      {
+        schemaVersion: 1,
+        project: {
+          id: "fixture-basic",
+          name: "Fixture Basic",
+          summary: "Fixture repository for GroundAtlas scanner tests.",
+          lifecycle: "active",
+        },
+        adoption: {
+          status: "exception",
+          exceptions: [
+            {
+              id: "calendar-date",
+              owner: "Fixture Owner",
+              reason: "Test invalid calendar dates.",
+              expiresAt: "2026-02-31",
+            },
+          ],
+        },
+      },
+      null,
+      2,
+    )}\n`,
+  );
+
+  const report = await inspectFleet({
+    cwd: tempRoot,
+    paths: [fixtureRoot],
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+
+  expect(report.summary.blocked).toBe(1);
+  expect(
+    report.projects[0]?.issues.some(
+      (issue) =>
+        issue.code === "invalid-project-manifest" &&
+        issue.message.includes("must be a valid YYYY-MM-DD date"),
+    ),
+  ).toBe(true);
 });
 
 test("fleet inspection blocks commercial dogfooding when machine manifest is missing", async () => {

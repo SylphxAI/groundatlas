@@ -1,46 +1,64 @@
 import { readFile } from "node:fs/promises";
 
-const manifest = JSON.parse(await readFile(".doctrine/project.json", "utf8"));
+import { inspectMachineProjectManifest } from "../src/application/projectManifest.ts";
+
+const doctrineManifest = JSON.parse(await readFile(".doctrine/project.json", "utf8"));
 const errors = [];
 
 function assert(condition, message) {
   if (!condition) errors.push(message);
 }
 
-assert(manifest.schemaVersion === 1, "schemaVersion must be 1");
+async function assertManifestValid(path) {
+  const report = await inspectMachineProjectManifest(process.cwd(), new Set([path]));
+  if (!report.valid) {
+    for (const issue of report.issues) {
+      errors.push(issue.message);
+    }
+  }
+}
+
+await assertManifestValid("project.manifest.json");
+await assertManifestValid(".doctrine/project.json");
+
+assert(doctrineManifest.schemaVersion === 1, "schemaVersion must be 1");
 assert(
-  manifest.project?.repo === "SylphxAI/groundatlas",
+  doctrineManifest.project?.repo === "SylphxAI/groundatlas",
   "project.repo must identify SylphxAI/groundatlas",
 );
-assert(manifest.project?.lifecycle, "project.lifecycle is required");
+assert(doctrineManifest.project?.lifecycle, "project.lifecycle is required");
 assert(
-  Array.isArray(manifest.project?.goals) && manifest.project.goals.length > 0,
+  Array.isArray(doctrineManifest.project?.goals) && doctrineManifest.project.goals.length > 0,
   "project.goals required",
 );
 assert(
-  Array.isArray(manifest.project?.nonGoals) && manifest.project.nonGoals.length > 0,
+  Array.isArray(doctrineManifest.project?.nonGoals) && doctrineManifest.project.nonGoals.length > 0,
   "project.nonGoals required",
 );
 assert(
-  Array.isArray(manifest.boundaries?.owns) && manifest.boundaries.owns.length > 0,
+  Array.isArray(doctrineManifest.boundaries?.owns) && doctrineManifest.boundaries.owns.length > 0,
   "boundaries.owns required",
 );
 assert(
-  Array.isArray(manifest.boundaries?.doesNotOwn) && manifest.boundaries.doesNotOwn.length > 0,
+  Array.isArray(doctrineManifest.boundaries?.doesNotOwn) &&
+    doctrineManifest.boundaries.doesNotOwn.length > 0,
   "boundaries.doesNotOwn required",
 );
 assert(
-  Array.isArray(manifest.boundaries?.forbiddenCouplings) &&
-    manifest.boundaries.forbiddenCouplings.length > 0,
+  Array.isArray(doctrineManifest.boundaries?.forbiddenCouplings) &&
+    doctrineManifest.boundaries.forbiddenCouplings.length > 0,
   "forbiddenCouplings required",
 );
 assert(
-  manifest.documentation?.catalog?.path === ".doctrine/project.json",
+  doctrineManifest.documentation?.catalog?.path === ".doctrine/project.json",
   "documentation.catalog must point to manifest",
 );
-assert(Array.isArray(manifest.delivery?.requiredContexts), "delivery.requiredContexts required");
-assert(manifest.adoption?.status, "adoption.status required");
-for (const gap of manifest.adoption?.gaps ?? []) {
+assert(
+  Array.isArray(doctrineManifest.delivery?.requiredContexts),
+  "delivery.requiredContexts required",
+);
+assert(doctrineManifest.adoption?.status, "adoption.status required");
+for (const gap of doctrineManifest.adoption?.gaps ?? []) {
   assert(
     gap.id && gap.owner && gap.target,
     `gap ${gap.id ?? "unknown"} must include id, owner, target`,

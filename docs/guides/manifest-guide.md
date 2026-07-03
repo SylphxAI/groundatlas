@@ -18,6 +18,10 @@ Also recognized:
 - `.project/manifest.json`
 - ecosystem adapters such as `.doctrine/project.json`
 
+GroundAtlas treats `project.manifest.json` as the public, vendor-neutral
+contract. Ecosystem files such as `.doctrine/project.json` are adapters: they can
+prove a local repo is discoverable, but they are not the public default.
+
 ## Minimal example
 
 ```json
@@ -63,3 +67,17 @@ A single neutral manifest per project lets a portfolio dashboard answer:
 
 The manifest is intentionally small. It should point to truth homes, not copy all
 truth into one file.
+
+## Validation in fleet gates
+
+`ga fleet` validates the neutral manifest shape when it sees
+`project.manifest.json`, `groundatlas.project.json`, or `.project/manifest.json`.
+Invalid schema version, missing project identity, unsupported lifecycle,
+invalid URI fields, malformed surfaces, malformed commands, or
+`adoption.status: "blocked"` make the repo `blocked`.
+
+Recognized adapters such as `.doctrine/project.json` are checked only for their
+adapter contract and reported under `manifestAdapters` in the fleet JSON. The
+top-level `manifest` field is the selected manifest used for public governance.
+This keeps the public manifest neutral while still letting internal ecosystems
+dogfood the same control-plane gate.

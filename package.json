@@ -45,7 +45,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/fix-shebang.mjs",
     "check": "bun run typecheck && bun test && biome check . && bun run validate:manifest && bun run validate:public-assets && bun run build && node dist/cli.js --help && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js fleet . --require-atlas --json && bun run pack:dry-run && bun run pack:smoke",
-    "validate:manifest": "node scripts/validate-project-manifest.mjs",
+    "validate:manifest": "bun scripts/validate-project-manifest.mjs",
     "dev": "bun run src/cli.ts",
     "format": "biome format --write .",
     "lint": "biome check .",
