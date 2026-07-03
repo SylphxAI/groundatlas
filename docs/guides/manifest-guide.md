@@ -31,6 +31,15 @@ ga manifest project.manifest.json --json
 ga manifest validate .doctrine/project.json --json
 ```
 
+Package consumers can resolve the schema from the published package:
+
+```js
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const schemaPath = require.resolve("groundatlas/schemas/project.manifest.schema.json");
+```
+
 The explicit-path JSON shape is:
 
 ```json

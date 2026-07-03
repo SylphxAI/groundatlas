@@ -61,6 +61,12 @@
       "name": "GitHub Action gate",
       "path": "action.yml",
       "description": "Reusable composite action for ga update/manifest/audit/fleet CI gates with manifest/fleet JSON reports after npm publish/readback."
+    },
+    {
+      "type": "schema",
+      "name": "Package-exported project manifest schema",
+      "path": "package.json exports: ./schemas/project.manifest.schema.json",
+      "description": "Published package subpath for the vendor-neutral project manifest schema."
     }
   ],
   "commands": [
