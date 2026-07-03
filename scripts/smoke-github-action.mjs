@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { cp, mkdir, mkdtemp, readFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import packageJson from "../package.json" with { type: "json" };
@@ -11,6 +11,7 @@ const packDir = path.join(tempRoot, "package");
 const runnerTemp = path.join(tempRoot, "runner");
 const fixtureCopy = path.join(tempRoot, "fixture-basic");
 const trackedFixtureCopy = path.join(tempRoot, "fixture-tracked-output");
+const strictFailureFixtureCopy = path.join(tempRoot, "fixture-strict-warning");
 
 await mkdir(packDir, { recursive: true });
 await mkdir(runnerTemp, { recursive: true });
@@ -22,6 +23,12 @@ await cp(path.join(root, "test", "fixtures", "basic"), trackedFixtureCopy, {
   recursive: true,
   force: true,
 });
+await cp(path.join(root, "test", "fixtures", "basic"), strictFailureFixtureCopy, {
+  recursive: true,
+  force: true,
+});
+await writeNeutralProjectManifest(fixtureCopy);
+await writeNeutralProjectManifest(trackedFixtureCopy);
 
 const action = await readFile(path.join(root, "action.yml"), "utf8");
 const runBlock = extractRunBlock(action);
@@ -58,6 +65,9 @@ const smoke = runAction({
   workingDirectory: fixtureCopy,
   outputDir: ".groundatlas-action-smoke",
   failOnDiff: false,
+  manifestReportPath: "groundatlas-reports/manifest.json",
+  fleetReportPath: "groundatlas-reports/fleet.json",
+  githubOutputPath: path.join(runnerTemp, "github-output-happy.txt"),
 });
 
 assertActionPassed(smoke, "GitHub Action smoke failed.", fixtureCopy);
@@ -72,6 +82,52 @@ for (const required of [
   if (!output.includes(required)) {
     throw new Error(`GitHub Action smoke output missing ${required}.\n${output}`);
   }
+}
+if (output.includes("stale-atlas")) {
+  throw new Error(`Relative report paths polluted the freshness gate.\n${output}`);
+}
+
+const smokeOutputs = parseGithubOutput(
+  await readFile(path.join(runnerTemp, "github-output-happy.txt"), "utf8"),
+);
+assertOutputPath(smokeOutputs, "manifest-report-path", fixtureCopy);
+assertOutputPath(smokeOutputs, "fleet-report-path", fixtureCopy);
+
+const manifestReport = await readJsonReport(smokeOutputs["manifest-report-path"]);
+const fleetReport = await readJsonReport(smokeOutputs["fleet-report-path"]);
+if (
+  manifestReport.selected?.valid !== true ||
+  manifestReport.selected?.path !== "project.manifest.json" ||
+  manifestReport.selected?.adapter !== false
+) {
+  throw new Error(`GitHub Action manifest report was not valid: ${JSON.stringify(manifestReport)}`);
+}
+if (
+  !manifestReport.discovered?.some(
+    (manifest) => manifest.path === ".doctrine/project.json" && manifest.adapter === true,
+  )
+) {
+  throw new Error(
+    `GitHub Action manifest report did not preserve Doctrine as an adapter: ${JSON.stringify(
+      manifestReport,
+    )}`,
+  );
+}
+if (fleetReport.summary?.total !== 1 || !fleetReport.projects?.[0]?.generatedAtlas?.checked) {
+  throw new Error(`GitHub Action fleet report was not usable: ${JSON.stringify(fleetReport)}`);
+}
+if (
+  fleetReport.projects?.[0]?.manifest?.path !== "project.manifest.json" ||
+  fleetReport.projects?.[0]?.manifest?.adapter !== false ||
+  !fleetReport.projects?.[0]?.manifestAdapters?.some(
+    (manifest) => manifest.path === ".doctrine/project.json" && manifest.adapter === true,
+  )
+) {
+  throw new Error(
+    `GitHub Action fleet report did not select the neutral manifest with Doctrine as adapter: ${JSON.stringify(
+      fleetReport,
+    )}`,
+  );
 }
 
 if (!tarballName.includes(`${packageJson.version}.tgz`)) {
@@ -114,6 +170,34 @@ assertActionPassed(
   trackedFixtureCopy,
 );
 
+const strictFailure = runAction({
+  packageSpec: tarballPath,
+  workingDirectory: strictFailureFixtureCopy,
+  outputDir: ".groundatlas",
+  failOnDiff: false,
+  strict: true,
+  githubOutputPath: path.join(runnerTemp, "github-output-strict-failure.txt"),
+});
+if (strictFailure.status === 0) {
+  throw new Error("GitHub Action strict warning smoke unexpectedly passed.");
+}
+const strictFailureOutputs = parseGithubOutput(
+  await readFile(path.join(runnerTemp, "github-output-strict-failure.txt"), "utf8"),
+);
+assertOutputPath(strictFailureOutputs, "manifest-report-path");
+assertOutputPath(strictFailureOutputs, "fleet-report-path");
+const strictFailureFleetReport = await readJsonReport(strictFailureOutputs["fleet-report-path"]);
+if (
+  strictFailureFleetReport.summary?.warning !== 1 ||
+  strictFailureFleetReport.summary?.total !== 1
+) {
+  throw new Error(
+    `GitHub Action failed strict gate did not preserve parseable fleet JSON: ${JSON.stringify(
+      strictFailureFleetReport,
+    )}`,
+  );
+}
+
 console.log(
   JSON.stringify(
     {
@@ -122,8 +206,12 @@ console.log(
       packageVersion: packageJson.version,
       fixture: fixtureCopy,
       trackedFixture: trackedFixtureCopy,
+      strictFailureFixture: strictFailureFixtureCopy,
       outputDir: ".groundatlas-action-smoke",
+      manifestReport: smokeOutputs["manifest-report-path"],
+      fleetReport: smokeOutputs["fleet-report-path"],
       trackedOutputDiffGate: "passed",
+      strictFailureReports: "preserved",
     },
     null,
     2,
@@ -143,7 +231,16 @@ function extractRunBlock(actionText) {
   return block.join("\n");
 }
 
-function runAction({ packageSpec, workingDirectory, outputDir, failOnDiff }) {
+function runAction({
+  packageSpec,
+  workingDirectory,
+  outputDir,
+  failOnDiff,
+  manifestReportPath = "",
+  fleetReportPath = "",
+  strict = false,
+  githubOutputPath,
+}) {
   return spawnSync("bash", ["-c", runBlock], {
     cwd: root,
     encoding: "utf8",
@@ -154,9 +251,12 @@ function runAction({ packageSpec, workingDirectory, outputDir, failOnDiff }) {
       GROUNDATLAS_OUTPUT_DIR: outputDir,
       GROUNDATLAS_UPDATE: "true",
       GROUNDATLAS_REQUIRE_ATLAS: "true",
-      GROUNDATLAS_STRICT: "false",
+      GROUNDATLAS_STRICT: strict ? "true" : "false",
       GROUNDATLAS_FAIL_ON_DIFF: failOnDiff ? "true" : "false",
+      GROUNDATLAS_MANIFEST_REPORT_PATH: manifestReportPath,
+      GROUNDATLAS_FLEET_REPORT_PATH: fleetReportPath,
       RUNNER_TEMP: runnerTemp,
+      ...(githubOutputPath ? { GITHUB_OUTPUT: githubOutputPath } : {}),
     },
   });
 }
@@ -168,4 +268,62 @@ function assertActionPassed(result, message, fixture) {
       .filter(Boolean)
       .join("\n"),
   );
+}
+
+async function writeNeutralProjectManifest(targetDir) {
+  const manifest = {
+    schemaVersion: 1,
+    project: {
+      id: "fixture-basic",
+      name: "Fixture Basic",
+      summary: "Fixture repository for GroundAtlas GitHub Action smoke tests.",
+      lifecycle: "active",
+      visibility: "open-source",
+      repository: "https://github.com/SylphxAI/fixture-basic",
+    },
+    truth: {
+      humanProjectFile: "PROJECT.md",
+      agentAdapter: "AGENTS.md",
+      adrs: ["docs/adr/"],
+      source: ["src/"],
+      tests: ["test/"],
+    },
+    surfaces: [{ type: "cli", name: "Fixture CLI", path: "package.json" }],
+    commands: [{ name: "check", command: "bun test", purpose: "Run fixture tests." }],
+    adoption: { status: "adopted" },
+  };
+  await writeFile(
+    path.join(targetDir, "project.manifest.json"),
+    `${JSON.stringify(manifest, null, 2)}\n`,
+  );
+}
+
+async function readJsonReport(reportPath) {
+  return JSON.parse(await readFile(reportPath, "utf8"));
+}
+
+function parseGithubOutput(outputText) {
+  return Object.fromEntries(
+    outputText
+      .split("\n")
+      .filter(Boolean)
+      .map((line) => {
+        const separator = line.indexOf("=");
+        if (separator === -1) throw new Error(`Invalid GITHUB_OUTPUT line: ${line}`);
+        return [line.slice(0, separator), line.slice(separator + 1)];
+      }),
+  );
+}
+
+function assertOutputPath(outputs, key, expectedPrefix) {
+  const value = outputs[key];
+  if (!value) {
+    throw new Error(`GITHUB_OUTPUT missing ${key}: ${JSON.stringify(outputs)}`);
+  }
+  if (!path.isAbsolute(value)) {
+    throw new Error(`GITHUB_OUTPUT ${key} must be absolute: ${value}`);
+  }
+  if (expectedPrefix && !value.startsWith(`${expectedPrefix}${path.sep}`)) {
+    throw new Error(`GITHUB_OUTPUT ${key} should resolve from working-directory: ${value}`);
+  }
 }

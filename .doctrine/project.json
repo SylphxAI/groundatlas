@@ -26,7 +26,8 @@
       "Publish the static landing page through GitHub Pages with least-privilege workflow permissions and no repository secrets.",
       "Validate neutral project manifests in fleet dogfooding gates while reporting ecosystem manifests as adapters.",
       "Expose a reusable GitHub Action gate for downstream update/audit/fleet adoption after npm publish and version-tag readback.",
-      "Expose read-only standalone manifest validation through the CLI and a public package subpath without making GroundAtlas the manifest SSOT."
+      "Expose read-only standalone manifest validation through the CLI and a public package subpath without making GroundAtlas the manifest SSOT.",
+      "Emit manifest and fleet JSON reports from the GitHub Action gate so downstream CI can persist adoption evidence as artifacts."
     ],
     "nonGoals": [
       "Own or replace downstream project truth such as ADRs, specs, schemas, tests, manifests, workflows, release proof, or source code.",
@@ -226,7 +227,8 @@
       {
         "type": "workflow",
         "name": "GitHub Action gate",
-        "location": "action.yml"
+        "location": "action.yml",
+        "description": "Reusable composite action that runs update, manifest, audit, and fleet gates and emits artifact-ready JSON report paths."
       },
       {
         "type": "documentation",

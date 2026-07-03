@@ -25,11 +25,19 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
-      - uses: SylphxAI/groundatlas@v0.1.0
+      - id: groundatlas
+        uses: SylphxAI/groundatlas@v0.1.0
         with:
           package-spec: groundatlas@0.1.0
           require-atlas: "true"
           strict: "true"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: groundatlas-reports
+          path: |
+            ${{ steps.groundatlas.outputs.manifest-report-path }}
+            ${{ steps.groundatlas.outputs.fleet-report-path }}
 ```
 
 If the runner does not already provide Node.js 20.11 or newer, add
@@ -38,9 +46,10 @@ If the runner does not already provide Node.js 20.11 or newer, add
 ## What the action does
 
 1. Runs `ga update`.
-2. Runs `ga audit`.
-3. Runs `ga fleet . --require-atlas --json`.
-4. Optionally fails if generated GroundAtlas files or `groundatlas.config.json`
+2. Runs `ga manifest --json` and writes a manifest report.
+3. Runs `ga audit`.
+4. Runs `ga fleet . --require-atlas --json` and writes a fleet report.
+5. Optionally fails if generated GroundAtlas files or `groundatlas.config.json`
    changed in CI.
 
 The action does not make `.groundatlas/**` a source of truth. It checks that the
@@ -59,6 +68,24 @@ fleet gate.
 | `require-atlas` | `true` | Require generated `atlas.json` in `ga fleet`. |
 | `strict` | `false` | Fail on fleet warnings as well as blocked status. |
 | `fail-on-diff` | `false` | Optional tracked/unignored generated-output freshness guard. Leave disabled when `.groundatlas/**` is ignored. |
+| `manifest-report-path` | runner temp | Optional path for the `ga manifest --json` report. The action output is always absolute. |
+| `fleet-report-path` | runner temp | Optional path for the `ga fleet --json` report. The action output is always absolute. |
+
+## Reports
+
+The action writes two machine-readable reports and exposes their paths as action
+outputs:
+
+- `manifest-report-path` — selected neutral manifest or recognized adapter plus
+  validation issues;
+- `fleet-report-path` — adopted/warning/blocked fleet status, manifest adapters,
+  generated-atlas audit state, and validation commands.
+
+Use `actions/upload-artifact` with the action outputs to keep those reports as
+CI evidence. If custom report paths are relative, they are resolved from
+`working-directory`, but the action tees reports to runner temp first and copies
+them to the requested paths only after freshness-sensitive scans finish. This
+keeps evidence artifacts from becoming scanned source truth.
 
 ## No local binary bypass
 

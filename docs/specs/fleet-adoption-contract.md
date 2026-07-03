@@ -63,6 +63,8 @@ A useful fleet gate must be machine-checkable:
 - expose the same checks through the reusable GitHub Action gate after npm
   publish/readback, so downstream repos can adopt the gate without copying
   project-local scripts;
+- preserve the action's manifest and fleet JSON reports as CI artifacts for
+  auditability, incident review, and fleet dashboard ingestion;
 - keep the action tag and npm package spec pinned to the same released version;
   `groundatlas@latest` is not acceptable for commercial CI provenance;
 - warn, then later fail, on missing specs/ADRs/tests/CI/security as each repo

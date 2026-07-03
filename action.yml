@@ -31,11 +31,28 @@ inputs:
     description: Fail if tracked or unignored GroundAtlas generated files or config changed.
     required: false
     default: "false"
+  manifest-report-path:
+    description: Optional path for the manifest validation JSON report. Defaults to RUNNER_TEMP.
+    required: false
+    default: ""
+  fleet-report-path:
+    description: Optional path for the fleet adoption JSON report. Defaults to RUNNER_TEMP.
+    required: false
+    default: ""
+
+outputs:
+  manifest-report-path:
+    description: Path to the manifest validation JSON report.
+    value: ${{ steps.groundatlas-gate.outputs.manifest-report-path }}
+  fleet-report-path:
+    description: Path to the fleet adoption JSON report.
+    value: ${{ steps.groundatlas-gate.outputs.fleet-report-path }}
 
 runs:
   using: composite
   steps:
     - name: Run GroundAtlas gate
+      id: groundatlas-gate
       shell: bash
       env:
         GROUNDATLAS_PACKAGE_SPEC: ${{ inputs.package-spec }}
@@ -45,6 +62,8 @@ runs:
         GROUNDATLAS_REQUIRE_ATLAS: ${{ inputs.require-atlas }}
         GROUNDATLAS_STRICT: ${{ inputs.strict }}
         GROUNDATLAS_FAIL_ON_DIFF: ${{ inputs.fail-on-diff }}
+        GROUNDATLAS_MANIFEST_REPORT_PATH: ${{ inputs.manifest-report-path }}
+        GROUNDATLAS_FLEET_REPORT_PATH: ${{ inputs.fleet-report-path }}
       run: |
         set -euo pipefail
 
@@ -56,11 +75,82 @@ runs:
           npm exec --yes --package "$GROUNDATLAS_PACKAGE_SPEC" -- ga "$@"
         }
 
+        runner_temp="${RUNNER_TEMP:-/tmp}"
+        mkdir -p "$runner_temp"
+
+        resolve_report_path() {
+          local configured="$1"
+          local fallback_name="$2"
+          if [[ -n "$configured" ]]; then
+            if [[ "$configured" = /* ]]; then
+              printf '%s\n' "$configured"
+            else
+              printf '%s/%s\n' "$PWD" "$configured"
+            fi
+          else
+            printf '%s/%s\n' "$runner_temp" "$fallback_name"
+          fi
+        }
+
+        create_temp_report() {
+          mktemp "$runner_temp/$1.XXXXXX.json"
+        }
+
+        capture_json_report() {
+          local report_path="$1"
+          shift
+          set +e
+          run_ga "$@" | tee "$report_path"
+          local -a pipe_status=("${PIPESTATUS[@]}")
+          set -e
+          if [[ "${pipe_status[0]}" -ne 0 ]]; then
+            return "${pipe_status[0]}"
+          fi
+          return "${pipe_status[1]}"
+        }
+
+        publish_report() {
+          local source_path="$1"
+          local destination_path="$2"
+          mkdir -p "$(dirname "$destination_path")"
+          if [[ "$source_path" != "$destination_path" ]]; then
+            cp "$source_path" "$destination_path"
+          fi
+        }
+
+        write_action_outputs() {
+          if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+            {
+              echo "manifest-report-path=$manifest_report_path"
+              echo "fleet-report-path=$fleet_report_path"
+            } >> "$GITHUB_OUTPUT"
+          fi
+        }
+
         if [[ "$GROUNDATLAS_UPDATE" == "true" ]]; then
           run_ga update --out "$GROUNDATLAS_OUTPUT_DIR"
         fi
 
-        run_ga audit --out "$GROUNDATLAS_OUTPUT_DIR"
+        manifest_report_path="$(resolve_report_path "$GROUNDATLAS_MANIFEST_REPORT_PATH" "groundatlas-manifest.json")"
+        fleet_report_path="$(resolve_report_path "$GROUNDATLAS_FLEET_REPORT_PATH" "groundatlas-fleet.json")"
+        manifest_temp="$(create_temp_report "groundatlas-manifest")"
+        fleet_temp="$(create_temp_report "groundatlas-fleet")"
+
+        manifest_status=0
+        capture_json_report "$manifest_temp" manifest --out "$GROUNDATLAS_OUTPUT_DIR" --json || manifest_status=$?
+        if [[ "$manifest_status" -ne 0 ]]; then
+          publish_report "$manifest_temp" "$manifest_report_path"
+          write_action_outputs
+          exit "$manifest_status"
+        fi
+
+        audit_status=0
+        run_ga audit --out "$GROUNDATLAS_OUTPUT_DIR" || audit_status=$?
+        if [[ "$audit_status" -ne 0 ]]; then
+          publish_report "$manifest_temp" "$manifest_report_path"
+          write_action_outputs
+          exit "$audit_status"
+        fi
 
         fleet_args=(fleet "." --out "$GROUNDATLAS_OUTPUT_DIR")
         if [[ "$GROUNDATLAS_REQUIRE_ATLAS" == "true" ]]; then
@@ -71,7 +161,16 @@ runs:
         fi
         fleet_args+=(--json)
 
-        run_ga "${fleet_args[@]}" | tee "${RUNNER_TEMP:-/tmp}/groundatlas-fleet.json"
+        fleet_status=0
+        capture_json_report "$fleet_temp" "${fleet_args[@]}" || fleet_status=$?
+
+        publish_report "$manifest_temp" "$manifest_report_path"
+        publish_report "$fleet_temp" "$fleet_report_path"
+        write_action_outputs
+
+        if [[ "$fleet_status" -ne 0 ]]; then
+          exit "$fleet_status"
+        fi
 
         if [[ "$GROUNDATLAS_FAIL_ON_DIFF" == "true" ]]; then
           changed="$(git status --short -- "$GROUNDATLAS_OUTPUT_DIR" groundatlas.config.json)"
