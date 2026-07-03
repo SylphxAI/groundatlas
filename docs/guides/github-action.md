@@ -24,14 +24,14 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: groundatlas
         uses: SylphxAI/groundatlas@v0.1.0
         with:
           package-spec: groundatlas@0.1.0
           require-atlas: "true"
           strict: "true"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: groundatlas-reports

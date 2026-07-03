@@ -411,7 +411,7 @@ After npm publish/readback and a version tag, downstream repositories can run:
     package-spec: groundatlas@0.1.0
     require-atlas: "true"
     strict: "true"
-- uses: actions/upload-artifact@v4
+- uses: actions/upload-artifact@v5
   if: always()
   with:
     name: groundatlas-reports

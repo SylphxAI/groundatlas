@@ -75,6 +75,11 @@
       "purpose": "Validate the reusable GitHub Action gate contract and public boundary wording."
     },
     {
+      "name": "validate:workflows",
+      "command": "bun run validate:workflows",
+      "purpose": "Validate GitHub workflow release gates, trusted-publishing settings, and Node 24-compatible action references."
+    },
+    {
       "name": "manifest",
       "command": "bun run build && node dist/cli.js manifest project.manifest.json --json",
       "purpose": "Validate the neutral project manifest through the public CLI without generating maps."
