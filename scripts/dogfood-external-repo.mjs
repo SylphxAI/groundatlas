@@ -8,7 +8,10 @@ import process from "node:process";
 
 const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 const repoRoot = path.resolve(new URL("..", import.meta.url).pathname);
-const claimBoundary = "pre-npm-pilot-only";
+const registryUrl = process.env.GROUNDATLAS_NPM_REGISTRY ?? "https://registry.npmjs.org";
+const configuredPackageSpec = process.env.GROUNDATLAS_DOGFOOD_PACKAGE_SPEC?.trim() || null;
+const packageSource = configuredPackageSpec ? "npm-registry" : "packed-local-tarball";
+const claimBoundary = configuredPackageSpec ? "post-publish-package-pilot" : "pre-npm-pilot-only";
 
 const repoInputs = parseRepoInputs(process.argv.slice(2), process.env.GROUNDATLAS_DOGFOOD_REPOS);
 if (repoInputs.length === 0) {
@@ -23,7 +26,8 @@ const evidence = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
   claimBoundary,
-  groundatlasPackageSource: "packed-local-tarball",
+  groundatlasPackageSource: packageSource,
+  packageSpec: configuredPackageSpec,
   packageName: packageJson.name,
   packageVersion: packageJson.version,
   packagePublished: await isPackagePublished(packageJson.name),
@@ -31,10 +35,14 @@ const evidence = {
 };
 
 try {
-  run("bun", ["run", "build"], { cwd: repoRoot });
-  const tarball = packGroundAtlas(tmpRoot);
+  let packageSpec = configuredPackageSpec;
+  if (!packageSpec) {
+    run("bun", ["run", "build"], { cwd: repoRoot });
+    packageSpec = packGroundAtlas(tmpRoot);
+    evidence.packageSpec = packageSpec;
+  }
   const installRoot = path.join(tmpRoot, "install");
-  await makeInstallProject(installRoot, tarball);
+  await makeInstallProject(installRoot, packageSpec);
 
   const groundatlasBin = path.join(installRoot, "node_modules", ".bin", "groundatlas");
   const gaBin = path.join(installRoot, "node_modules", ".bin", "ga");
@@ -79,11 +87,13 @@ function packGroundAtlas(destination) {
   return path.join(destination, packResult.filename);
 }
 
-async function makeInstallProject(installRoot, tarball) {
+async function makeInstallProject(installRoot, packageSpec) {
   await rm(installRoot, { force: true, recursive: true });
   await mkdir(installRoot, { recursive: true });
   await writeFile(path.join(installRoot, "package.json"), '{"private":true,"type":"module"}\n');
-  run("npm", ["install", "--silent", tarball], { cwd: installRoot });
+  const installArgs = ["install", "--silent", "--ignore-scripts", packageSpec];
+  if (configuredPackageSpec) installArgs.push("--registry", registryUrl);
+  run("npm", installArgs, { cwd: installRoot });
 }
 
 async function dogfoodRepository({ repoInput, tmpRoot, groundatlasBin, gaBin, installRoot }) {
@@ -158,7 +168,8 @@ async function dogfoodRepository({ repoInput, tmpRoot, groundatlasBin, gaBin, in
     targetRef,
     targetBranch,
     claimBoundary,
-    groundatlasPackageSource: "packed-local-tarball",
+    groundatlasPackageSource: evidence.groundatlasPackageSource,
+    packageSpec: evidence.packageSpec,
     packagePublished: evidence.packagePublished,
     installedVersion: run(groundatlasBin, ["--version"], { cwd: installRoot }).trim(),
     outputDir,
