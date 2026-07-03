@@ -7,6 +7,8 @@
   commands.
 - Fact-scoped SSOT model, orientation route, spec/design classification, and
   generated-map freshness auditing.
+- Vendor-neutral `project.manifest.json` control file schema, example, guides,
+  public asset validation, and static landing page.
 - Repo-local governance docs, permission model, dogfooding contract, fleet
   adoption contract, competitive positioning, and CI.
 - Release workflow prepared for npm provenance publishing once trusted publishing

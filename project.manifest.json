@@ -1,0 +1,58 @@
+{
+  "$schema": "./schemas/project.manifest.schema.json",
+  "schemaVersion": 1,
+  "project": {
+    "id": "groundatlas",
+    "name": "GroundAtlas",
+    "summary": "Source-grounded repository control plane for humans and agents.",
+    "lifecycle": "active",
+    "visibility": "open-source",
+    "repository": "https://github.com/SylphxAI/groundatlas",
+    "tags": ["agents", "documentation", "repository-map", "ssot", "cli"]
+  },
+  "truth": {
+    "humanProjectFile": "PROJECT.md",
+    "agentAdapter": "AGENTS.md",
+    "specs": ["docs/specs/"],
+    "adrs": ["docs/adr/"],
+    "source": ["src/"],
+    "tests": ["test/"],
+    "runbooks": ["docs/runbooks/"]
+  },
+  "surfaces": [
+    {
+      "type": "cli",
+      "name": "GroundAtlas CLI",
+      "path": "package.json",
+      "description": "Binaries: groundatlas and ga."
+    },
+    {
+      "type": "schema",
+      "name": "Project control file schema",
+      "path": "schemas/project.manifest.schema.json",
+      "description": "Vendor-neutral project manifest schema."
+    },
+    {
+      "type": "website",
+      "name": "Static landing page",
+      "path": "docs/website/index.html",
+      "description": "Dependency-free public product landing page."
+    }
+  ],
+  "commands": [
+    {
+      "name": "check",
+      "command": "bun run check",
+      "purpose": "Run the complete local validation and dogfooding suite."
+    },
+    {
+      "name": "release:preflight",
+      "command": "GROUNDATLAS_RELEASE_TAG=v0.1.0 bun run release:preflight",
+      "purpose": "Verify local release readiness before npm publication."
+    }
+  ],
+  "adoption": {
+    "status": "adopted",
+    "notes": "GroundAtlas dogfoods its own vendor-neutral project control file while keeping generated .groundatlas output non-authoritative."
+  }
+}

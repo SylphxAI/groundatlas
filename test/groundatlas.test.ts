@@ -59,7 +59,7 @@ test("scanRepository identifies canonical sources and skips secrets", async () =
 test("recognizes vendor-neutral machine project manifests without requiring doctrine", async () => {
   await rm(path.join(fixtureRoot, ".doctrine"), { force: true, recursive: true });
   await Bun.write(
-    path.join(fixtureRoot, "groundatlas.project.json"),
+    path.join(fixtureRoot, "project.manifest.json"),
     `${JSON.stringify({ name: "fixture-basic", lifecycle: "test" }, null, 2)}\n`,
   );
   const atlas = await scanRepository({
@@ -69,7 +69,7 @@ test("recognizes vendor-neutral machine project manifests without requiring doct
   });
   expect(
     atlas.sources.some(
-      (source) => source.path === "groundatlas.project.json" && source.kind === "project-manifest",
+      (source) => source.path === "project.manifest.json" && source.kind === "project-manifest",
     ),
   ).toBe(true);
   expect(atlas.risks.some((risk) => risk.code === "missing-machine-project-manifest")).toBe(false);

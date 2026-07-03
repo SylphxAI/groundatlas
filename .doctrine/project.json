@@ -11,6 +11,8 @@
       "Generate deterministic source-grounded maps over repository truth surfaces.",
       "Expose a fact-scoped SSOT model and orientation route for humans and AI agents.",
       "Recognize vendor-neutral machine project manifests and ecosystem-specific manifest adapters without making SylphxAI Doctrine a public requirement.",
+      "Expose public guides, schema, examples, and a static landing page for open-source adoption.",
+      "Dogfood the vendor-neutral project.manifest.json control file in this repository.",
       "Help humans and AI agents enter repositories faster while preserving canonical source ownership.",
       "Provide safe CLI operations for init, update, scan, audit, explain, and impact analysis.",
       "Detect stale generated maps through non-secret source fingerprints.",
@@ -143,6 +145,51 @@
         "type": "documentation",
         "name": "Multi-project control plane",
         "location": "docs/specs/multi-project-control-plane.md"
+      },
+      {
+        "type": "manifest",
+        "name": "Vendor-neutral project control file",
+        "location": "project.manifest.json"
+      },
+      {
+        "type": "schema",
+        "name": "Project manifest schema",
+        "location": "schemas/project.manifest.schema.json"
+      },
+      {
+        "type": "documentation",
+        "name": "Project manifest example",
+        "location": "examples/project.manifest.json"
+      },
+      {
+        "type": "documentation",
+        "name": "User guide",
+        "location": "docs/guides/user-guide.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Developer experience guide",
+        "location": "docs/guides/dx-guide.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Agent guide",
+        "location": "docs/guides/agent-guide.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Project control file guide",
+        "location": "docs/guides/manifest-guide.md"
+      },
+      {
+        "type": "documentation",
+        "name": "Open-source strategy",
+        "location": "docs/specs/open-source-strategy.md"
+      },
+      {
+        "type": "website",
+        "name": "Static landing page",
+        "location": "docs/website/index.html"
       }
     ],
     "allowedDependencies": [
@@ -173,7 +220,7 @@
       "status": "present"
     },
     "runbooks": {
-      "path": "README.md, CONTRIBUTING.md, SECURITY.md, docs/runbooks/publishing.md",
+      "path": "README.md, CONTRIBUTING.md, SECURITY.md, docs/runbooks/publishing.md, docs/guides/, docs/website/",
       "status": "present"
     },
     "generatedReferences": {
@@ -185,7 +232,7 @@
     "ciModel": "legacy-ci",
     "requiredContexts": ["CI / check"],
     "deployPath": "Source changes are delivered by GitHub PR/CI. npm publication is prepared through .github/workflows/release.yml and requires npm trusted publishing or an npm identity/token before first registry publish.",
-    "productionProof": "Clean checkout runs bun install and bun run check successfully; generated-map audit includes freshness/non-SSOT proof; package release proof requires npm registry readback for groundatlas.",
+    "productionProof": "Clean checkout runs bun install and bun run check successfully; generated-map audit includes freshness/non-SSOT proof; package release proof requires npm registry readback for groundatlas. Public docs/schema/site proof requires validate:public-assets.",
     "recoveryClass": "source-revertable",
     "deployable": false
   },
