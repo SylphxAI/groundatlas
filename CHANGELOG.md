@@ -38,5 +38,7 @@
   so downstream tools can consume the neutral schema without scraping repo paths.
 - Release workflow prepared for npm provenance publishing once trusted publishing
   or npm credentials are configured.
+- Tag-gated release evidence bundle for registry readback plus npm-registry
+  post-publish dogfood, so first publish proof is machine-readable.
 - Node 24-compatible GitHub workflow/action references plus workflow contract
   validation for release, CI, Pages, and artifact-upload examples.

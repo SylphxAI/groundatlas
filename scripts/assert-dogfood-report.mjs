@@ -2,23 +2,31 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
+const packageJson = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
 const args = process.argv.slice(2);
 const reportPath =
   args.find((arg) => !arg.startsWith("--")) ?? process.env.GROUNDATLAS_DOGFOOD_REPORT_PATH;
 const expectPreNpm = args.includes("--expect-pre-npm");
+const expectPostPublish = args.includes("--expect-post-publish");
 const expectAdopted = args.includes("--expect-adopted");
 const expectNeutralManifest = args.includes("--expect-neutral-manifest");
 const expectDoctrineAdapter = args.includes("--expect-doctrine-adapter");
 
 if (!reportPath) {
   console.error(
-    "Usage: node scripts/assert-dogfood-report.mjs <report.json> [--expect-pre-npm] [--expect-adopted] [--expect-neutral-manifest] [--expect-doctrine-adapter]",
+    "Usage: node scripts/assert-dogfood-report.mjs <report.json> [--expect-pre-npm|--expect-post-publish] [--expect-adopted] [--expect-neutral-manifest] [--expect-doctrine-adapter]",
   );
+  process.exit(1);
+}
+
+if (expectPreNpm && expectPostPublish) {
+  console.error("--expect-pre-npm and --expect-post-publish are mutually exclusive.");
   process.exit(1);
 }
 
 const report = JSON.parse(await readFile(reportPath, "utf8"));
 const errors = [];
+const expectedPackageSpec = `${packageJson.name}@${packageJson.version}`;
 
 function assert(condition, message) {
   if (!condition) errors.push(message);
@@ -44,6 +52,22 @@ if (expectPreNpm) {
   );
 }
 
+if (expectPostPublish) {
+  assert(
+    report.claimBoundary === "post-publish-package-pilot",
+    `Expected claimBoundary=post-publish-package-pilot, got ${report.claimBoundary}.`,
+  );
+  assert(
+    report.groundatlasPackageSource === "npm-registry",
+    `Expected groundatlasPackageSource=npm-registry, got ${report.groundatlasPackageSource}.`,
+  );
+  assert(
+    report.packageSpec === expectedPackageSpec,
+    `Expected packageSpec=${expectedPackageSpec}, got ${report.packageSpec}.`,
+  );
+  assert(report.packagePublished === true, "Expected packagePublished=true after npm publish.");
+}
+
 for (const [index, repo] of (report.repositories ?? []).entries()) {
   const label = repo.targetRepo ?? `repositories[${index}]`;
   assert(repo.scanOk === true, `${label}: scanOk must be true.`);
@@ -59,6 +83,21 @@ for (const [index, repo] of (report.repositories ?? []).entries()) {
     repo.groundatlasPackageSource === report.groundatlasPackageSource,
     `${label}: repository package source must match top-level evidence.`,
   );
+
+  if (expectPostPublish) {
+    assert(
+      repo.packageSpec === expectedPackageSpec,
+      `${label}: expected packageSpec=${expectedPackageSpec}, got ${repo.packageSpec}.`,
+    );
+    assert(
+      repo.packagePublished === true,
+      `${label}: expected packagePublished=true after npm publish.`,
+    );
+    assert(
+      repo.installedVersion === packageJson.version,
+      `${label}: expected installedVersion=${packageJson.version}, got ${repo.installedVersion}.`,
+    );
+  }
 
   if (expectAdopted) {
     assert(

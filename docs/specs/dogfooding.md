@@ -82,6 +82,12 @@ This post-publish mode reports `groundatlasPackageSource: "npm-registry"` and
 for package-based fleet adoption, but mandatory fleet rollout still requires
 repo-local PRs and CI gates in the target projects.
 
+The release workflow must run this post-publish pilot only on `v*.*.*` tag
+events, after npm publish and registry readback. It uploads the
+`groundatlas-release-evidence` artifact with both registry readback JSON and
+post-publish dogfood JSON. Workflow dispatch remains preflight-only and must not
+publish, read back, or claim package-based dogfooding.
+
 ## Dogfood policy
 
 - The GroundAtlas repository carries `groundatlas.config.json` as its own config.

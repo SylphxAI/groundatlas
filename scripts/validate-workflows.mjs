@@ -20,6 +20,7 @@ const docsText = (await Promise.all(docsPaths.map((path) => readFile(path, "utf8
 );
 const allText = `${workflowText}\n---\n${docsText}`;
 const releaseTagEnvLine = "GROUNDATLAS_RELEASE_TAG: $" + "{{ inputs.release_tag }}";
+const githubShaRefLine = "ref: $" + "{{ github.sha }}";
 
 for (const deprecated of [
   "actions/checkout@v4",
@@ -59,13 +60,32 @@ assert(
   "CI external dogfood must use a public checkout target instead of a private credentialed repo.",
 );
 assert(
+  workflowText.includes("groundatlas-npm-readback.json") &&
+    workflowText.includes("set -euo pipefail") &&
+    workflowText.includes("groundatlas-post-publish-dogfood.json") &&
+    workflowText.includes("name: groundatlas-release-evidence"),
+  "Release workflow must upload npm readback and post-publish dogfood evidence artifacts.",
+);
+assert(
+  workflowText.includes("GROUNDATLAS_DOGFOOD_PACKAGE_SPEC") &&
+    workflowText.includes("GROUNDATLAS_DOGFOOD_REPORT_PATH") &&
+    workflowText.includes("--expect-post-publish"),
+  "Release workflow must assert post-publish npm-registry dogfood evidence.",
+);
+assert(
+  workflowText.includes("path: .dogfood-targets/groundatlas-release") &&
+    workflowText.includes(githubShaRefLine),
+  "Release post-publish dogfood must use a fresh checkout at the release commit.",
+);
+assert(
   workflowText.includes("npm publish --access public --provenance"),
   "Release workflow must publish with npm provenance.",
 );
 assert(
   workflowText.includes("if: startsWith(github.ref, 'refs/tags/v')") &&
-    (workflowText.match(/if: startsWith\(github\.ref, 'refs\/tags\/v'\)/g) ?? []).length >= 2,
-  "Release workflow publish and readback must stay tag-gated.",
+    (workflowText.match(/if: startsWith\(github\.ref, 'refs\/tags\/v'\)/g) ?? []).length >= 5 &&
+    workflowText.includes("if: always() && startsWith(github.ref, 'refs/tags/v')"),
+  "Release workflow publish, readback, post-publish dogfood, and release evidence upload must stay tag-gated.",
 );
 assert(
   workflowText.includes(releaseTagEnvLine),

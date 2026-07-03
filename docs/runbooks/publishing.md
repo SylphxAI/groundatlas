@@ -25,6 +25,8 @@ As of the first publish-prep pass:
 6. Run a copied-repository package pilot with
    `GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@X.Y.Z bun run dogfood:external`
    before claiming fleet package adoption.
+7. Preserve the `groundatlas-release-evidence` workflow artifact containing
+   `groundatlas-npm-readback.json` and `groundatlas-post-publish-dogfood.json`.
 
 ## Trusted publishing setup
 
@@ -90,6 +92,14 @@ The release workflow runs:
 The registry readback emits machine-readable evidence including version,
 integrity, tarball URL, `gitHead`, expected Git commit, and installed-package
 smoke results. In GitHub Actions, `gitHead` must match `GITHUB_SHA`.
+
+On tag runs, the release workflow then installs the just-published npm package
+into the external dogfood pilot and writes
+`groundatlas-post-publish-dogfood.json`. The assertion requires
+`claimBoundary: "post-publish-package-pilot"`,
+`groundatlasPackageSource: "npm-registry"`, `packagePublished: true`, adopted
+fleet status, neutral manifest selection, Doctrine adapter reporting, and no
+mutation of the checked-out target repository.
 
 Workflow dispatch is dry-run/preflight only. Publishing requires a version tag so
 the release path is auditable and reproducible.
