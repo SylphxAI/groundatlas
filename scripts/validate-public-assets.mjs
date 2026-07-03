@@ -60,6 +60,23 @@ if (!readme.includes("Open-source promise")) {
 if (!website.includes("Vendor-neutral by design")) {
   errors.push("Website must explain the vendor-neutral position.");
 }
+for (const requiredWebsiteLink of [
+  "https://github.com/SylphxAI/groundatlas#readme",
+  "https://github.com/SylphxAI/groundatlas/blob/main/docs/guides/user-guide.md",
+  "https://github.com/SylphxAI/groundatlas/blob/main/docs/guides/agent-guide.md",
+  "https://github.com/SylphxAI/groundatlas/blob/main/docs/guides/manifest-guide.md",
+  "https://github.com/SylphxAI/groundatlas/blob/main/schemas/project.manifest.schema.json",
+]) {
+  if (!website.includes(requiredWebsiteLink)) {
+    errors.push(`Website missing required public link: ${requiredWebsiteLink}`);
+  }
+}
+if (!website.includes("After npm registry publish/readback")) {
+  errors.push("Website install snippet must not claim npm installation before registry readback.");
+}
+if (!readme.includes("https://sylphxai.github.io/groundatlas/")) {
+  errors.push("README must expose the public website URL.");
+}
 
 if (errors.length > 0) {
   console.error(errors.map((error) => `- ${error}`).join("\n"));

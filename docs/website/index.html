@@ -58,10 +58,11 @@
       <nav>
         <div class="brand">GroundAtlas</div>
         <div class="nav-links">
-          <a href="../../README.md">README</a>
-          <a href="../guides/user-guide.md">User guide</a>
-          <a href="../guides/agent-guide.md">Agent guide</a>
-          <a href="../specs/open-source-strategy.md">Strategy</a>
+          <a href="https://github.com/SylphxAI/groundatlas#readme">README</a>
+          <a href="https://github.com/SylphxAI/groundatlas/blob/main/docs/guides/user-guide.md">User guide</a>
+          <a href="https://github.com/SylphxAI/groundatlas/blob/main/docs/guides/agent-guide.md">Agent guide</a>
+          <a href="https://github.com/SylphxAI/groundatlas/blob/main/docs/guides/manifest-guide.md">Manifest guide</a>
+          <a href="https://github.com/SylphxAI/groundatlas/blob/main/schemas/project.manifest.schema.json">Schema</a>
         </div>
       </nav>
       <div class="hero">
@@ -72,19 +73,20 @@
             GroundAtlas maps canonical files, generated context, freshness, and change routes so teams can onboard faster without turning AI-written prose into a second source of truth.
           </p>
           <div class="actions">
-            <a class="button primary" href="../../README.md">Start with the README</a>
-            <a class="button" href="../guides/manifest-guide.md">Project control file</a>
+            <a class="button primary" href="https://github.com/SylphxAI/groundatlas#readme">Start with the README</a>
+            <a class="button" href="https://github.com/SylphxAI/groundatlas/blob/main/docs/guides/user-guide.md">User guide</a>
+            <a class="button" href="https://github.com/SylphxAI/groundatlas/blob/main/schemas/project.manifest.schema.json">Schema</a>
             <a class="button" href="https://github.com/SylphxAI/groundatlas">GitHub</a>
           </div>
         </div>
         <div class="card">
-          <pre><code>npm install -g groundatlas
-cd your-repo
-ga init
-ga update
-ga audit
-ga explain "release workflow"
-ga impact --since main</code></pre>
+          <pre><code># After npm registry publish/readback:
+npm install -g groundatlas
+
+# From source today:
+bun install
+bun run build
+node dist/cli.js fleet . --require-atlas</code></pre>
         </div>
       </div>
     </header>
@@ -125,6 +127,7 @@ ga impact --since main</code></pre>
           <li>No network or model key required for core functionality.</li>
           <li>Generated output is deletable and non-authoritative.</li>
           <li>Future AI features must cite source-owned truth.</li>
+          <li>Npm install is advertised only after registry readback succeeds.</li>
         </ul>
       </section>
     </main>
