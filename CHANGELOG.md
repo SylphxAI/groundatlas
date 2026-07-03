@@ -24,5 +24,7 @@
 - Composite-action packed-tarball smoke plus exact action/package version
   defaulting, so pre-publish action evidence cannot bypass package behavior or
   drift through `groundatlas@latest`.
+- Stable generated-output rewrites when source freshness is unchanged, enabling
+  tracked `.groundatlas/**` CI diff gates without timestamp-only churn.
 - Release workflow prepared for npm provenance publishing once trusted publishing
   or npm credentials are configured.

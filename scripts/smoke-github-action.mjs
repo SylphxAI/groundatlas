@@ -10,10 +10,15 @@ const tempRoot = await mkdtemp(path.join(tmpdir(), "groundatlas-action-smoke-"))
 const packDir = path.join(tempRoot, "package");
 const runnerTemp = path.join(tempRoot, "runner");
 const fixtureCopy = path.join(tempRoot, "fixture-basic");
+const trackedFixtureCopy = path.join(tempRoot, "fixture-tracked-output");
 
 await mkdir(packDir, { recursive: true });
 await mkdir(runnerTemp, { recursive: true });
 await cp(path.join(root, "test", "fixtures", "basic"), fixtureCopy, {
+  recursive: true,
+  force: true,
+});
+await cp(path.join(root, "test", "fixtures", "basic"), trackedFixtureCopy, {
   recursive: true,
   force: true,
 });
@@ -48,35 +53,14 @@ if (!tarballName) {
 }
 const tarballPath = path.join(packDir, tarballName);
 
-const smoke = spawnSync("bash", ["-c", runBlock], {
-  cwd: root,
-  encoding: "utf8",
-  env: {
-    ...process.env,
-    GROUNDATLAS_PACKAGE_SPEC: tarballPath,
-    GROUNDATLAS_WORKING_DIRECTORY: fixtureCopy,
-    GROUNDATLAS_OUTPUT_DIR: ".groundatlas-action-smoke",
-    GROUNDATLAS_UPDATE: "true",
-    GROUNDATLAS_REQUIRE_ATLAS: "true",
-    GROUNDATLAS_STRICT: "false",
-    GROUNDATLAS_FAIL_ON_DIFF: "false",
-    RUNNER_TEMP: runnerTemp,
-  },
+const smoke = runAction({
+  packageSpec: tarballPath,
+  workingDirectory: fixtureCopy,
+  outputDir: ".groundatlas-action-smoke",
+  failOnDiff: false,
 });
 
-if (smoke.status !== 0) {
-  throw new Error(
-    [
-      "GitHub Action smoke failed.",
-      `packageSpec=${tarballPath}`,
-      `fixture=${fixtureCopy}`,
-      smoke.stdout,
-      smoke.stderr,
-    ]
-      .filter(Boolean)
-      .join("\n"),
-  );
-}
+assertActionPassed(smoke, "GitHub Action smoke failed.", fixtureCopy);
 
 const output = `${smoke.stdout}\n${smoke.stderr}`;
 for (const required of [
@@ -96,6 +80,40 @@ if (!tarballName.includes(`${packageJson.version}.tgz`)) {
   );
 }
 
+const trackedSeed = runAction({
+  packageSpec: tarballPath,
+  workingDirectory: trackedFixtureCopy,
+  outputDir: ".groundatlas",
+  failOnDiff: false,
+});
+assertActionPassed(
+  trackedSeed,
+  "GitHub Action tracked-output seed smoke failed.",
+  trackedFixtureCopy,
+);
+for (const args of [
+  ["init", "-b", "main"],
+  ["add", "."],
+  ["-c", "user.email=test@example.com", "-c", "user.name=Test", "commit", "-m", "seed"],
+]) {
+  const git = spawnSync("git", args, { cwd: trackedFixtureCopy, encoding: "utf8" });
+  if (git.status !== 0) {
+    throw new Error(`git ${args.join(" ")} failed:\n${git.stderr || git.stdout}`);
+  }
+}
+
+const trackedDiffGate = runAction({
+  packageSpec: tarballPath,
+  workingDirectory: trackedFixtureCopy,
+  outputDir: ".groundatlas",
+  failOnDiff: true,
+});
+assertActionPassed(
+  trackedDiffGate,
+  "GitHub Action fail-on-diff tracked-output smoke failed.",
+  trackedFixtureCopy,
+);
+
 console.log(
   JSON.stringify(
     {
@@ -103,7 +121,9 @@ console.log(
       packageSpec: tarballPath,
       packageVersion: packageJson.version,
       fixture: fixtureCopy,
+      trackedFixture: trackedFixtureCopy,
       outputDir: ".groundatlas-action-smoke",
+      trackedOutputDiffGate: "passed",
     },
     null,
     2,
@@ -121,4 +141,31 @@ function extractRunBlock(actionText) {
     block.push(line.startsWith("        ") ? line.slice(8) : "");
   }
   return block.join("\n");
+}
+
+function runAction({ packageSpec, workingDirectory, outputDir, failOnDiff }) {
+  return spawnSync("bash", ["-c", runBlock], {
+    cwd: root,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      GROUNDATLAS_PACKAGE_SPEC: packageSpec,
+      GROUNDATLAS_WORKING_DIRECTORY: workingDirectory,
+      GROUNDATLAS_OUTPUT_DIR: outputDir,
+      GROUNDATLAS_UPDATE: "true",
+      GROUNDATLAS_REQUIRE_ATLAS: "true",
+      GROUNDATLAS_STRICT: "false",
+      GROUNDATLAS_FAIL_ON_DIFF: failOnDiff ? "true" : "false",
+      RUNNER_TEMP: runnerTemp,
+    },
+  });
+}
+
+function assertActionPassed(result, message, fixture) {
+  if (result.status === 0) return;
+  throw new Error(
+    [message, `packageSpec=${tarballPath}`, `fixture=${fixture}`, result.stdout, result.stderr]
+      .filter(Boolean)
+      .join("\n"),
+  );
 }

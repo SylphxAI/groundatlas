@@ -94,3 +94,5 @@ in source files, docs, manifests, and tests.
 
 If a downstream repository chooses to commit generated maps, its CI must run
 `ga update` and then `ga audit` so stale tracked output cannot pass quietly.
+GroundAtlas must not create timestamp-only churn in that path: unchanged source
+freshness fingerprints preserve volatile generated-at/git metadata.
