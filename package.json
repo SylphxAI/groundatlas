@@ -29,6 +29,7 @@
   },
   "files": [
     "dist",
+    "action.yml",
     "project.manifest.json",
     "examples",
     "schemas",
@@ -44,7 +45,7 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/fix-shebang.mjs",
-    "check": "bun run typecheck && bun test && biome check . && bun run validate:manifest && bun run validate:public-assets && bun run build && node dist/cli.js --help && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js fleet . --require-atlas --json && bun run pack:dry-run && bun run pack:smoke",
+    "check": "bun run typecheck && bun test && biome check . && bun run validate:manifest && bun run validate:public-assets && bun run validate:github-action && bun run build && node dist/cli.js --help && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js fleet . --require-atlas --json && bun run smoke:github-action && bun run pack:dry-run && bun run pack:smoke",
     "validate:manifest": "bun scripts/validate-project-manifest.mjs",
     "dev": "bun run src/cli.ts",
     "format": "biome format --write .",
@@ -59,6 +60,8 @@
     "release:preflight": "node scripts/verify-release-version.mjs && node scripts/npm-registry-preflight.mjs && bun run check",
     "release:readback": "node scripts/npm-registry-readback.mjs",
     "validate:public-assets": "node scripts/validate-public-assets.mjs",
+    "validate:github-action": "node scripts/validate-github-action.mjs",
+    "smoke:github-action": "node scripts/smoke-github-action.mjs",
     "dogfood:external": "node scripts/dogfood-external-repo.mjs"
   },
   "devDependencies": {

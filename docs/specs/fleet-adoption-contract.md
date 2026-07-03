@@ -58,6 +58,11 @@ A useful fleet gate must be machine-checkable:
 - fail when `atlas.json` uses the wrong schema version;
 - fail when the atlas records error-level source risks;
 - fail when `ga fleet . --require-atlas --json` reports `blocked`;
+- expose the same checks through the reusable GitHub Action gate after npm
+  publish/readback, so downstream repos can adopt the gate without copying
+  project-local scripts;
+- keep the action tag and npm package spec pinned to the same released version;
+  `groundatlas@latest` is not acceptable for commercial CI provenance;
 - warn, then later fail, on missing specs/ADRs/tests/CI/security as each repo
   reaches commercial-grade lifecycle.
 

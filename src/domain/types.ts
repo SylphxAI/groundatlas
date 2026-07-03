@@ -24,6 +24,7 @@ export type SourceKind =
   | "design-doc"
   | "documentation"
   | "generated-map"
+  | "github-action"
   | "license"
   | "package-manifest"
   | "project-manifest"
@@ -76,7 +77,7 @@ export type ValidationCommand = {
 
 export type PublicSurface = {
   name: string;
-  type: "cli" | "docs" | "manifest" | "package" | "schema" | "workflow";
+  type: "cli" | "docs" | "github-action" | "manifest" | "package" | "schema" | "workflow";
   path: string;
 };
 

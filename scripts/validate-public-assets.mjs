@@ -7,10 +7,12 @@ const requiredFiles = [
   "docs/guides/dx-guide.md",
   "docs/guides/agent-guide.md",
   "docs/guides/manifest-guide.md",
+  "docs/guides/github-action.md",
   "docs/specs/open-source-strategy.md",
   "docs/specs/control-plane-business-case.md",
   "docs/specs/multi-project-control-plane.md",
   "docs/website/index.html",
+  "action.yml",
 ];
 
 const errors = [];
@@ -76,6 +78,9 @@ if (!website.includes("After npm registry publish/readback")) {
 }
 if (!readme.includes("https://sylphxai.github.io/groundatlas/")) {
   errors.push("README must expose the public website URL.");
+}
+if (!readme.includes("GitHub Action gate")) {
+  errors.push("README must mention the GitHub Action gate.");
 }
 
 if (errors.length > 0) {

@@ -56,6 +56,7 @@ const SURFACE_TYPES = new Set([
   "package",
   "docs",
   "schema",
+  "github-action",
   "workflow",
   "service",
   "website",
