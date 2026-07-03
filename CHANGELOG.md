@@ -33,3 +33,5 @@
   for vendor-neutral manifest/adaptor validation before full fleet adoption.
 - Release workflow prepared for npm provenance publishing once trusted publishing
   or npm credentials are configured.
+- Node 24-compatible GitHub workflow/action references plus workflow contract
+  validation for release, CI, Pages, and artifact-upload examples.

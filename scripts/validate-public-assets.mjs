@@ -13,6 +13,9 @@ const requiredFiles = [
   "docs/specs/multi-project-control-plane.md",
   "docs/website/index.html",
   "action.yml",
+  "scripts/validate-github-action.mjs",
+  "scripts/validate-workflows.mjs",
+  "scripts/smoke-github-action.mjs",
 ];
 
 const errors = [];
@@ -85,6 +88,12 @@ if (!readme.includes("GitHub Action gate")) {
 }
 if (!readme.includes("manifest-report-path") || !readme.includes("fleet-report-path")) {
   errors.push("README must document GitHub Action manifest/fleet report paths.");
+}
+
+if (!readme.includes("actions/upload-artifact@v5")) {
+  errors.push(
+    "README must use Node 24-compatible upload-artifact@v5 in the GitHub Action example.",
+  );
 }
 if (!readme.includes("ga manifest")) {
   errors.push("README must mention standalone manifest validation.");
