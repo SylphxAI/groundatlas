@@ -111,6 +111,27 @@ test("writeAtlas creates generated files with non-SSOT banner and audit passes",
   expect(audit.ok).toBe(true);
 });
 
+test("writeAtlas keeps generated output stable when source freshness is unchanged", async () => {
+  const config = await ensureConfig(fixtureRoot);
+  const firstAtlas = await scanRepository({
+    cwd: fixtureRoot,
+    outputDir: config.outputDir,
+    now: new Date("2026-01-01T00:00:00Z"),
+  });
+  await writeAtlas(path.join(fixtureRoot, config.outputDir), firstAtlas);
+  const firstJson = await readFile(path.join(fixtureRoot, config.outputDir, "atlas.json"), "utf8");
+
+  const secondAtlas = await scanRepository({
+    cwd: fixtureRoot,
+    outputDir: config.outputDir,
+    now: new Date("2026-01-02T00:00:00Z"),
+  });
+  await writeAtlas(path.join(fixtureRoot, config.outputDir), secondAtlas);
+  const secondJson = await readFile(path.join(fixtureRoot, config.outputDir, "atlas.json"), "utf8");
+
+  expect(secondJson).toBe(firstJson);
+});
+
 test("audit fails when generated banner is missing", async () => {
   await mkdir(path.join(fixtureRoot, ".groundatlas"), { recursive: true });
   await Bun.write(

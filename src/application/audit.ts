@@ -90,7 +90,7 @@ async function auditFreshness(cwd: string, outputDir: string, atlas: AtlasMap): 
   }
 }
 
-function freshnessFingerprint(atlas: AtlasMap): string {
+export function freshnessFingerprint(atlas: AtlasMap): string {
   return JSON.stringify({
     schemaVersion: atlas.schemaVersion,
     generator: atlas.generator,

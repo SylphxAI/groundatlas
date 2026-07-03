@@ -76,4 +76,7 @@ dogfooding proof aligned with the package users actually install.
 - Do not use `groundatlas@latest` for commercial CI gates; pin the action tag and
   package spec to the same released version.
 - `ga audit` is the primary freshness gate. `fail-on-diff` is only for
-  repositories that intentionally track or unignore generated output.
+  repositories that intentionally track or unignore generated output. `ga update`
+  preserves volatile generated-at/git metadata when the source freshness
+  fingerprint is unchanged, so tracked output can be diff-checked without a
+  timestamp-only failure.

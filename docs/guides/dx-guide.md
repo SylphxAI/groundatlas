@@ -21,6 +21,10 @@ If a repo commits `.groundatlas/**`, CI should fail when `ga update` changes the
 tracked generated output. If a repo ignores `.groundatlas/**`, CI should still run
 `ga update && ga audit` so stale local maps cannot hide drift.
 
+`ga update` preserves volatile generated-at/git metadata when the source
+freshness fingerprint is unchanged, so committed generated maps should not churn
+from timestamps alone.
+
 ## PR workflow
 
 ```sh
