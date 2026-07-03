@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 
-import { inspectMachineProjectManifest } from "../src/application/projectManifest.ts";
+import { validateProjectManifestFile } from "../src/application/projectManifest.ts";
 
 const doctrineManifest = JSON.parse(await readFile(".doctrine/project.json", "utf8"));
 const errors = [];
@@ -10,7 +10,7 @@ function assert(condition, message) {
 }
 
 async function assertManifestValid(path) {
-  const report = await inspectMachineProjectManifest(process.cwd(), new Set([path]));
+  const report = await validateProjectManifestFile(path, path);
   if (!report.valid) {
     for (const issue of report.issues) {
       errors.push(issue.message);

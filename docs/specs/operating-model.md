@@ -49,6 +49,8 @@ Generated maps link to those homes. They do not override them.
   and is fresh against the current scan.
 - `ga explain` / `ga query` finds relevant source entries for a topic.
 - `ga impact --since <ref>` maps changed files to atlas entries.
+- `ga manifest [path]` validates a neutral project manifest or recognized
+  adapter without writing generated maps.
 - `ga fleet` / `ga inventory` / `ga score` reports adopted/warning/blocked
   dogfooding status across local repository checkouts.
 

@@ -14,16 +14,19 @@ it.
    `.doctrine/project.json` adapter.
 5. Build the CLI.
 6. Run `node dist/cli.js --help`.
-7. Run `node dist/cli.js update` on this repository.
-8. Run `node dist/cli.js audit` on the generated map, including schema,
+7. Run `node dist/cli.js manifest project.manifest.json --json` so the neutral
+   project manifest is validated without generating maps.
+8. Run `node dist/cli.js update` on this repository.
+9. Run `node dist/cli.js audit` on the generated map, including schema,
    generated/non-SSOT banners, source-owned error risks, and freshness.
-9. Run `node dist/cli.js fleet . --require-atlas --json` so GroundAtlas reports
+10. Run `node dist/cli.js fleet . --require-atlas --json` so GroundAtlas reports
    its own adopted/warning/blocked status through the same machine surface that
    downstream repositories will use.
-10. Run package dry-run checks before publish workflows.
-11. Install the packed tarball in a clean temp project and run imported library
-    plus installed CLI smoke tests, including `ga fleet --require-atlas --json`
-    against a fixture with both neutral manifest and Doctrine adapter.
+11. Run package dry-run checks before publish workflows.
+12. Install the packed tarball in a clean temp project and run imported library
+    plus installed CLI smoke tests, including `groundatlas/manifest`,
+    `ga manifest`, and `ga fleet --require-atlas --json` against a fixture with
+    both neutral manifest and Doctrine adapter.
 
 ## External source-checkout pilot
 
@@ -45,6 +48,7 @@ The evidence explicitly reports:
 - `claimBoundary: "pre-npm-pilot-only"`;
 - whether the npm package is published;
 - detected project manifest and agent adapter;
+- standalone manifest validation result for the detected manifest or adapter;
 - scan/audit/fleet command results;
 - original repository status before and after.
 

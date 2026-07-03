@@ -57,7 +57,12 @@ try {
   console.log(JSON.stringify(evidence, null, 2));
 
   const failed = evidence.repositories.some(
-    (repo) => repo.mutatedOriginalRepo || !repo.auditOk || !repo.scanOk || !repo.fleetCommandOk,
+    (repo) =>
+      repo.mutatedOriginalRepo ||
+      !repo.auditOk ||
+      !repo.scanOk ||
+      !repo.manifestValidationOk ||
+      !repo.fleetCommandOk,
   );
   process.exitCode = failed ? 1 : 0;
 } finally {
@@ -161,6 +166,22 @@ async function dogfoodRepository({ repoInput, tmpRoot, groundatlasBin, gaBin, in
   const originalStatusAfter = gitStatus(repoInput);
   const mutatedOriginalRepo = originalStatusBefore !== originalStatusAfter;
   const sourcePaths = new Set(scan.sources.map((source) => source.path));
+  const detectedProjectManifest =
+    [...sourcePaths].find((sourcePath) =>
+      [
+        "project.manifest.json",
+        "groundatlas.project.json",
+        ".project/manifest.json",
+        ".doctrine/project.json",
+      ].includes(sourcePath),
+    ) ?? null;
+  const manifestValidation = detectedProjectManifest
+    ? JSON.parse(
+        run(gaBin, ["manifest", detectedProjectManifest, "--cwd", targetCopy, "--json"], {
+          cwd: installRoot,
+        }),
+      )
+    : null;
 
   return {
     targetRepo: repoInput,
@@ -175,19 +196,13 @@ async function dogfoodRepository({ repoInput, tmpRoot, groundatlasBin, gaBin, in
     outputDir,
     scanOk: scan.schemaVersion === 2,
     auditOk: audit.ok === true,
+    manifestValidationOk: manifestValidation?.report?.valid === true,
     fleetCommandOk: fleetResult.status === 0 || fleetResult.status === 1,
     mutatedOriginalRepo,
     originalRepoStatusBefore: originalStatusBefore,
     originalRepoStatusAfter: originalStatusAfter,
-    detectedProjectManifest:
-      [...sourcePaths].find((sourcePath) =>
-        [
-          "project.manifest.json",
-          "groundatlas.project.json",
-          ".project/manifest.json",
-          ".doctrine/project.json",
-        ].includes(sourcePath),
-      ) ?? null,
+    detectedProjectManifest,
+    manifestValidation: manifestValidation?.report ?? null,
     detectedAgentAdapter:
       [...sourcePaths].find((sourcePath) =>
         ["AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md", ".cursor/rules"].includes(

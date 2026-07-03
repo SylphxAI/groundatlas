@@ -5,6 +5,7 @@ export type CommandName =
   | "help"
   | "impact"
   | "init"
+  | "manifest"
   | "scan"
   | "update"
   | "version";
@@ -115,6 +116,7 @@ function normalizeCommand(command: string | undefined): CommandName {
     case "fleet":
     case "impact":
     case "init":
+    case "manifest":
     case "scan":
     case "update":
       return command;

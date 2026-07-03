@@ -35,15 +35,17 @@ as an internal adapter, but GroundAtlas public adoption must stay vendor-neutral
 2. Install or run GroundAtlas from the published package once npm registry
    readback exists. Until then, use the repository checkout only for dogfooding
    and do not claim fleet package adoption complete.
-3. Run `ga init` if the repo has no config.
-4. Run `ga update` to generate `.groundatlas/**`.
-5. Run `ga audit` locally.
-6. Run `ga fleet <repo> --require-atlas --json` to produce a machine-readable
+3. Run `ga manifest project.manifest.json --json` or validate the recognized
+   adapter path to prove project metadata before generating maps.
+4. Run `ga init` if the repo has no config.
+5. Run `ga update` to generate `.groundatlas/**`.
+6. Run `ga audit` locally.
+7. Run `ga fleet <repo> --require-atlas --json` to produce a machine-readable
    adopted/warning/blocked report.
-7. Add `ga update && ga audit && ga fleet . --require-atlas` or an equivalent package script to CI only after
+8. Add `ga update && ga audit && ga fleet . --require-atlas` or an equivalent package script to CI only after
    the generated output is reproducible and the repo has clear ownership of all
    required truth homes.
-8. Do not manually edit `.groundatlas/**`; change canonical sources and regenerate.
+9. Do not manually edit `.groundatlas/**`; change canonical sources and regenerate.
 
 ## CI gate policy
 

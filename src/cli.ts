@@ -9,9 +9,14 @@ import { explainQuery } from "./application/explain.js";
 import { inspectFleet } from "./application/fleet.js";
 import { writeAtlas } from "./application/generate.js";
 import { analyzeImpact } from "./application/impact.js";
+import {
+  inspectMachineProjectManifests,
+  validateProjectManifestFile,
+} from "./application/projectManifest.js";
 import { scanRepository } from "./application/scan.js";
 import { parseArgs } from "./cli/args.js";
 import { helpText } from "./cli/help.js";
+import type { MachineManifestReport } from "./domain/types.js";
 import {
   renderFleetReport,
   renderImpact,
@@ -43,6 +48,37 @@ async function main(argv: string[]): Promise<number> {
     console.log(`GroundAtlas initialized ${config.outputDir}/`);
     for (const file of written) console.log(`- ${path.relative(cwd, file)}`);
     return atlas.risks.some((risk) => risk.severity === "error") ? 1 : 0;
+  }
+
+  if (args.command === "manifest") {
+    const manifestValues = args.values[0] === "validate" ? args.values.slice(1) : args.values;
+    if (manifestValues.length > 1) throw new Error("manifest accepts at most one path.");
+    const target = manifestValues[0];
+    if (target) {
+      const absoluteTarget = path.resolve(cwd, target);
+      const report = await validateProjectManifestFile(absoluteTarget, target);
+      if (args.json) {
+        console.log(JSON.stringify({ schemaVersion: 1, report }, null, 2));
+      } else {
+        console.log(renderManifestReport(report));
+      }
+      return report.valid ? 0 : 1;
+    }
+
+    const config = await loadConfig(cwd, args.outputDir);
+    const atlas = await scanRepository({ cwd, outputDir: config.outputDir });
+    const inspection = await inspectMachineProjectManifests(
+      cwd,
+      new Set(atlas.sources.map((source) => source.path)),
+    );
+    if (args.json) {
+      console.log(JSON.stringify({ schemaVersion: 1, ...inspection }, null, 2));
+    } else if (inspection.discovered.length === 0) {
+      console.error("No machine project manifest discovered.");
+    } else {
+      console.log(inspection.discovered.map(renderManifestReport).join("\n\n"));
+    }
+    return inspection.selected.valid ? 0 : 1;
   }
 
   const config = await loadConfig(cwd, args.outputDir);
@@ -119,6 +155,14 @@ async function main(argv: string[]): Promise<number> {
   }
 
   return 1;
+}
+
+function renderManifestReport(report: MachineManifestReport): string {
+  const adapter = report.adapter ? " adapter" : "";
+  const status = report.valid ? "valid" : "invalid";
+  const summary = `${status} ${report.kind ?? "manifest"}${adapter}: ${report.path ?? "none"}`;
+  if (report.issues.length === 0) return summary;
+  return `${summary}\n${renderRisks(report.issues)}`;
 }
 
 main(process.argv.slice(2))

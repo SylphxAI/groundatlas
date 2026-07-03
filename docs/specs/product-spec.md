@@ -42,12 +42,14 @@ and ready to become the substrate for optional AI/citation features.
    source-owned error risks, and freshness against the current scan.
 5. `ga explain <query>` finds source-grounded files related to a topic.
 6. `ga impact --since <ref>` maps changed files to known sources.
-7. `ga fleet [paths...]` reports adopted/warning/blocked dogfooding status
+7. `ga manifest [path]` validates a neutral project manifest or recognized
+   adapter without generating maps.
+8. `ga fleet [paths...]` reports adopted/warning/blocked dogfooding status
    across one or more local repository checkouts and validates neutral project
    manifests before accepting a repo as adopted.
-8. `groundatlas` library exports scanner, audit, explain, impact, fleet, and
-   renderer primitives.
-9. Release workflow performs npm dry-run and is ready for provenance publish.
+9. `groundatlas` and `groundatlas/manifest` library exports expose scanner,
+   audit, explain, impact, fleet, manifest-validation, and renderer primitives.
+10. Release workflow performs npm dry-run and is ready for provenance publish.
 
 ## Invariants
 
@@ -70,5 +72,7 @@ and ready to become the substrate for optional AI/citation features.
 - `ga scan --json` exposes the truth model and orientation route.
 - `ga explain` returns source entries with paths and reasons.
 - `ga impact --since <ref>` returns a deterministic table or JSON.
+- `ga manifest project.manifest.json --json` validates the neutral project
+  manifest without requiring generated maps.
 - `ga fleet . --require-atlas --json` reports GroundAtlas self-dogfooding
   without reading generated maps as source truth.

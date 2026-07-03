@@ -22,6 +22,33 @@ GroundAtlas treats `project.manifest.json` as the public, vendor-neutral
 contract. Ecosystem files such as `.doctrine/project.json` are adapters: they can
 prove a local repo is discoverable, but they are not the public default.
 
+## Standalone validation
+
+Validate one manifest without generating `.groundatlas/**`:
+
+```sh
+ga manifest project.manifest.json --json
+ga manifest validate .doctrine/project.json --json
+```
+
+The explicit-path JSON shape is:
+
+```json
+{ "schemaVersion": 1, "report": { "path": "project.manifest.json", "valid": true } }
+```
+
+Running without a path discovers the repository's manifests and preserves the
+same priority as `ga fleet`: neutral manifests first, ecosystem adapters second.
+That JSON shape is:
+
+```json
+{ "schemaVersion": 1, "selected": {}, "discovered": [], "adapters": [] }
+```
+
+The command is intentionally read-only. It is the first public validator surface
+for the future vendor-neutral manifest/control-plane library; it does not make
+GroundAtlas the SSOT for project identity.
+
 ## Minimal example
 
 ```json
@@ -69,6 +96,9 @@ The manifest is intentionally small. It should point to truth homes, not copy al
 truth into one file.
 
 ## Validation in fleet gates
+
+`ga manifest` validates one file, while `ga fleet` validates the selected
+manifest and adapters as part of a repository adoption report.
 
 `ga fleet` validates the neutral manifest shape when it sees
 `project.manifest.json`, `groundatlas.project.json`, or `.project/manifest.json`.

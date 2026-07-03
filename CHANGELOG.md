@@ -26,5 +26,7 @@
   drift through `groundatlas@latest`.
 - Stable generated-output rewrites when source freshness is unchanged, enabling
   tracked `.groundatlas/**` CI diff gates without timestamp-only churn.
+- Standalone `ga manifest` command plus `groundatlas/manifest` package subpath
+  for vendor-neutral manifest/adaptor validation before full fleet adoption.
 - Release workflow prepared for npm provenance publishing once trusted publishing
   or npm credentials are configured.

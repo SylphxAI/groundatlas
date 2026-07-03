@@ -7,6 +7,8 @@ export { analyzeImpact } from "./application/impact.js";
 export {
   inspectMachineProjectManifest,
   inspectMachineProjectManifests,
+  validateMachineProjectManifestFile,
+  validateProjectManifestFile,
 } from "./application/projectManifest.js";
 export { scanRepository } from "./application/scan.js";
 export { classifySource } from "./domain/classify.js";

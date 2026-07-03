@@ -9,6 +9,7 @@ pages or asking an AI agent to guess.
 npm install -g groundatlas
 cd your-repo
 ga init
+ga manifest project.manifest.json --json
 ga update
 ga audit
 ```
@@ -22,10 +23,12 @@ of claiming public package installation.
 2. Open `.groundatlas/README.md` for the generated start-here map.
 3. Inspect the linked canonical files before making decisions.
 4. Run `ga explain "topic"` to find likely owning files.
-5. Run `ga impact --since main` before reviewing a pull request.
-6. Run `ga fleet . --require-atlas` to check adopted/warning/blocked
+5. Run `ga manifest project.manifest.json --json` when changing project
+   identity, surfaces, commands, or adoption state.
+6. Run `ga impact --since main` before reviewing a pull request.
+7. Run `ga fleet . --require-atlas` to check adopted/warning/blocked
    dogfooding status.
-7. Run `ga audit` in CI to catch stale generated maps and missing non-SSOT
+8. Run `ga audit` in CI to catch stale generated maps and missing non-SSOT
    boundaries.
 
 ## Mental model

@@ -25,7 +25,8 @@
       "Run bounded source-checkout dogfood pilots against copied target repositories before claiming npm-based fleet adoption.",
       "Publish the static landing page through GitHub Pages with least-privilege workflow permissions and no repository secrets.",
       "Validate neutral project manifests in fleet dogfooding gates while reporting ecosystem manifests as adapters.",
-      "Expose a reusable GitHub Action gate for downstream update/audit/fleet adoption after npm publish and version-tag readback."
+      "Expose a reusable GitHub Action gate for downstream update/audit/fleet adoption after npm publish and version-tag readback.",
+      "Expose read-only standalone manifest validation through the CLI and a public package subpath without making GroundAtlas the manifest SSOT."
     ],
     "nonGoals": [
       "Own or replace downstream project truth such as ADRs, specs, schemas, tests, manifests, workflows, release proof, or source code.",
@@ -62,6 +63,11 @@
       {
         "name": "freshness-audit-fingerprint",
         "description": "Non-secret source fingerprint comparison that fails stale generated maps."
+      },
+      {
+        "type": "package",
+        "name": "Manifest validator source",
+        "location": "src/manifest.ts"
       }
     ],
     "doesNotOwn": [
@@ -236,6 +242,12 @@
         "type": "script",
         "name": "GitHub Action smoke",
         "location": "scripts/smoke-github-action.mjs"
+      },
+      {
+        "type": "package-export",
+        "name": "Manifest validator subpath",
+        "location": "package.json exports: ./manifest -> dist/manifest.js",
+        "description": "Read-only public bridge for vendor-neutral project manifest validation before standalone library extraction."
       }
     ],
     "allowedDependencies": [

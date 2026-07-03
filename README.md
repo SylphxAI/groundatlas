@@ -22,6 +22,7 @@ npm install -g groundatlas
 bun install
 bun run build
 node dist/cli.js init
+node dist/cli.js manifest project.manifest.json --json
 node dist/cli.js update
 node dist/cli.js audit
 node dist/cli.js explain "validation commands"
@@ -31,7 +32,9 @@ node dist/cli.js fleet . --require-atlas
 
 The package exposes both `groundatlas` and the short daily-driver command `ga`.
 It also exports a typed library API from `groundatlas` for tools that want to
-consume the scanner, audit, renderer, explain, and impact primitives directly.
+consume the scanner, audit, renderer, explain, impact, and manifest-validation
+primitives directly. The `groundatlas/manifest` subpath is a read-only bridge
+toward a future standalone vendor-neutral manifest library.
 
 ## Why this exists
 
@@ -163,6 +166,8 @@ Product-ready initial CLI/library slice:
 - dependency-free static landing page under `docs/website/`;
 - reusable GitHub Action gate under `action.yml`;
 - `ga init`, `ga update`, `ga scan`, `ga audit`, `ga explain`, `ga impact`;
+- standalone `ga manifest` validation for vendor-neutral project manifests and
+  recognized ecosystem adapters;
 - `ga fleet` / `ga inventory` / `ga score` for adopted/warning/blocked
   dogfooding reports and neutral manifest validation across one or more
   repositories;
@@ -279,10 +284,12 @@ See [Operating Model](./docs/specs/operating-model.md).
 | `ga audit` | Verify generated maps, non-SSOT boundary, schema version, error risks, and freshness. |
 | `ga explain <query>` | Find source-grounded files related to a query. |
 | `ga impact --since <ref>` | Map git diff paths to known atlas sources. |
+| `ga manifest [path]` | Validate a vendor-neutral project manifest or recognized adapter without writing generated maps. |
 | `ga fleet [paths...]` | Report adopted/warning/blocked dogfooding status and validate neutral project manifests across one or more repositories. |
 
 Aliases: `ingest` → `scan`; `validate` → `audit`; `query` → `explain`;
-`inventory` / `score` → `fleet`; `map` / `export` → `update`.
+`manifest validate` → `manifest`; `inventory` / `score` → `fleet`; `map` /
+`export` → `update`.
 
 ## Generated output
 
@@ -305,11 +312,12 @@ GroundAtlas dogfoods itself in `bun run check`: it typechecks, tests, lints,
 validates the project manifest, builds the CLI, runs the CLI against this
 repository, audits generated output freshness/non-SSOT policy, verifies npm
 package dry-run, checks its own `ga fleet . --require-atlas` adoption report,
-smoke-runs the reusable GitHub Action against a packed tarball, and
-smoke-installs the packed tarball. The packed-package smoke runs the installed
-CLI against a fixture containing both `project.manifest.json` and
-`.doctrine/project.json`, proving the neutral manifest is selected and the
-Doctrine file stays an adapter.
+validates its own `project.manifest.json` through the standalone manifest
+command, smoke-runs the reusable GitHub Action against a packed tarball, and
+smoke-installs the packed tarball. The packed-package smoke imports both
+`groundatlas` and `groundatlas/manifest`, then runs the installed CLI against a
+fixture containing both `project.manifest.json` and `.doctrine/project.json`,
+proving the neutral manifest is selected and the Doctrine file stays an adapter.
 
 See [Dogfooding Contract](./docs/specs/dogfooding.md).
 
@@ -337,6 +345,8 @@ star-worthy slices are deliberately source-grounded rather than AI-magic-first:
 
 - first npm publication with provenance and registry readback;
 - richer HTML output and hosted docs/site publishing;
+- future extraction of the manifest validator subpath into a standalone
+  vendor-neutral control-plane library once the package/repo name is decided;
 - claim/citation graph with exact source anchors;
 - query answers that cite canonical files, not generated memory;
 - deeper dependency-aware PR impact analysis;

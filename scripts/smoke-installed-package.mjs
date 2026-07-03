@@ -36,9 +36,23 @@ export function smokeInstalledPackage({
         "-e",
         [
           "import('groundatlas').then((m)=>{",
-          "const required=['scanRepository','auditAtlas','inspectFleet','inspectMachineProjectManifest','inspectMachineProjectManifests','ATLAS_SCHEMA_VERSION'];",
+          "const required=['scanRepository','auditAtlas','inspectFleet','inspectMachineProjectManifest','inspectMachineProjectManifests','validateMachineProjectManifestFile','validateProjectManifestFile','ATLAS_SCHEMA_VERSION'];",
           "for (const key of required) if (!m[key]) throw new Error('missing export '+key);",
           "console.log('library exports ok')",
+          "})",
+        ].join(" "),
+      ],
+      { cwd: appDir, stdio: "inherit" },
+    );
+    execFileSync(
+      "node",
+      [
+        "-e",
+        [
+          "import('groundatlas/manifest').then((m)=>{",
+          "const required=['inspectMachineProjectManifest','inspectMachineProjectManifests','validateProjectManifestFile'];",
+          "for (const key of required) if (!m[key]) throw new Error('missing manifest export '+key);",
+          "console.log('manifest exports ok')",
           "})",
         ].join(" "),
       ],
@@ -174,6 +188,15 @@ export function smokeInstalledPackage({
       }
     }
     execFileSync(ga, ["init"], { cwd: repoDir, stdio: "inherit" });
+    const manifest = JSON.parse(
+      execFileSync(ga, ["manifest", "project.manifest.json", "--json"], {
+        cwd: repoDir,
+        encoding: "utf8",
+      }),
+    );
+    if (manifest.report?.valid !== true || manifest.report?.adapter !== false) {
+      throw new Error(`installed package manifest smoke failed: ${JSON.stringify(manifest)}`);
+    }
     execFileSync(ga, ["update"], { cwd: repoDir, stdio: "inherit" });
     execFileSync(ga, ["audit"], { cwd: repoDir, stdio: "inherit" });
     const fleet = JSON.parse(
@@ -214,6 +237,7 @@ export function smokeInstalledPackage({
       installedVersion: installedPackageJson.version,
       fleetStatus: project.status,
       selectedManifest: project.manifest.path,
+      manifestValidation: manifest.report.path,
       adapterPaths: project.manifestAdapters.map((manifest) => manifest.path),
     };
     console.log(JSON.stringify(evidence, null, 2));

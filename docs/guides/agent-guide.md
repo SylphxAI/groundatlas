@@ -22,6 +22,7 @@ as source truth. The generated map is a compass, not the territory.
 
 ```sh
 ga scan --json
+ga manifest project.manifest.json --json
 ga explain "project manifest"
 ga impact --since origin/main
 ga fleet . --require-atlas --json
