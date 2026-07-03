@@ -5,11 +5,15 @@ CLI binaries `groundatlas` and `ga`.
 
 ## Current registry state
 
-As of the first publish-prep pass:
+As of the first publish-prep passes:
 
 - `npm view groundatlas` returns 404: package name is available.
 - `npm view @sylphxai/groundatlas` returns 404: scoped fallback is available.
 - Local workstation `npm whoami` returns `ENEEDAUTH`: no npm identity is present.
+- The `v0.1.0` tag workflow reached `npm publish` but did not create a registry
+  package because npm returned 404/not-authorized for `groundatlas@0.1.0`.
+  Therefore `v0.1.1` is the next first-publish candidate; do not move the
+  already-pushed `v0.1.0` tag.
 
 ## Required release path
 
@@ -42,6 +46,12 @@ Before the first real npm publish, configure npm trusted publishing for:
 If trusted publishing cannot create the first package, use a one-time npm token
 only as a bounded fallback, then immediately move future releases back to OIDC.
 Record the token exception with owner, expiry, and removal path.
+
+The release workflow currently passes the organization `NPM_TOKEN` explicitly to
+`npm publish --provenance` so the first package can be bootstrapped through the
+same CI/CD credential path used by other SylphxAI libraries. Remove the token
+fallback only after npm trusted publishing is configured and a tokenless dry run
+has been proven on a non-production test package or the next release candidate.
 
 ## Local dry run
 

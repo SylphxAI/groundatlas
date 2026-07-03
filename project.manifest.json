@@ -97,7 +97,7 @@
     },
     {
       "name": "release:preflight",
-      "command": "GROUNDATLAS_RELEASE_TAG=v0.1.0 bun run release:preflight",
+      "command": "GROUNDATLAS_RELEASE_TAG=v0.1.1 bun run release:preflight",
       "purpose": "Verify local release readiness before npm publication."
     },
     {

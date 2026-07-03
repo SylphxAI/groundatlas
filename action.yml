@@ -6,7 +6,7 @@ inputs:
   package-spec:
     description: npm package spec to execute. Defaults to the package version paired with this action tag.
     required: false
-    default: groundatlas@0.1.0
+    default: groundatlas@0.1.1
   working-directory:
     description: Repository directory to inspect.
     required: false

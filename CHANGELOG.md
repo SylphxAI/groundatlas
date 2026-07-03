@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 - pending npm publication
+## 0.1.1 - pending npm publication
 
 - Initial GroundAtlas CLI and library package surface.
 - Deterministic source scanner, map renderer, audit gate, explain, and impact
