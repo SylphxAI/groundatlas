@@ -83,6 +83,9 @@ if (!readme.includes("https://sylphxai.github.io/groundatlas/")) {
 if (!readme.includes("GitHub Action gate")) {
   errors.push("README must mention the GitHub Action gate.");
 }
+if (!readme.includes("manifest-report-path") || !readme.includes("fleet-report-path")) {
+  errors.push("README must document GitHub Action manifest/fleet report paths.");
+}
 if (!readme.includes("ga manifest")) {
   errors.push("README must mention standalone manifest validation.");
 }

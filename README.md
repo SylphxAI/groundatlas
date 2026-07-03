@@ -164,7 +164,8 @@ Product-ready initial CLI/library slice:
 - deterministic scanner and atlas JSON;
 - vendor-neutral `project.manifest.json` control file schema and example;
 - dependency-free static landing page under `docs/website/`;
-- reusable GitHub Action gate under `action.yml`;
+- reusable GitHub Action gate under `action.yml` with manifest/fleet JSON report
+  artifacts;
 - `ga init`, `ga update`, `ga scan`, `ga audit`, `ga explain`, `ga impact`;
 - standalone `ga manifest` validation for vendor-neutral project manifests and
   recognized ecosystem adapters;
@@ -313,8 +314,9 @@ validates the project manifest, builds the CLI, runs the CLI against this
 repository, audits generated output freshness/non-SSOT policy, verifies npm
 package dry-run, checks its own `ga fleet . --require-atlas` adoption report,
 validates its own `project.manifest.json` through the standalone manifest
-command, smoke-runs the reusable GitHub Action against a packed tarball, and
-smoke-installs the packed tarball. The packed-package smoke imports both
+command, smoke-runs the reusable GitHub Action against a packed tarball and
+verifies manifest/fleet JSON reports, and smoke-installs the packed tarball. The
+packed-package smoke imports both
 `groundatlas` and `groundatlas/manifest`, then runs the installed CLI against a
 fixture containing both `project.manifest.json` and `.doctrine/project.json`,
 proving the neutral manifest is selected and the Doctrine file stays an adapter.
@@ -399,11 +401,19 @@ GroundAtlas includes a reusable composite action in [`action.yml`](./action.yml)
 After npm publish/readback and a version tag, downstream repositories can run:
 
 ```yaml
-- uses: SylphxAI/groundatlas@v0.1.0
+- id: groundatlas
+  uses: SylphxAI/groundatlas@v0.1.0
   with:
     package-spec: groundatlas@0.1.0
     require-atlas: "true"
     strict: "true"
+- uses: actions/upload-artifact@v4
+  if: always()
+  with:
+    name: groundatlas-reports
+    path: |
+      ${{ steps.groundatlas.outputs.manifest-report-path }}
+      ${{ steps.groundatlas.outputs.fleet-report-path }}
 ```
 
 Before npm registry readback, this action is source-ready but not an external

@@ -60,7 +60,7 @@
       "type": "github-action",
       "name": "GitHub Action gate",
       "path": "action.yml",
-      "description": "Reusable composite action for ga update/audit/fleet CI gates after npm publish/readback."
+      "description": "Reusable composite action for ga update/manifest/audit/fleet CI gates with manifest/fleet JSON reports after npm publish/readback."
     }
   ],
   "commands": [
@@ -82,7 +82,7 @@
     {
       "name": "smoke:github-action",
       "command": "bun run smoke:github-action",
-      "purpose": "Run the reusable composite action against a packed tarball in a copied fixture repository."
+      "purpose": "Run the reusable composite action against a packed tarball in copied fixture repositories and verify manifest/fleet JSON reports."
     },
     {
       "name": "release:preflight",

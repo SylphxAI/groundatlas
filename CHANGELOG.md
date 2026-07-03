@@ -21,6 +21,7 @@
   installs, kept separate from pre-publish packed-tarball evidence.
 - Reusable GitHub Action gate contract for downstream `ga update` / `ga audit`
   / `ga fleet` adoption checks after npm publish and version-tag readback.
+- GitHub Action manifest/fleet JSON reports and output paths for CI artifacts.
 - Composite-action packed-tarball smoke plus exact action/package version
   defaulting, so pre-publish action evidence cannot bypass package behavior or
   drift through `groundatlas@latest`.

@@ -87,8 +87,8 @@ repo-local PRs and CI gates in the target projects.
   publish/readback and a version tag are available; before that, action usage is
   source-ready but not package-adoption proof.
 - `bun run check` must exercise the reusable GitHub Action run block against a
-  packed tarball so source-ready action claims are backed by behavior, not string
-  validation alone.
+  packed tarball and verify manifest/fleet report JSON so source-ready action
+  claims are backed by behavior, not string validation alone.
 
 ## Why generated maps are ignored
 
