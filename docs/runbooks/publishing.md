@@ -7,15 +7,15 @@ CLI binaries `groundatlas` and `ga`.
 
 As of the release-evidence hardening patch:
 
-- `groundatlas@0.1.2` is published on npm as the current public unscoped
+- `groundatlas@0.1.3` is published on npm as the current public unscoped
   package.
-- `npm view groundatlas@0.1.2 version dist.integrity dist.tarball gitHead --json`
-  must read back `version: "0.1.2"` and the tag commit git head before the
+- `npm view groundatlas@0.1.3 version dist.integrity dist.tarball gitHead --json`
+  must read back `version: "0.1.3"` and the tag commit git head before the
   package is treated as release evidence.
 - The `v0.1.1` tag workflow is the first successful publish run. It used
   `npm publish --access public --provenance` through the organization
   `NPM_TOKEN` fallback while trusted publishing setup remains open.
-- The `v0.1.2` tag workflow proves the JSON-pure release evidence path added
+- The `v0.1.3` tag workflow proves the JSON-pure release evidence path added
   after the first publish.
 - The `v0.1.0` tag workflow reached `npm publish` but did not create a registry
   package because npm returned 404/not-authorized for `groundatlas@0.1.0`.

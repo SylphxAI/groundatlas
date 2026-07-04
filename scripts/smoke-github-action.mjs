@@ -29,6 +29,8 @@ await cp(path.join(root, "test", "fixtures", "basic"), strictFailureFixtureCopy,
 });
 await writeNeutralProjectManifest(fixtureCopy);
 await writeNeutralProjectManifest(trackedFixtureCopy);
+await writeAdoptedRepoEvidence(fixtureCopy);
+await writeAdoptedRepoEvidence(trackedFixtureCopy);
 
 const action = await readFile(path.join(root, "action.yml"), "utf8");
 const runBlock = extractRunBlock(action);
@@ -67,7 +69,9 @@ const smoke = runAction({
   failOnDiff: false,
   manifestReportPath: "groundatlas-reports/manifest.json",
   fleetReportPath: "groundatlas-reports/fleet.json",
+  fleetMarkdownReportPath: "groundatlas-reports/fleet.md",
   githubOutputPath: path.join(runnerTemp, "github-output-happy.txt"),
+  githubStepSummaryPath: path.join(runnerTemp, "step-summary-happy.md"),
 });
 
 assertActionPassed(smoke, "GitHub Action smoke failed.", fixtureCopy);
@@ -92,9 +96,12 @@ const smokeOutputs = parseGithubOutput(
 );
 assertOutputPath(smokeOutputs, "manifest-report-path", fixtureCopy);
 assertOutputPath(smokeOutputs, "fleet-report-path", fixtureCopy);
+assertOutputPath(smokeOutputs, "fleet-markdown-report-path", fixtureCopy);
 
 const manifestReport = await readJsonReport(smokeOutputs["manifest-report-path"]);
 const fleetReport = await readJsonReport(smokeOutputs["fleet-report-path"]);
+const fleetMarkdownReport = await readFile(smokeOutputs["fleet-markdown-report-path"], "utf8");
+const stepSummaryReport = await readFile(path.join(runnerTemp, "step-summary-happy.md"), "utf8");
 if (
   manifestReport.selected?.valid !== true ||
   manifestReport.selected?.path !== "project.manifest.json" ||
@@ -127,6 +134,17 @@ if (
     `GitHub Action fleet report did not select the neutral manifest with Doctrine as adapter: ${JSON.stringify(
       fleetReport,
     )}`,
+  );
+}
+if (
+  !fleetMarkdownReport.includes("# GroundAtlas fleet adoption report") ||
+  !fleetMarkdownReport.includes("Summary: 1 adopted, 0 warning, 0 blocked, 1 total.")
+) {
+  throw new Error(`GitHub Action fleet Markdown report was not usable:\n${fleetMarkdownReport}`);
+}
+if (!stepSummaryReport.includes("Summary: 1 adopted, 0 warning, 0 blocked, 1 total.")) {
+  throw new Error(
+    `GitHub Action step summary did not include the fleet scorecard:\n${stepSummaryReport}`,
   );
 }
 
@@ -177,6 +195,7 @@ const strictFailure = runAction({
   failOnDiff: false,
   strict: true,
   githubOutputPath: path.join(runnerTemp, "github-output-strict-failure.txt"),
+  githubStepSummaryPath: path.join(runnerTemp, "step-summary-strict-failure.md"),
 });
 if (strictFailure.status === 0) {
   throw new Error("GitHub Action strict warning smoke unexpectedly passed.");
@@ -186,7 +205,16 @@ const strictFailureOutputs = parseGithubOutput(
 );
 assertOutputPath(strictFailureOutputs, "manifest-report-path");
 assertOutputPath(strictFailureOutputs, "fleet-report-path");
+assertOutputPath(strictFailureOutputs, "fleet-markdown-report-path");
 const strictFailureFleetReport = await readJsonReport(strictFailureOutputs["fleet-report-path"]);
+const strictFailureFleetMarkdownReport = await readFile(
+  strictFailureOutputs["fleet-markdown-report-path"],
+  "utf8",
+);
+const strictFailureStepSummaryReport = await readFile(
+  path.join(runnerTemp, "step-summary-strict-failure.md"),
+  "utf8",
+);
 if (
   strictFailureFleetReport.summary?.warning !== 1 ||
   strictFailureFleetReport.summary?.total !== 1
@@ -195,6 +223,21 @@ if (
     `GitHub Action failed strict gate did not preserve parseable fleet JSON: ${JSON.stringify(
       strictFailureFleetReport,
     )}`,
+  );
+}
+if (
+  !strictFailureFleetMarkdownReport.includes("# GroundAtlas fleet adoption report") ||
+  !strictFailureFleetMarkdownReport.includes("Summary: 0 adopted, 1 warning, 0 blocked, 1 total.")
+) {
+  throw new Error(
+    `GitHub Action failed strict gate did not preserve fleet Markdown report:\n${strictFailureFleetMarkdownReport}`,
+  );
+}
+if (
+  !strictFailureStepSummaryReport.includes("Summary: 0 adopted, 1 warning, 0 blocked, 1 total.")
+) {
+  throw new Error(
+    `GitHub Action failed strict gate did not preserve the fleet scorecard in the step summary:\n${strictFailureStepSummaryReport}`,
   );
 }
 
@@ -210,6 +253,8 @@ console.log(
       outputDir: ".groundatlas-action-smoke",
       manifestReport: smokeOutputs["manifest-report-path"],
       fleetReport: smokeOutputs["fleet-report-path"],
+      fleetMarkdownReport: smokeOutputs["fleet-markdown-report-path"],
+      stepSummary: "fleet scorecard appended",
       trackedOutputDiffGate: "passed",
       strictFailureReports: "preserved",
     },
@@ -238,8 +283,10 @@ function runAction({
   failOnDiff,
   manifestReportPath = "",
   fleetReportPath = "",
+  fleetMarkdownReportPath = "",
   strict = false,
   githubOutputPath,
+  githubStepSummaryPath,
 }) {
   return spawnSync("bash", ["-c", runBlock], {
     cwd: root,
@@ -255,8 +302,10 @@ function runAction({
       GROUNDATLAS_FAIL_ON_DIFF: failOnDiff ? "true" : "false",
       GROUNDATLAS_MANIFEST_REPORT_PATH: manifestReportPath,
       GROUNDATLAS_FLEET_REPORT_PATH: fleetReportPath,
+      GROUNDATLAS_FLEET_MARKDOWN_REPORT_PATH: fleetMarkdownReportPath,
       RUNNER_TEMP: runnerTemp,
       ...(githubOutputPath ? { GITHUB_OUTPUT: githubOutputPath } : {}),
+      ...(githubStepSummaryPath ? { GITHUB_STEP_SUMMARY: githubStepSummaryPath } : {}),
     },
   });
 }
@@ -295,6 +344,41 @@ async function writeNeutralProjectManifest(targetDir) {
   await writeFile(
     path.join(targetDir, "project.manifest.json"),
     `${JSON.stringify(manifest, null, 2)}\n`,
+  );
+}
+
+async function writeAdoptedRepoEvidence(targetDir) {
+  await mkdir(path.join(targetDir, ".github", "workflows"), { recursive: true });
+  await mkdir(path.join(targetDir, "docs", "specs"), { recursive: true });
+  await writeFile(
+    path.join(targetDir, "README.md"),
+    "# Fixture Basic\n\nPublic entry point for the adopted GroundAtlas action smoke fixture.\n",
+  );
+  await writeFile(
+    path.join(targetDir, "SECURITY.md"),
+    "# Security\n\nReport fixture security issues through the test harness.\n",
+  );
+  await writeFile(
+    path.join(targetDir, "docs", "specs", "product.md"),
+    "# Fixture Product Spec\n\nDefines the adopted smoke fixture boundary.\n",
+  );
+  await writeFile(
+    path.join(targetDir, ".github", "workflows", "ci.yml"),
+    [
+      "name: Fixture CI",
+      "on:",
+      "  pull_request:",
+      "  merge_group:",
+      "  push:",
+      "    branches: [main]",
+      "jobs:",
+      "  check:",
+      "    runs-on: ubuntu-latest",
+      "    steps:",
+      "      - uses: actions/checkout@v5",
+      "      - run: bun test",
+      "",
+    ].join("\n"),
   );
 }
 

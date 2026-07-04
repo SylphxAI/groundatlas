@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.3 - Markdown fleet scorecard
+
+- GitHub Action fleet gates now preserve both the machine-readable JSON report
+  and a human-readable Markdown scorecard artifact.
+- Downstream dogfooding examples now upload manifest JSON, fleet JSON, and fleet
+  Markdown reports together for release/review evidence.
+- Action contract validation and smoke tests now enforce the Markdown scorecard
+  output, including strict-gate failure preservation.
+
 ## 0.1.2 - published to npm
 
 - Release evidence artifacts are now JSON-parseability gated, so future npm tag

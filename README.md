@@ -186,7 +186,7 @@ Product-ready initial CLI/library slice:
 - release workflow with npm provenance, registry readback, post-publish dogfood,
   and JSON evidence artifacts.
 
-`groundatlas@0.1.2` is published on npm and read back from the registry. The
+`groundatlas@0.1.3` is published on npm and read back from the registry. The
 remaining release-infrastructure gap is to migrate the bounded `NPM_TOKEN`
 fallback to npm trusted publishing/OIDC before treating it as permanent.
 
@@ -395,7 +395,7 @@ packed tarball.
 
 ## Library publication
 
-`groundatlas@0.1.2` is published on npm as the public package for the CLI,
+`groundatlas@0.1.3` is published on npm as the public package for the CLI,
 library API, GitHub Action package spec, manifest bridge, and exported schema.
 `bun run release:readback` installs the immutable registry package and runs the
 same installed-package fleet smoke. Package-based downstream pilots use
@@ -420,9 +420,9 @@ After npm publish/readback and a version tag, downstream repositories can run:
 
 ```yaml
 - id: groundatlas
-  uses: SylphxAI/groundatlas@v0.1.2
+  uses: SylphxAI/groundatlas@v0.1.3
   with:
-    package-spec: groundatlas@0.1.2
+    package-spec: groundatlas@0.1.3
     require-atlas: "true"
     strict: "true"
 - uses: actions/upload-artifact@v5
@@ -432,8 +432,12 @@ After npm publish/readback and a version tag, downstream repositories can run:
     path: |
       ${{ steps.groundatlas.outputs.manifest-report-path }}
       ${{ steps.groundatlas.outputs.fleet-report-path }}
+      ${{ steps.groundatlas.outputs.fleet-markdown-report-path }}
 ```
 
 This proves a target repository is using the released package/action. It still
 does not make `.groundatlas/**` truth, and it does not claim organization-wide
-fleet adoption until each target repository adds its own CI gate.
+fleet adoption until each target repository adds its own CI gate. The action also
+appends the Markdown scorecard to `GITHUB_STEP_SUMMARY` when GitHub provides it,
+so humans and agents can review the same gate output without treating the
+scorecard as SSOT.

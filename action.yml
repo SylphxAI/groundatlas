@@ -6,7 +6,7 @@ inputs:
   package-spec:
     description: npm package spec to execute. Defaults to the package version paired with this action tag.
     required: false
-    default: groundatlas@0.1.2
+    default: groundatlas@0.1.3
   working-directory:
     description: Repository directory to inspect.
     required: false
@@ -39,6 +39,10 @@ inputs:
     description: Optional path for the fleet adoption JSON report. Defaults to RUNNER_TEMP.
     required: false
     default: ""
+  fleet-markdown-report-path:
+    description: Optional path for the human-readable fleet adoption Markdown report. Defaults to RUNNER_TEMP.
+    required: false
+    default: ""
 
 outputs:
   manifest-report-path:
@@ -47,6 +51,9 @@ outputs:
   fleet-report-path:
     description: Path to the fleet adoption JSON report.
     value: ${{ steps.groundatlas-gate.outputs.fleet-report-path }}
+  fleet-markdown-report-path:
+    description: Path to the human-readable fleet adoption Markdown report.
+    value: ${{ steps.groundatlas-gate.outputs.fleet-markdown-report-path }}
 
 runs:
   using: composite
@@ -64,6 +71,7 @@ runs:
         GROUNDATLAS_FAIL_ON_DIFF: ${{ inputs.fail-on-diff }}
         GROUNDATLAS_MANIFEST_REPORT_PATH: ${{ inputs.manifest-report-path }}
         GROUNDATLAS_FLEET_REPORT_PATH: ${{ inputs.fleet-report-path }}
+        GROUNDATLAS_FLEET_MARKDOWN_REPORT_PATH: ${{ inputs.fleet-markdown-report-path }}
       run: |
         set -euo pipefail
 
@@ -109,6 +117,19 @@ runs:
           return "${pipe_status[1]}"
         }
 
+        capture_text_report() {
+          local report_path="$1"
+          shift
+          set +e
+          run_ga "$@" | tee "$report_path"
+          local -a pipe_status=("${PIPESTATUS[@]}")
+          set -e
+          if [[ "${pipe_status[0]}" -ne 0 ]]; then
+            return "${pipe_status[0]}"
+          fi
+          return "${pipe_status[1]}"
+        }
+
         publish_report() {
           local source_path="$1"
           local destination_path="$2"
@@ -123,7 +144,18 @@ runs:
             {
               echo "manifest-report-path=$manifest_report_path"
               echo "fleet-report-path=$fleet_report_path"
+              echo "fleet-markdown-report-path=$fleet_markdown_report_path"
             } >> "$GITHUB_OUTPUT"
+          fi
+        }
+
+        publish_step_summary() {
+          local source_path="$1"
+          if [[ -n "${GITHUB_STEP_SUMMARY:-}" && -s "$source_path" ]]; then
+            {
+              echo
+              cat "$source_path"
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
         }
 
@@ -133,8 +165,10 @@ runs:
 
         manifest_report_path="$(resolve_report_path "$GROUNDATLAS_MANIFEST_REPORT_PATH" "groundatlas-manifest.json")"
         fleet_report_path="$(resolve_report_path "$GROUNDATLAS_FLEET_REPORT_PATH" "groundatlas-fleet.json")"
+        fleet_markdown_report_path="$(resolve_report_path "$GROUNDATLAS_FLEET_MARKDOWN_REPORT_PATH" "groundatlas-fleet.md")"
         manifest_temp="$(create_temp_report "groundatlas-manifest")"
         fleet_temp="$(create_temp_report "groundatlas-fleet")"
+        fleet_markdown_temp="$(mktemp "$runner_temp/groundatlas-fleet.XXXXXX.md")"
 
         manifest_status=0
         capture_json_report "$manifest_temp" manifest --out "$GROUNDATLAS_OUTPUT_DIR" --json || manifest_status=$?
@@ -159,14 +193,22 @@ runs:
         if [[ "$GROUNDATLAS_STRICT" == "true" ]]; then
           fleet_args+=(--strict)
         fi
-        fleet_args+=(--json)
 
         fleet_status=0
-        capture_json_report "$fleet_temp" "${fleet_args[@]}" || fleet_status=$?
+        capture_json_report "$fleet_temp" "${fleet_args[@]}" --json || fleet_status=$?
+
+        fleet_markdown_status=0
+        capture_text_report "$fleet_markdown_temp" "${fleet_args[@]}" || fleet_markdown_status=$?
 
         publish_report "$manifest_temp" "$manifest_report_path"
         publish_report "$fleet_temp" "$fleet_report_path"
+        publish_report "$fleet_markdown_temp" "$fleet_markdown_report_path"
+        publish_step_summary "$fleet_markdown_temp"
         write_action_outputs
+
+        if [[ "$fleet_status" -eq 0 && "$fleet_markdown_status" -ne 0 ]]; then
+          exit "$fleet_markdown_status"
+        fi
 
         if [[ "$fleet_status" -ne 0 ]]; then
           exit "$fleet_status"
