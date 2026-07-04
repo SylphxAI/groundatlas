@@ -21,6 +21,7 @@ for (const required of [
   "fail-on-diff:",
   "manifest-report-path:",
   "fleet-report-path:",
+  "fleet-markdown-report-path:",
   "npm exec --yes --package",
   "Node.js >=20.11",
   "ga update",
@@ -28,8 +29,11 @@ for (const required of [
   "ga audit",
   "fleet",
   "PIPESTATUS",
+  "capture_text_report",
   "publish_report",
+  "publish_step_summary",
   "GITHUB_OUTPUT",
+  "GITHUB_STEP_SUMMARY",
 ]) {
   assert(action.includes(required), `action.yml missing required content: ${required}`);
 }
@@ -72,8 +76,11 @@ for (const required of [
   "No local binary bypass",
   "not use `groundatlas@latest`",
   "manifest-report-path",
+  "fleet-markdown-report-path",
+  "GITHUB_STEP_SUMMARY",
   "steps.groundatlas.outputs.manifest-report-path",
   "steps.groundatlas.outputs.fleet-report-path",
+  "steps.groundatlas.outputs.fleet-markdown-report-path",
   "upload-artifact",
 ]) {
   assert(guide.includes(required), `GitHub Action guide missing required boundary: ${required}`);

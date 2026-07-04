@@ -26,9 +26,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - id: groundatlas
-        uses: SylphxAI/groundatlas@v0.1.2
+        uses: SylphxAI/groundatlas@v0.1.3
         with:
-          package-spec: groundatlas@0.1.2
+          package-spec: groundatlas@0.1.3
           require-atlas: "true"
           strict: "true"
       - uses: actions/upload-artifact@v5
@@ -38,6 +38,7 @@ jobs:
           path: |
             ${{ steps.groundatlas.outputs.manifest-report-path }}
             ${{ steps.groundatlas.outputs.fleet-report-path }}
+            ${{ steps.groundatlas.outputs.fleet-markdown-report-path }}
 ```
 
 If the runner does not already provide Node.js 20.11 or newer, add
@@ -48,7 +49,8 @@ If the runner does not already provide Node.js 20.11 or newer, add
 1. Runs `ga update`.
 2. Runs `ga manifest --json` and writes a manifest report.
 3. Runs `ga audit`.
-4. Runs `ga fleet . --require-atlas --json` and writes a fleet report.
+4. Runs `ga fleet . --require-atlas --json` for the machine report and
+   `ga fleet . --require-atlas` for the Markdown scorecard.
 5. Optionally fails if generated GroundAtlas files or `groundatlas.config.json`
    changed in CI.
 
@@ -61,7 +63,7 @@ fleet gate.
 
 | Input | Default | Purpose |
 | --- | --- | --- |
-| `package-spec` | `groundatlas@0.1.2` | npm package spec executed through `npm exec`. The default must match the action tag's package version; production CI should not use `groundatlas@latest`. |
+| `package-spec` | `groundatlas@0.1.3` | npm package spec executed through `npm exec`. The default must match the action tag's package version; production CI should not use `groundatlas@latest`. |
 | `working-directory` | `.` | Repository directory to inspect. |
 | `output-dir` | `.groundatlas` | Generated GroundAtlas output directory. |
 | `update` | `true` | Run `ga update` before checks. |
@@ -70,16 +72,19 @@ fleet gate.
 | `fail-on-diff` | `false` | Optional tracked/unignored generated-output freshness guard. Leave disabled when `.groundatlas/**` is ignored. |
 | `manifest-report-path` | runner temp | Optional path for the `ga manifest --json` report. The action output is always absolute. |
 | `fleet-report-path` | runner temp | Optional path for the `ga fleet --json` report. The action output is always absolute. |
+| `fleet-markdown-report-path` | runner temp | Optional path for the human-readable `ga fleet` Markdown report. The action output is always absolute. |
 
 ## Reports
 
-The action writes two machine-readable reports and exposes their paths as action
-outputs:
+The action writes two machine-readable JSON reports plus one human-readable
+Markdown scorecard, appends the scorecard to `GITHUB_STEP_SUMMARY` when GitHub
+provides it, and exposes all report paths as action outputs:
 
 - `manifest-report-path` — selected neutral manifest or recognized adapter plus
   validation issues;
 - `fleet-report-path` — adopted/warning/blocked fleet status, manifest adapters,
-  generated-atlas audit state, and validation commands.
+  generated-atlas audit state, and validation commands;
+- `fleet-markdown-report-path` — the same fleet status rendered as a human-readable Markdown scorecard for CI summaries, dashboards, and release evidence.
 
 Use `actions/upload-artifact` with the action outputs to keep those reports as
 CI evidence. If custom report paths are relative, they are resolved from

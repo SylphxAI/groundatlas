@@ -96,8 +96,15 @@ if (!readme.includes("groundatlas-external-dogfood")) {
 if (!readme.includes("groundatlas-release-evidence")) {
   errors.push("README must mention release evidence artifacts.");
 }
-if (!readme.includes("manifest-report-path") || !readme.includes("fleet-report-path")) {
-  errors.push("README must document GitHub Action manifest/fleet report paths.");
+if (
+  !readme.includes("manifest-report-path") ||
+  !readme.includes("fleet-report-path") ||
+  !readme.includes("fleet-markdown-report-path") ||
+  !readme.includes("GITHUB_STEP_SUMMARY")
+) {
+  errors.push(
+    "README must document GitHub Action manifest/fleet JSON/Markdown report paths and step-summary scorecard.",
+  );
 }
 
 if (!readme.includes("actions/upload-artifact@v5")) {

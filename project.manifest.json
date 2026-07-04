@@ -99,21 +99,21 @@
     {
       "name": "smoke:github-action",
       "command": "bun run smoke:github-action",
-      "purpose": "Run the reusable composite action against a packed tarball in copied fixture repositories and verify manifest/fleet JSON reports."
+      "purpose": "Run the reusable composite action against a packed tarball in copied fixture repositories and verify manifest JSON, fleet JSON, fleet Markdown, and step-summary reports."
     },
     {
       "name": "release:preflight",
-      "command": "GROUNDATLAS_RELEASE_TAG=v0.1.2 bun run release:preflight",
+      "command": "GROUNDATLAS_RELEASE_TAG=v0.1.3 bun run release:preflight",
       "purpose": "Verify local release readiness before a tag-gated npm publication."
     },
     {
       "name": "release:readback",
       "command": "bun run release:readback",
-      "purpose": "Read back groundatlas@0.1.2 from npm and run installed-package smoke evidence."
+      "purpose": "Read back groundatlas@0.1.3 from npm and run installed-package smoke evidence."
     },
     {
       "name": "dogfood:external",
-      "command": "GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@0.1.2 GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo bun run dogfood:external",
+      "command": "GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@0.1.3 GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo bun run dogfood:external",
       "purpose": "Run a non-mutating package-based dogfood pilot against copied target repositories after npm registry readback."
     }
   ],

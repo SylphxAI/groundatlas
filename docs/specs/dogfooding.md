@@ -73,7 +73,7 @@ After registry readback, the same external pilot can install from npm instead of
 a packed local tarball:
 
 ```sh
-GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@0.1.2 \
+GROUNDATLAS_DOGFOOD_PACKAGE_SPEC=groundatlas@0.1.3 \
   GROUNDATLAS_DOGFOOD_REPOS=/absolute/path/to/repo \
   bun run dogfood:external
 ```
@@ -83,7 +83,7 @@ This post-publish mode reports `groundatlasPackageSource: "npm-registry"` and
 for package-based fleet adoption, but mandatory fleet rollout still requires
 repo-local PRs and CI gates in the target projects.
 
-For `groundatlas@0.1.2`, this package/readback layer exists. The remaining
+For `groundatlas@0.1.3`, this package/readback layer exists. The remaining
 dogfooding boundary is downstream CI adoption, not package availability.
 
 The release workflow must run this post-publish pilot only on `v*.*.*` tag
@@ -104,7 +104,7 @@ publish, read back, or claim package-based dogfooding.
   may write generated output only inside a copied temp repository.
 - External repositories should use the GitHub Action gate only after npm
   publish/readback and a version tag are available; for released versions such as
-  `v0.1.2`, the gate is package-adoption proof for that target repository only.
+  `v0.1.3`, the gate is package-adoption proof for that target repository only.
 - `bun run check` must exercise the reusable GitHub Action run block against a
   packed tarball and verify manifest/fleet report JSON so source-ready action
   claims are backed by behavior, not string validation alone.
