@@ -64,13 +64,15 @@
     "smoke:github-action": "node scripts/smoke-github-action.mjs",
     "dogfood:external": "node scripts/dogfood-external-repo.mjs",
     "validate:workflows": "node scripts/validate-workflows.mjs",
-    "dogfood:assert": "node scripts/assert-dogfood-report.mjs"
+    "dogfood:assert": "node scripts/assert-dogfood-report.mjs",
+    "lint:fix": "biome check --write ."
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",
     "@types/bun": "^1.3.14",
     "@types/node": "^24.10.1",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2",
+    "@sylphx/biome-config": "^0.4.1"
   },
   "packageManager": "bun@1.3.12",
   "main": "./dist/index.js",
