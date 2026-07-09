@@ -65,7 +65,10 @@
     "dogfood:external": "node scripts/dogfood-external-repo.mjs",
     "validate:workflows": "node scripts/validate-workflows.mjs",
     "dogfood:assert": "node scripts/assert-dogfood-report.mjs",
-    "lint:fix": "biome check --write ."
+    "lint:fix": "biome check --write .",
+    "rust:build": "cargo build -p groundatlas-scanner",
+    "rust:test": "cargo test --workspace",
+    "rust:clippy": "cargo clippy --workspace -- -D warnings"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",

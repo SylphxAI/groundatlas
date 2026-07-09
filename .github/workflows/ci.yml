@@ -11,9 +11,28 @@ permissions:
   contents: read
 
 jobs:
+  rust:
+    name: rust scanner
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Run Rust tests
+        run: cargo test --workspace
+
+      - name: Run Rust clippy
+        run: cargo clippy --workspace -- -D warnings
+
   check:
     name: check
     runs-on: ubuntu-latest
+    needs: rust
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
@@ -22,6 +41,12 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.3.12"
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust scanner for npm bridge tests
+        run: cargo build -p groundatlas-scanner
 
       - name: Install dependencies
         run: bun install --frozen-lockfile

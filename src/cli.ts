@@ -14,6 +14,10 @@ import {
   validateProjectManifestFile,
 } from "./application/projectManifest.js";
 import { scanRepository } from "./application/scan.js";
+import {
+  rustScannerDelegationEnabled,
+  scanRepositoryViaRust,
+} from "./infrastructure/rustScanner.js";
 import { parseArgs } from "./cli/args.js";
 import { helpText } from "./cli/help.js";
 import type { MachineManifestReport } from "./domain/types.js";
@@ -92,6 +96,25 @@ async function main(argv: string[]): Promise<number> {
   }
 
   if (args.command === "scan") {
+    if (rustScannerDelegationEnabled()) {
+      const stub = scanRepositoryViaRust({ cwd, outputDir: config.outputDir });
+      if (args.json) {
+        console.log(JSON.stringify(stub, null, 2));
+      } else {
+        console.log(
+          `Rust scanner S0 stub for ${stub.repository.name} (${stub.generator.name} ${stub.generator.version})`,
+        );
+        console.log(renderRisks(
+          stub.risks.map((risk) => ({
+            severity: risk.severity as "info" | "warning" | "error",
+            code: risk.code,
+            message: risk.message,
+          })),
+        ));
+      }
+      return stub.risks.some((risk) => risk.severity === "error") ? 1 : 0;
+    }
+
     const atlas = await scanRepository({ cwd, outputDir: config.outputDir });
     if (args.json) {
       console.log(JSON.stringify(atlas, null, 2));
