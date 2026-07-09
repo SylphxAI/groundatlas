@@ -20,6 +20,6 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!.git", "!dist", "!dist-types", "!node_modules", "!.groundatlas"]
+    "includes": ["**", "!.git", "!dist", "!dist-types", "!node_modules", "!.groundatlas", "!target"]
   }
 }
