@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 2,
+  "repo": "SylphxAI/groundatlas",
+  "cycle": "cycle49",
+  "reauditRef": "rej-010",
+  "verifiedAt": "2026-07-10T30:00:00Z",
+  "status": "rust_impl_on_disk_verified",
+  "executionStatus": "harness_present_shell_unavailable",
+  "promotionPolicy": "NO_PROMOTIONS — rust_impl ONLY per rej-010; proof.status remains missing until differential_green at bound SHAs",
+  "slice": "scanner/rust-scan",
+  "capabilities": ["scanner/rust-scan", "cli/scan"],
+  "harness": {
+    "entrypoint": "scripts/run-groundatlas-differential.sh",
+    "differentialTest": "crates/groundatlas-scanner/tests/scan_differential.rs",
+    "oracle": "scripts/differential/scan-oracle.ts",
+    "corpus": "scripts/differential/fixtures/basic-scan-corpus.json",
+    "goldenBaseline": "test/fixtures/basic/atlas.golden.json",
+    "authorityGate": "scripts/check-no-ts-scan-backend.sh",
+    "parityTest": "test/scanParity.test.ts"
+  },
+  "caseCounts": {
+    "scannerRustScan": 1,
+    "goldenBaselineFiles": 1
+  },
+  "resumeCommands": [
+    "cargo build -p groundatlas-scanner",
+    "bash scripts/run-groundatlas-differential.sh",
+    "cargo test -p groundatlas-scanner --test scan_differential",
+    "bun test test/scanParity.test.ts"
+  ],
+  "notes": "Cycle49 rej-010: scanner/rust-scan + cli/scan bounded differential harness on-disk verify. Shell unavailable (rej-007) — run resumeCommands to emit differential_green."
+}

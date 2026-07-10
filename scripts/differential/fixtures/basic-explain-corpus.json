@@ -1,0 +1,12 @@
+{
+  "corpusVersion": 1,
+  "description": "cli/explain differential corpus — TS explainQuery vs Rust explain_query (rej-010 cycle51)",
+  "atlasFixture": "test/fixtures/basic/atlas.golden.json",
+  "queries": [
+    { "id": "explain-adr", "query": "adr architecture" },
+    { "id": "explain-ci", "query": "ci workflow" },
+    { "id": "explain-typescript", "query": "typescript source" },
+    { "id": "explain-manifest", "query": "manifest package" },
+    { "id": "explain-no-match", "query": "zzzznonexistent" }
+  ]
+}

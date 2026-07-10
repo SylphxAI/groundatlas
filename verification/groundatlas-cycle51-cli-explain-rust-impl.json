@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "repo": "SylphxAI/groundatlas",
+  "cycle": "cycle51",
+  "reauditRef": "rej-010",
+  "verifiedAt": "2026-07-10T32:00:00Z",
+  "status": "rust_impl_on_disk_verified",
+  "executionStatus": "harness_present_shell_unavailable",
+  "promotionPolicy": "NO_PROMOTIONS — rust_impl ONLY per rej-010; proof.status remains missing until differential_green at bound SHAs",
+  "slice": "cli/explain",
+  "capabilities": ["cli/explain"],
+  "harness": {
+    "entrypoint": "scripts/run-groundatlas-differential.sh --slice cli/explain",
+    "differentialTest": "crates/groundatlas-scanner/tests/explain_differential.rs#cli_explain_differential_matches_ts_oracle",
+    "oracle": "scripts/differential/explain-oracle.ts",
+    "corpus": "scripts/differential/fixtures/basic-explain-corpus.json",
+    "rustSurface": "crates/groundatlas-scanner/src/explain.rs"
+  },
+  "caseCounts": { "explainQuery": 5 },
+  "resumeCommands": [
+    "cargo test -p groundatlas-scanner --test explain_differential cli_explain_differential_matches_ts_oracle",
+    "bash scripts/run-groundatlas-differential.sh --slice cli/explain"
+  ],
+  "notes": "Cycle51 rej-010: cli/explain ts_only→rust_impl bounded differential harness on-disk verify. Shell unavailable (rej-007)."
+}

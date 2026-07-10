@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 2,
+  "repo": "SylphxAI/groundatlas",
+  "reauditRef": "rej-010",
+  "status": "pending_differential_green",
+  "harness": "scripts/run-groundatlas-differential.sh",
+  "slices": [
+    "scanner/rust-scan",
+    "cli/scan",
+    "cli/audit"
+  ],
+  "differentialTests": [
+    "crates/groundatlas-scanner/tests/scan_differential.rs",
+    "crates/groundatlas-scanner/tests/audit_differential.rs"
+  ],
+  "oracles": [
+    "scripts/differential/scan-oracle.ts",
+    "scripts/differential/audit-oracle.ts"
+  ],
+  "behaviorSpecs": [
+    "scripts/differential/fixtures/basic-scan-corpus.json",
+    "scripts/differential/fixtures/basic-audit-corpus.json"
+  ],
+  "notes": "Placeholder verification record — run scripts/run-groundatlas-differential.sh at candidate SHA to emit differential_green artifact with lastComparedMainSha binding."
+}

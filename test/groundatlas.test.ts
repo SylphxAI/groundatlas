@@ -1,5 +1,6 @@
-import { afterEach, beforeEach, expect, test } from "bun:test";
+import { afterEach, beforeAll, beforeEach, expect, test } from "bun:test";
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdir, mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -12,8 +13,22 @@ import { validateProjectManifestFile } from "../src/application/projectManifest.
 import { scanRepository } from "../src/application/scan.ts";
 import { ATLAS_SCHEMA_VERSION, GENERATED_BANNER } from "../src/domain/types.ts";
 
+const repoRoot = path.resolve(import.meta.dir, "..");
+const rustBinary = path.join(repoRoot, "target/debug/groundatlas-scanner");
+
 let tempRoot: string;
 let fixtureRoot: string;
+
+beforeAll(() => {
+  if (!existsSync(rustBinary)) {
+    execFileSync("cargo", ["build", "-p", "groundatlas-scanner"], {
+      cwd: repoRoot,
+      stdio: ["ignore", "pipe", "pipe"],
+    });
+  }
+  process.env.GROUNDATLAS_RUST_SCANNER_BIN = rustBinary;
+  delete process.env.GROUNDATLAS_RUST_SCANNER;
+});
 
 beforeEach(async () => {
   tempRoot = await mkdtemp(path.join(os.tmpdir(), "groundatlas-test-"));
