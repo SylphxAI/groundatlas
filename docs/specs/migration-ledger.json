@@ -19,9 +19,7 @@
   ],
   "reauditRef": "rej-010",
   "verificationRef": "verification/groundatlas-cycle38-cli-audit-freshness-rust-impl.json",
-  "inventorySource": [
-    "manual"
-  ],
+  "inventorySource": ["manual"],
   "inScopeBoundary": {
     "includeGlobs": [
       "src/**",
