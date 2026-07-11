@@ -1,0 +1,19 @@
+{
+  "corpusVersion": 1,
+  "description": "GroundAtlas scanner SSOT differential — TS scan oracle vs native Rust on prepared basic fixture corpus",
+  "scanCases": [
+    {
+      "id": "basic-fixture-atlas-map",
+      "fixtureSource": "test/fixtures/basic",
+      "injectSecretFile": ".env",
+      "injectSecretContent": "SHOULD_NOT_BE_SCANNED=secret\n",
+      "gitInit": true,
+      "outputDir": ".groundatlas"
+    }
+  ],
+  "goldenBaseline": "test/fixtures/basic/atlas.golden.json",
+  "normalize": {
+    "generatedAt": "2026-01-01T00:00:00.000Z",
+    "generatorVersion": "0.1.3"
+  }
+}

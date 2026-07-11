@@ -1,0 +1,340 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-01-01T00:00:00.000Z",
+  "generator": {
+    "name": "GroundAtlas",
+    "version": "0.1.3"
+  },
+  "repository": {
+    "name": "fixture-basic",
+    "root": "<REPO_ROOT>",
+    "git": {
+      "branch": "main",
+      "head": "c8b4a90616bcce8935498c98cb7b08a810ae4c01",
+      "isDirty": false,
+      "remote": null
+    },
+    "packageManager": "unknown"
+  },
+  "policy": {
+    "generatedDocsAreNotSsot": true,
+    "canonicalTruthLivesIn": [
+      "source code",
+      "schemas",
+      "tests",
+      "specs/design docs",
+      "package manifests",
+      "PROJECT.md",
+      "machine project manifest adapters",
+      "docs/adr/",
+      "CI workflows"
+    ],
+    "writeBoundary": ".groundatlas/ plus groundatlas.config.json during init only"
+  },
+  "truth": {
+    "model": "fact-scoped-ssot",
+    "conflictRule": "Resolve each fact at its owning truth home; if sources disagree, change the owning source and regenerate GroundAtlas rather than editing generated maps.",
+    "generatedArtifactsAre": "navigation-only",
+    "homes": [
+      {
+        "domain": "Project identity and boundaries",
+        "owns": "What the project is, lifecycle, owner boundary, public surfaces, adoption state, and delivery proof.",
+        "examples": [
+          "PROJECT.md",
+          "project.manifest.json",
+          "groundatlas.project.json",
+          ".project/manifest.json",
+          ".doctrine/project.json"
+        ],
+        "precedence": 10,
+        "requiredForCommercialGrade": true
+      },
+      {
+        "domain": "Durable decisions",
+        "owns": "Architecture, product, data, security, operations, or commercial decisions that must survive beyond one edit.",
+        "examples": [
+          "docs/adr/"
+        ],
+        "precedence": 20,
+        "requiredForCommercialGrade": true
+      },
+      {
+        "domain": "Product intent and operating contracts",
+        "owns": "Requirements, adoption rules, operating models, design intent, and acceptance criteria.",
+        "examples": [
+          "docs/specs/",
+          "DESIGN.md",
+          "design.md"
+        ],
+        "precedence": 30,
+        "requiredForCommercialGrade": true
+      },
+      {
+        "domain": "Machine-checkable contracts",
+        "owns": "Schemas, type contracts, migrations, package exports, command surfaces, and dependency boundaries.",
+        "examples": [
+          "src/domain/types.ts",
+          "*.schema.json",
+          "package.json"
+        ],
+        "precedence": 40,
+        "requiredForCommercialGrade": true
+      },
+      {
+        "domain": "Implemented behavior",
+        "owns": "What the product actually does at runtime.",
+        "examples": [
+          "src/",
+          "lib/"
+        ],
+        "precedence": 50,
+        "requiredForCommercialGrade": true
+      },
+      {
+        "domain": "Behavior proof",
+        "owns": "Expected behavior, regressions, evals, validation commands, and release gates.",
+        "examples": [
+          "test/",
+          "tests/",
+          "package.json scripts",
+          ".github/workflows/"
+        ],
+        "precedence": 60,
+        "requiredForCommercialGrade": true
+      },
+      {
+        "domain": "Operations, security, and support",
+        "owns": "Repeatable procedures, vulnerability reporting, incident handling, and customer support expectations.",
+        "examples": [
+          "docs/runbooks/",
+          "SECURITY.md",
+          "CHANGELOG.md"
+        ],
+        "precedence": 70,
+        "requiredForCommercialGrade": true
+      }
+    ]
+  },
+  "orientation": [
+    {
+      "order": 1,
+      "title": "Agent adapter",
+      "paths": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        ".github/copilot-instructions.md",
+        ".cursor/rules"
+      ],
+      "required": true,
+      "present": true,
+      "reason": "Start with local agent rules so automation follows the repository boundary.",
+      "ssotRole": "Runtime adapter; prefer AGENTS.md as the tool-neutral entry point and treat tool-specific files as optional adapters."
+    },
+    {
+      "order": 2,
+      "title": "Project identity and machine manifest",
+      "paths": [
+        "PROJECT.md",
+        "project.manifest.json",
+        "groundatlas.project.json",
+        ".project/manifest.json",
+        ".doctrine/project.json"
+      ],
+      "required": true,
+      "present": true,
+      "reason": "Find the project goal, lifecycle, owner boundary, public surfaces, and adoption state.",
+      "ssotRole": "Canonical truth for project identity and boundaries."
+    },
+    {
+      "order": 3,
+      "title": "Public start-here documentation",
+      "paths": [
+        "README.md"
+      ],
+      "required": true,
+      "present": false,
+      "reason": "Read the product promise, install path, and user-facing contract.",
+      "ssotRole": "Canonical public entry point; lower authority than schemas, tests, ADRs, and source."
+    },
+    {
+      "order": 4,
+      "title": "Specs and design intent",
+      "paths": [
+        "docs/specs/",
+        "DESIGN.md",
+        "design.md"
+      ],
+      "required": true,
+      "present": false,
+      "reason": "Understand intended behavior, adoption rules, and design constraints before editing.",
+      "ssotRole": "Canonical for intended product/operating contracts until implemented facts disagree."
+    },
+    {
+      "order": 5,
+      "title": "Architecture and decision records",
+      "paths": [
+        "docs/adr/"
+      ],
+      "required": true,
+      "present": true,
+      "reason": "Find durable choices and trade-offs before inventing a new pattern.",
+      "ssotRole": "Canonical for durable decisions; newer ADRs supersede older conflicting prose."
+    },
+    {
+      "order": 6,
+      "title": "Machine contracts and build surfaces",
+      "paths": [
+        "package.json",
+        "schemas",
+        "migrations",
+        "src/domain/types.ts"
+      ],
+      "required": true,
+      "present": true,
+      "reason": "Identify commands, exports, schemas, and machine-readable contracts.",
+      "ssotRole": "Canonical for package, schema, API, and type contracts."
+    },
+    {
+      "order": 7,
+      "title": "Implementation and behavior proof",
+      "paths": [
+        "src/",
+        "lib/",
+        "test/",
+        "tests/"
+      ],
+      "required": true,
+      "present": true,
+      "reason": "Verify how the product actually behaves and what regressions are protected.",
+      "ssotRole": "Canonical for implemented behavior and expected behavior."
+    },
+    {
+      "order": 8,
+      "title": "CI, release, security, and operations",
+      "paths": [
+        ".github/workflows/",
+        "docs/runbooks/",
+        "SECURITY.md",
+        "CHANGELOG.md"
+      ],
+      "required": true,
+      "present": false,
+      "reason": "Prove the delivery path, release gates, operational procedures, and support boundary.",
+      "ssotRole": "Canonical for validation automation, release operations, and support procedures."
+    }
+  ],
+  "sources": [
+    {
+      "path": "docs/adr/ADR-1-fixture.md",
+      "kind": "adr",
+      "reason": "Records durable architecture or product decisions.",
+      "canonical": true,
+      "sizeBytes": 62,
+      "contentSha256": "fc63162950f6b45c0af5f4d4034b7d42318ae9615474a3f35cb03445985e78bd"
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "agent-adapter",
+      "reason": "Bootstraps agents into repo-local context; AGENTS.md is preferred and tool-specific adapters are optional.",
+      "canonical": true,
+      "sizeBytes": 55,
+      "contentSha256": "daf2078a83407ea9aa40cd967ba9843ae718bc30a31eedaa79c4edf09d79e292"
+    },
+    {
+      "path": "package.json",
+      "kind": "package-manifest",
+      "reason": "Defines package metadata, binaries, scripts, and dependency surface.",
+      "canonical": true,
+      "sizeBytes": 195,
+      "contentSha256": "8a78c3a0790eb428771be1789e70cd887cd5d11197741f43432ebfe5fb5fe248"
+    },
+    {
+      "path": ".doctrine/project.json",
+      "kind": "project-manifest",
+      "reason": "Defines repository identity, lifecycle, boundary, or project-local truth.",
+      "canonical": true,
+      "sizeBytes": 1197,
+      "contentSha256": "7b2c2b2ebcff6bb34fe2ba1fa772db0e10fd4d771b6b7e340247173db2b7d069"
+    },
+    {
+      "path": "PROJECT.md",
+      "kind": "project-manifest",
+      "reason": "Defines repository identity, lifecycle, boundary, or project-local truth.",
+      "canonical": true,
+      "sizeBytes": 66,
+      "contentSha256": "b7395ca736b17fd0421ae51d5a5293458d4e80412a2d911c3d6ba18dbb4ce894"
+    },
+    {
+      "path": "src/index.ts",
+      "kind": "source",
+      "reason": "Implements product behavior.",
+      "canonical": true,
+      "sizeBytes": 74,
+      "contentSha256": "6d19f90f4b079887ade7928f266c1ab5262c17b76970f56d355683e6889f350c"
+    },
+    {
+      "path": "test/index.test.ts",
+      "kind": "test",
+      "reason": "Proves expected behavior or regression coverage.",
+      "canonical": true,
+      "sizeBytes": 118,
+      "contentSha256": "9f32cf039a4643468eb3db7741722d4ad3ad01fea04e362589131c6815dcd0a4"
+    }
+  ],
+  "publicSurfaces": [
+    {
+      "name": "Machine project manifest (Doctrine adapter)",
+      "type": "manifest",
+      "path": ".doctrine/project.json"
+    },
+    {
+      "name": "package binaries",
+      "type": "cli",
+      "path": "package.json"
+    },
+    {
+      "name": "Project manifest",
+      "type": "manifest",
+      "path": "PROJECT.md"
+    }
+  ],
+  "validationCommands": [
+    {
+      "command": "bun run check",
+      "source": "package.json",
+      "reason": "package.json defines the check validation script."
+    },
+    {
+      "command": "bun run test",
+      "source": "package.json",
+      "reason": "package.json defines the test validation script."
+    },
+    {
+      "command": "bun run build",
+      "source": "package.json",
+      "reason": "package.json defines the build validation script."
+    }
+  ],
+  "risks": [
+    {
+      "severity": "warning",
+      "code": "missing-readme",
+      "message": "README.md is missing; public human entry point is not explicit."
+    },
+    {
+      "severity": "warning",
+      "code": "missing-spec-or-design",
+      "message": "No docs/specs/ or DESIGN.md was discovered; product intent may not be reviewable."
+    },
+    {
+      "severity": "warning",
+      "code": "missing-ci-workflows",
+      "message": "No GitHub workflow was discovered; validation may rely on local discipline."
+    },
+    {
+      "severity": "warning",
+      "code": "missing-security-policy",
+      "message": "SECURITY.md is missing; vulnerability reporting and security expectations are unclear."
+    }
+  ]
+}

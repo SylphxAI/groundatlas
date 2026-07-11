@@ -1,10 +1,10 @@
 [package]
 name = "groundatlas-scanner"
-version = "0.1.0"
+version = "0.1.3"
 edition.workspace = true
 license.workspace = true
 publish.workspace = true
-description = "GroundAtlas Rust scanner CLI (ADR-168 S0 health + version)"
+description = "GroundAtlas Rust scanner CLI (ADR-168 S1 scan parity)"
 
 [lints]
 workspace = true
@@ -20,6 +20,9 @@ path = "src/main.rs"
 clap = { version = "4", features = ["derive"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+sha2 = "0.10"
+time = { version = "0.3", features = ["formatting"] }
 
 [dev-dependencies]
 assert_cmd = "2"
+serde = { version = "1", features = ["derive"] }

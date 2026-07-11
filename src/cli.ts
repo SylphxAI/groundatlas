@@ -14,13 +14,13 @@ import {
   validateProjectManifestFile,
 } from "./application/projectManifest.js";
 import { scanRepository } from "./application/scan.js";
+import { parseArgs } from "./cli/args.js";
+import { helpText } from "./cli/help.js";
+import type { MachineManifestReport } from "./domain/types.js";
 import {
   rustScannerDelegationEnabled,
   scanRepositoryViaRust,
 } from "./infrastructure/rustScanner.js";
-import { parseArgs } from "./cli/args.js";
-import { helpText } from "./cli/help.js";
-import type { MachineManifestReport } from "./domain/types.js";
 import {
   renderFleetReport,
   renderImpact,
@@ -29,6 +29,11 @@ import {
 } from "./renderers/markdown.js";
 
 const { version } = packageJson;
+
+// ADR-168 S2: published npm CLI scan hot path defaults to Rust scanner authority.
+if (process.env.GROUNDATLAS_RUST_SCANNER === undefined) {
+  process.env.GROUNDATLAS_RUST_SCANNER = "1";
+}
 
 async function main(argv: string[]): Promise<number> {
   const args = parseArgs(argv);
@@ -47,7 +52,9 @@ async function main(argv: string[]): Promise<number> {
 
   if (args.command === "init") {
     const config = await ensureConfig(cwd, args.outputDir);
-    const atlas = await scanRepository({ cwd, outputDir: config.outputDir });
+    const atlas = rustScannerDelegationEnabled()
+      ? scanRepositoryViaRust({ cwd, outputDir: config.outputDir })
+      : await scanRepository({ cwd, outputDir: config.outputDir });
     const written = await writeAtlas(path.join(cwd, config.outputDir), atlas);
     console.log(`GroundAtlas initialized ${config.outputDir}/`);
     for (const file of written) console.log(`- ${path.relative(cwd, file)}`);
@@ -70,7 +77,9 @@ async function main(argv: string[]): Promise<number> {
     }
 
     const config = await loadConfig(cwd, args.outputDir);
-    const atlas = await scanRepository({ cwd, outputDir: config.outputDir });
+    const atlas = rustScannerDelegationEnabled()
+      ? scanRepositoryViaRust({ cwd, outputDir: config.outputDir })
+      : await scanRepository({ cwd, outputDir: config.outputDir });
     const inspection = await inspectMachineProjectManifests(
       cwd,
       new Set(atlas.sources.map((source) => source.path)),
@@ -88,7 +97,9 @@ async function main(argv: string[]): Promise<number> {
   const config = await loadConfig(cwd, args.outputDir);
 
   if (args.command === "update") {
-    const atlas = await scanRepository({ cwd, outputDir: config.outputDir });
+    const atlas = rustScannerDelegationEnabled()
+      ? scanRepositoryViaRust({ cwd, outputDir: config.outputDir })
+      : await scanRepository({ cwd, outputDir: config.outputDir });
     const written = await writeAtlas(path.join(cwd, config.outputDir), atlas);
     console.log(`GroundAtlas updated ${config.outputDir}/`);
     for (const file of written) console.log(`- ${path.relative(cwd, file)}`);
@@ -97,22 +108,14 @@ async function main(argv: string[]): Promise<number> {
 
   if (args.command === "scan") {
     if (rustScannerDelegationEnabled()) {
-      const stub = scanRepositoryViaRust({ cwd, outputDir: config.outputDir });
+      const atlas = scanRepositoryViaRust({ cwd, outputDir: config.outputDir });
       if (args.json) {
-        console.log(JSON.stringify(stub, null, 2));
+        console.log(JSON.stringify(atlas, null, 2));
       } else {
-        console.log(
-          `Rust scanner S0 stub for ${stub.repository.name} (${stub.generator.name} ${stub.generator.version})`,
-        );
-        console.log(renderRisks(
-          stub.risks.map((risk) => ({
-            severity: risk.severity as "info" | "warning" | "error",
-            code: risk.code,
-            message: risk.message,
-          })),
-        ));
+        console.log(renderSourceTable(atlas.sources.filter((source) => source.canonical)));
+        if (atlas.risks.length > 0) console.log(`\n${renderRisks(atlas.risks)}`);
       }
-      return stub.risks.some((risk) => risk.severity === "error") ? 1 : 0;
+      return atlas.risks.some((risk) => risk.severity === "error") ? 1 : 0;
     }
 
     const atlas = await scanRepository({ cwd, outputDir: config.outputDir });
@@ -149,7 +152,9 @@ async function main(argv: string[]): Promise<number> {
   }
 
   if (args.command === "impact") {
-    const atlas = await scanRepository({ cwd, outputDir: config.outputDir });
+    const atlas = rustScannerDelegationEnabled()
+      ? scanRepositoryViaRust({ cwd, outputDir: config.outputDir })
+      : await scanRepository({ cwd, outputDir: config.outputDir });
     const impact = await analyzeImpact(cwd, args.since, atlas);
     if (args.json) {
       console.log(JSON.stringify(impact, null, 2));

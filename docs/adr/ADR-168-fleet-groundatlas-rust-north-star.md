@@ -67,6 +67,8 @@ memory safety on large repos, and fleet dogfood quality for the scanner hot path
 
 ## Validation
 
+- S1 evidence: `test/fixtures/basic/atlas.golden.json`, `crates/groundatlas-scanner/tests/basic_fixture_parity.rs`, `test/scanParity.test.ts`; migration ledger `docs/specs/groundatlas-migration-ledger.json`
+- S2 evidence: `src/cli.ts`, `src/infrastructure/rustScanner.ts`, `scripts/check-no-ts-scan-backend.sh`, `test/check-no-ts-scan-backend.test.ts`, `test/rustScanner.bridge.test.ts`; `cli/scan` → `authority_rust` on `feat/adr-168-s1-scan-parity`; `scripts/check-no-ts-init-backend.sh`, `test/initParity.test.ts`; `cli/init` → `authority_rust` on `feat/adr-168-s2-audit-rust-scan`; `scripts/check-no-ts-update-backend.sh`, `test/updateParity.test.ts`; `cli/update` → `authority_rust` on `feat/adr-168-s2-audit-rust-scan`; `scripts/check-no-ts-manifest-backend.sh`, `test/manifestParity.test.ts`; `cli/manifest` discovery → `authority_rust` on `feat/adr-168-s2-audit-rust-scan`; `scripts/check-no-ts-impact-backend.sh`, `test/impactParity.test.ts`; `cli/impact` → `authority_rust` on `feat/adr-168-s2-audit-rust-scan`
 - Deterministic map parity on fixture repos (TS vs Rust)
 - ADR-0002 audit gates pass on Rust output
 - `cargo test` + `cargo clippy -D warnings`
