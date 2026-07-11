@@ -91,7 +91,7 @@ test("manifest discovery source paths match between TS and Rust scan on basic fi
 });
 
 function runCliManifest(overrides: Record<string, string | undefined> = {}) {
-  const env = { ...process.env, GROUNDATLAS_RUST_SCANNER_BIN: rustBinary, ...overrides };
+  const env: NodeJS.ProcessEnv = { ...process.env, GROUNDATLAS_RUST_SCANNER_BIN: rustBinary, ...overrides };
   return spawnSync("bun", ["run", path.join(repoRoot, "src/cli.ts"), "manifest", "--json"], {
     cwd: fixtureRoot,
     encoding: "utf8",

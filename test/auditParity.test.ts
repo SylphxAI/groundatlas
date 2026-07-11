@@ -95,7 +95,7 @@ test("auditAtlas detects stale atlas when sources change under Rust freshness au
 });
 
 function runCliAudit(overrides: Record<string, string | undefined> = {}) {
-  const env = { ...process.env, GROUNDATLAS_RUST_SCANNER_BIN: rustBinary, ...overrides };
+  const env: NodeJS.ProcessEnv = { ...process.env, GROUNDATLAS_RUST_SCANNER_BIN: rustBinary, ...overrides };
   return spawnSync("bun", ["run", path.join(repoRoot, "src/cli.ts"), "audit", "--json"], {
     cwd: fixtureRoot,
     encoding: "utf8",
