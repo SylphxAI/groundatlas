@@ -42,7 +42,11 @@ function runCliInit(
   overrides: Record<string, string | undefined> = {},
   options?: { omitRustScannerFlag?: boolean },
 ) {
-  const env: NodeJS.ProcessEnv = { ...process.env, GROUNDATLAS_RUST_SCANNER_BIN: rustBinary, ...overrides };
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    GROUNDATLAS_RUST_SCANNER_BIN: rustBinary,
+    ...overrides,
+  };
   if (options?.omitRustScannerFlag) {
     delete env.GROUNDATLAS_RUST_SCANNER;
   }

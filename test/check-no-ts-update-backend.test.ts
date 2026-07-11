@@ -11,9 +11,9 @@ test("check-no-ts-update-backend gate script exists and enforces Rust update aut
   expect(script).toContain("rustScannerDelegationEnabled");
   expect(script).toContain("scanRepositoryViaRust");
   expect(script).toContain('GROUNDATLAS_RUST_SCANNER = "1"');
-  expect(existsSync(new URL("../test/fixtures/basic/atlas.golden.json", import.meta.url).pathname)).toBe(
-    true,
-  );
+  expect(
+    existsSync(new URL("../test/fixtures/basic/atlas.golden.json", import.meta.url).pathname),
+  ).toBe(true);
   expect(existsSync(new URL("../test/updateParity.test.ts", import.meta.url).pathname)).toBe(true);
 });
 

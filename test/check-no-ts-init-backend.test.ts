@@ -11,9 +11,9 @@ test("check-no-ts-init-backend gate script exists and enforces Rust init authori
   expect(script).toContain("rustScannerDelegationEnabled");
   expect(script).toContain("scanRepositoryViaRust");
   expect(script).toContain('GROUNDATLAS_RUST_SCANNER = "1"');
-  expect(existsSync(new URL("../test/fixtures/basic/atlas.golden.json", import.meta.url).pathname)).toBe(
-    true,
-  );
+  expect(
+    existsSync(new URL("../test/fixtures/basic/atlas.golden.json", import.meta.url).pathname),
+  ).toBe(true);
   expect(existsSync(new URL("../test/initParity.test.ts", import.meta.url).pathname)).toBe(true);
 });
 

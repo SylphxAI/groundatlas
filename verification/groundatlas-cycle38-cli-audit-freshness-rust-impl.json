@@ -8,13 +8,8 @@
   "executionStatus": "harness_present_shell_unavailable",
   "promotionPolicy": "NO_PROMOTIONS — rust_impl ONLY per rej-010; proof.status remains missing until differential_green at bound SHAs",
   "slice": "cli/audit:freshness_fingerprint",
-  "rustSurfaces": [
-    "crates/groundatlas-scanner/src/audit.rs"
-  ],
-  "tsBridge": [
-    "src/application/audit.ts#auditFreshness",
-    "src/infrastructure/rustScanner.ts"
-  ],
+  "rustSurfaces": ["crates/groundatlas-scanner/src/audit.rs"],
+  "tsBridge": ["src/application/audit.ts#auditFreshness", "src/infrastructure/rustScanner.ts"],
   "parityTests": [
     "test/auditParity.test.ts",
     "crates/groundatlas-scanner/tests/audit_differential.rs"
@@ -29,9 +24,7 @@
   "caseCounts": {
     "auditFreshness": 2
   },
-  "capabilities": [
-    "cli/audit"
-  ],
+  "capabilities": ["cli/audit"],
   "logRef": "/tmp/grok-goal-729a939ec6e2/implementer/cycle38-apps/groundatlas-cli-audit-freshness.log",
   "notes": "Cycle38 bounded slice: cli/audit freshness_fingerprint rust_impl verified on disk — Rust freshness_fingerprint mirrors TS audit.ts oracle; fresh + stale cases in basic-audit-corpus. Shell unavailable — run scripts/run-groundatlas-differential.sh to emit differential_green."
 }

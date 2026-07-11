@@ -56,7 +56,7 @@
     "dev": "bun run src/cli.ts",
     "format": "biome format --write .",
     "lint": "biome check .",
-    "test": "bun test",
+    "test": "bash scripts/run-unit-tests.sh",
     "typecheck": "tsc --noEmit",
     "groundatlas:update": "bun run src/cli.ts update",
     "groundatlas:audit": "bun run src/cli.ts audit",

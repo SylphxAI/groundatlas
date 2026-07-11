@@ -14,13 +14,13 @@ import {
   validateProjectManifestFile,
 } from "./application/projectManifest.js";
 import { scanRepository } from "./application/scan.js";
+import { parseArgs } from "./cli/args.js";
+import { helpText } from "./cli/help.js";
+import type { MachineManifestReport } from "./domain/types.js";
 import {
   rustScannerDelegationEnabled,
   scanRepositoryViaRust,
 } from "./infrastructure/rustScanner.js";
-import { parseArgs } from "./cli/args.js";
-import { helpText } from "./cli/help.js";
-import type { MachineManifestReport } from "./domain/types.js";
 import {
   renderFleetReport,
   renderImpact,
@@ -112,9 +112,7 @@ async function main(argv: string[]): Promise<number> {
       if (args.json) {
         console.log(JSON.stringify(atlas, null, 2));
       } else {
-        console.log(
-          renderSourceTable(atlas.sources.filter((source) => source.canonical)),
-        );
+        console.log(renderSourceTable(atlas.sources.filter((source) => source.canonical)));
         if (atlas.risks.length > 0) console.log(`\n${renderRisks(atlas.risks)}`);
       }
       return atlas.risks.some((risk) => risk.severity === "error") ? 1 : 0;

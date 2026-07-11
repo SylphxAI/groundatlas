@@ -11,9 +11,9 @@ test("check-no-ts-scan-backend gate script exists and enforces Rust scan authori
   expect(script).toContain("rustScannerDelegationEnabled");
   expect(script).toContain("scanRepositoryViaRust");
   expect(script).toContain('GROUNDATLAS_RUST_SCANNER = "1"');
-  expect(existsSync(new URL("../test/fixtures/basic/atlas.golden.json", import.meta.url).pathname)).toBe(
-    true,
-  );
+  expect(
+    existsSync(new URL("../test/fixtures/basic/atlas.golden.json", import.meta.url).pathname),
+  ).toBe(true);
   expect(existsSync(new URL("../test/scanParity.test.ts", import.meta.url).pathname)).toBe(true);
 });
 

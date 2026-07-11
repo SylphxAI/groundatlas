@@ -66,7 +66,7 @@ export async function cleanupScanFixture(tempRoot: string): Promise<void> {
   await rm(tempRoot, { force: true, recursive: true });
 }
 
-export async function scanTsOracleAtlas(repoRoot: string, fixtureRoot: string): Promise<AtlasMap> {
+export async function scanTsOracleAtlas(_repoRoot: string, fixtureRoot: string): Promise<AtlasMap> {
   const atlas = await scanRepository({
     cwd: fixtureRoot,
     outputDir: ".groundatlas",

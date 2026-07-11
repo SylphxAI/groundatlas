@@ -6,8 +6,8 @@ import { scanRepository } from "../src/application/scan.ts";
 import type { AtlasMap } from "../src/domain/types.ts";
 import { scanRepositoryViaRust } from "../src/infrastructure/rustScanner.ts";
 import {
-  cleanupScanFixture,
   CORPUS_RELATIVE,
+  cleanupScanFixture,
   GENERATED_AT,
   GENERATOR_VERSION,
   GOLDEN_RELATIVE,
@@ -101,7 +101,11 @@ function runCliScan(
   overrides: Record<string, string | undefined> = {},
   options?: { omitRustScannerFlag?: boolean },
 ) {
-  const env: NodeJS.ProcessEnv = { ...process.env, GROUNDATLAS_RUST_SCANNER_BIN: rustBinary, ...overrides };
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    GROUNDATLAS_RUST_SCANNER_BIN: rustBinary,
+    ...overrides,
+  };
   if (options?.omitRustScannerFlag) {
     delete env.GROUNDATLAS_RUST_SCANNER;
   }

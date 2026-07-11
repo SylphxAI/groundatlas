@@ -77,7 +77,11 @@ test("impact matched sources match between TS and Rust scan on basic fixture", a
 });
 
 function runCliImpact(overrides: Record<string, string | undefined> = {}) {
-  const env: NodeJS.ProcessEnv = { ...process.env, GROUNDATLAS_RUST_SCANNER_BIN: rustBinary, ...overrides };
+  const env: NodeJS.ProcessEnv = {
+    ...process.env,
+    GROUNDATLAS_RUST_SCANNER_BIN: rustBinary,
+    ...overrides,
+  };
   return spawnSync(
     "bun",
     ["run", path.join(repoRoot, "src/cli.ts"), "impact", "--since", "HEAD~1", "--json"],
@@ -101,9 +105,7 @@ test("CLI impact uses Rust authority by default", () => {
   }>;
   expect(payload.some((entry) => entry.path === "PROJECT.md")).toBe(true);
   expect(
-    payload.some((entry) =>
-      entry.matchedSources.some((source) => source.path === "PROJECT.md"),
-    ),
+    payload.some((entry) => entry.matchedSources.some((source) => source.path === "PROJECT.md")),
   ).toBe(true);
 });
 
@@ -117,8 +119,6 @@ test("CLI impact can opt out to TS when GROUNDATLAS_RUST_SCANNER=ts", () => {
   }>;
   expect(payload.some((entry) => entry.path === "PROJECT.md")).toBe(true);
   expect(
-    payload.some((entry) =>
-      entry.matchedSources.some((source) => source.path === "PROJECT.md"),
-    ),
+    payload.some((entry) => entry.matchedSources.some((source) => source.path === "PROJECT.md")),
   ).toBe(true);
 });

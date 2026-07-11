@@ -63,20 +63,16 @@ test("scanRepositoryViaRust returns full AtlasMap from groundatlas-scanner", () 
 });
 
 test("CLI scan delegates to Rust when GROUNDATLAS_RUST_SCANNER=1", () => {
-  const result = spawnSync(
-    "bun",
-    ["run", path.join(repoRoot, "src/cli.ts"), "scan", "--json"],
-    {
-      cwd: fixtureRoot,
-      encoding: "utf8",
-      env: {
-        ...process.env,
-        GROUNDATLAS_RUST_SCANNER: "1",
-        GROUNDATLAS_RUST_SCANNER_BIN: rustBinary,
-      },
-      stdio: ["ignore", "pipe", "pipe"],
+  const result = spawnSync("bun", ["run", path.join(repoRoot, "src/cli.ts"), "scan", "--json"], {
+    cwd: fixtureRoot,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      GROUNDATLAS_RUST_SCANNER: "1",
+      GROUNDATLAS_RUST_SCANNER_BIN: rustBinary,
     },
-  );
+    stdio: ["ignore", "pipe", "pipe"],
+  });
 
   expect(result.status).toBe(0);
   const payload = JSON.parse(result.stdout.trim()) as {
