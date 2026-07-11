@@ -18,6 +18,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
+      # Differential tests spawn scripts/differential/*-oracle.ts via bun.
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.12"
+
+      - name: Install JS deps (TS oracles)
+        run: bun install --frozen-lockfile
+
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -81,6 +90,14 @@ jobs:
         with:
           node-version: "22.14.0"
 
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      # Pre-npm dogfood packs a JS tarball only. S1 defaults CLI scan to Rust
+      # authority, so CI must supply a built scanner binary via env override.
+      - name: Build groundatlas-scanner for dogfood
+        run: cargo build -p groundatlas-scanner --release
+
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
@@ -88,6 +105,7 @@ jobs:
         env:
           GROUNDATLAS_DOGFOOD_REPOS: ${{ github.workspace }}/.dogfood-targets/groundatlas
           GROUNDATLAS_DOGFOOD_REPORT_PATH: ${{ runner.temp }}/groundatlas-external-dogfood.json
+          GROUNDATLAS_RUST_SCANNER_BIN: ${{ github.workspace }}/target/release/groundatlas-scanner
         run: bun run dogfood:external
 
       - name: Assert external dogfood evidence

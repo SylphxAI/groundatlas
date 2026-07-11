@@ -42,6 +42,21 @@ try {
     packageSpec = packGroundAtlas(tmpRoot);
     evidence.packageSpec = packageSpec;
   }
+
+  // Pre-npm tarball has no platform scanner binary. When dogfooding a packed
+  // local package with Rust scan authority defaulted on, point at a workspace
+  // build if the caller did not already set GROUNDATLAS_RUST_SCANNER_BIN.
+  if (!process.env.GROUNDATLAS_RUST_SCANNER_BIN?.trim()) {
+    const candidates = [
+      path.join(repoRoot, "target/release/groundatlas-scanner"),
+      path.join(repoRoot, "target/debug/groundatlas-scanner"),
+    ];
+    const found = candidates.find((candidate) => existsSync(candidate));
+    if (found) {
+      process.env.GROUNDATLAS_RUST_SCANNER_BIN = found;
+    }
+  }
+
   const installRoot = path.join(tmpRoot, "install");
   await makeInstallProject(installRoot, packageSpec);
 
