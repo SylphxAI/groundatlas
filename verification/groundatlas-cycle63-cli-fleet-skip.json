@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "repo": "SylphxAI/groundatlas",
+  "cycle": "cycle63",
+  "reauditRef": "rej-010",
+  "verifiedAt": "2026-07-10T54:00:00Z",
+  "status": "harness_metadata_only",
+  "executionStatus": "harness_present_shell_unavailable",
+  "slice": "cli/fleet",
+  "tsOnlyAction": "skip",
+  "skipReason": "cli/fleet requires fleet manifest renderer + scanRepository call-site migration",
+  "harness": {
+    "entrypoint": "scripts/run-groundatlas-differential.sh --slice cli/explain",
+    "verificationRef": "verification/groundatlas-cycle51-cli-explain-rust-impl.json"
+  },
+  "notes": "Cycle63 rej-010: cli/fleet ts_only deferred — harness metadata points to cycle51 cli/explain slice."
+}
