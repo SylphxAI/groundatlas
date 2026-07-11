@@ -10,7 +10,7 @@ test("check-no-ts-impact-backend gate script exists and enforces Rust impact aut
   expect(script).toContain("check-no-ts-impact-backend");
   expect(script).toContain("rustScannerDelegationEnabled");
   expect(script).toContain("scanRepositoryViaRust");
-  expect(script).toContain('args.command === "impact"');
+  expect(script).toContain(String.raw`args\.command === "impact"`);
   expect(existsSync(new URL("../test/impactParity.test.ts", import.meta.url).pathname)).toBe(true);
 });
 

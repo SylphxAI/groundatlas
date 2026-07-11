@@ -10,7 +10,7 @@ test("check-no-ts-manifest-backend gate script exists and enforces Rust manifest
   expect(script).toContain("check-no-ts-manifest-backend");
   expect(script).toContain("rustScannerDelegationEnabled");
   expect(script).toContain("scanRepositoryViaRust");
-  expect(script).toContain('args.command === "manifest"');
+  expect(script).toContain(String.raw`args\.command === "manifest"`);
   expect(existsSync(new URL("../test/manifestParity.test.ts", import.meta.url).pathname)).toBe(
     true,
   );
