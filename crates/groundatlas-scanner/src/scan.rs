@@ -86,7 +86,7 @@ pub fn scan_repository(options: ScanOptions<'_>) -> Result<AtlasMap, ScanError> 
     let generated_at = options
         .generated_at
         .map(str::to_string)
-        .unwrap_or_else(|| chrono_now_iso());
+        .unwrap_or_else(chrono_now_iso);
 
     let generator_version = options
         .generator_version

@@ -5,10 +5,10 @@ use crate::types::{SourceEntry, SourceKind};
 const MAX_RESULTS: usize = 20;
 
 fn kind_label(kind: SourceKind) -> String {
-    serde_json::to_string(&kind)
-        .expect("kind serializes")
-        .trim_matches('"')
-        .to_string()
+    match serde_json::to_string(&kind) {
+        Ok(raw) => raw.trim_matches('"').to_string(),
+        Err(_) => "unknown".to_string(),
+    }
 }
 
 /// Score a source entry against lowercase query terms (TS `scoreSource` parity).

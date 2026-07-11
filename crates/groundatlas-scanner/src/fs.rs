@@ -78,7 +78,7 @@ fn visit(
     files: &mut Vec<FileEntry>,
 ) -> Result<(), std::io::Error> {
     let mut entries: Vec<_> = fs::read_dir(directory)?.filter_map(Result::ok).collect();
-    entries.sort_by(|left, right| left.file_name().cmp(&right.file_name()));
+    entries.sort_by_key(|left| left.file_name());
 
     for entry in entries {
         let file_name = entry.file_name();
