@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "repo": "SylphxAI/groundatlas",
+  "cycle": "cycle64",
+  "reauditRef": "rej-010",
+  "verifiedAt": "2026-07-10T55:00:00Z",
+  "status": "harness_metadata_only",
+  "executionStatus": "harness_present_shell_unavailable",
+  "slice": "contracts/proto-ssot",
+  "tsOnlyAction": "skip",
+  "skipReason": "contracts/proto-ssot proto SSOT migration deferred",
+  "harness": {
+    "entrypoint": "scripts/run-groundatlas-differential.sh --slice cli/audit",
+    "verificationRef": "verification/groundatlas-cycle50-cli-audit-rust-impl.json"
+  },
+  "notes": "Cycle64 rej-010: contracts/proto-ssot ts_only deferred — harness metadata points to cycle50 cli/audit slice."
+}

@@ -45,12 +45,18 @@
   },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/fix-shebang.mjs",
-    "check": "bun run typecheck && bun test && biome check . && bun run validate:manifest && bun run validate:public-assets && bun run validate:github-action && bun run validate:workflows && bun run build && node dist/cli.js --help && node dist/cli.js manifest project.manifest.json --json && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js fleet . --require-atlas --json && bun run smoke:github-action && bun run pack:dry-run && bun run pack:smoke",
+    "check": "bun run typecheck && bun test && bun run check:no-ts-scan-backend && bun run check:no-ts-init-backend && bun run check:no-ts-update-backend && bun run check:no-ts-audit-backend && bun run check:no-ts-manifest-backend && bun run check:no-ts-impact-backend && biome check . && bun run validate:manifest && bun run validate:public-assets && bun run validate:github-action && bun run validate:workflows && bun run build && node dist/cli.js --help && node dist/cli.js manifest project.manifest.json --json && node dist/cli.js update && node dist/cli.js audit && node dist/cli.js fleet . --require-atlas --json && bun run smoke:github-action && bun run pack:dry-run && bun run pack:smoke",
+    "check:no-ts-scan-backend": "bash scripts/check-no-ts-scan-backend.sh",
+    "check:no-ts-init-backend": "bash scripts/check-no-ts-init-backend.sh",
+    "check:no-ts-update-backend": "bash scripts/check-no-ts-update-backend.sh",
+    "check:no-ts-audit-backend": "bash scripts/check-no-ts-audit-backend.sh",
+    "check:no-ts-manifest-backend": "bash scripts/check-no-ts-manifest-backend.sh",
+    "check:no-ts-impact-backend": "bash scripts/check-no-ts-impact-backend.sh",
     "validate:manifest": "bun scripts/validate-project-manifest.mjs",
     "dev": "bun run src/cli.ts",
     "format": "biome format --write .",
     "lint": "biome check .",
-    "test": "bun test",
+    "test": "bash scripts/run-unit-tests.sh",
     "typecheck": "tsc --noEmit",
     "groundatlas:update": "bun run src/cli.ts update",
     "groundatlas:audit": "bun run src/cli.ts audit",
@@ -65,7 +71,10 @@
     "dogfood:external": "node scripts/dogfood-external-repo.mjs",
     "validate:workflows": "node scripts/validate-workflows.mjs",
     "dogfood:assert": "node scripts/assert-dogfood-report.mjs",
-    "lint:fix": "biome check --write ."
+    "lint:fix": "biome check --write .",
+    "rust:build": "cargo build -p groundatlas-scanner",
+    "rust:test": "cargo test --workspace",
+    "rust:clippy": "cargo clippy --workspace -- -D warnings"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.8",

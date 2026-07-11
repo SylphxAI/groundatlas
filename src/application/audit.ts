@@ -8,6 +8,10 @@ import {
   type Risk,
 } from "../domain/types.js";
 import { pathExists, readJsonFile } from "../infrastructure/fs.js";
+import {
+  rustScannerDelegationEnabled,
+  scanRepositoryViaRust,
+} from "../infrastructure/rustScanner.js";
 import { scanRepository } from "./scan.js";
 
 export async function auditAtlas(cwd: string, outputDir: string): Promise<AuditResult> {
@@ -66,7 +70,9 @@ export async function auditAtlas(cwd: string, outputDir: string): Promise<AuditR
 
 async function auditFreshness(cwd: string, outputDir: string, atlas: AtlasMap): Promise<Risk[]> {
   try {
-    const current = await scanRepository({ cwd, outputDir });
+    const current = rustScannerDelegationEnabled()
+      ? scanRepositoryViaRust({ cwd, outputDir })
+      : await scanRepository({ cwd, outputDir });
     if (freshnessFingerprint(atlas) === freshnessFingerprint(current)) {
       return [];
     }
