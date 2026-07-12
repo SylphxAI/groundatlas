@@ -1,0 +1,16 @@
+{
+  "packet": "NONMCP-SITES-TICK038",
+  "at": "2026-07-12T03:07:10Z",
+  "transition": "ts_only\u2192rust_impl",
+  "capabilities": [
+    "cli/fleet"
+  ],
+  "localTests": "cargo test -p groundatlas-scanner --lib fleet \u2192 6 passed",
+  "claims": {
+    "rust_impl": true,
+    "parity_proven": false,
+    "authority_rust": false,
+    "ts_deleted": false
+  },
+  "notes": "adoption scoring pure core rej-010 hold; cloud CI via PR; no Docker."
+}

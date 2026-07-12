@@ -3,6 +3,7 @@
 mod audit;
 mod classify;
 mod explain;
+mod fleet;
 mod fs;
 mod git;
 mod scan;
@@ -10,6 +11,7 @@ mod types;
 
 pub use audit::freshness_fingerprint;
 pub use explain::explain_query;
+pub use fleet::{adoption_status, summarize_fleet, unique_sorted_issues, FleetAdoptionStatus, FleetIssue, FleetSummary, DOGFOOD_BLOCKING_RISK_CODES};
 pub use scan::{scan_repository, scan_repository_json, ScanError};
 pub use types::{
     health_body, health_json, AtlasMap, HealthBody, ScanOptions, SourceEntry, ATLAS_SCHEMA_VERSION,
