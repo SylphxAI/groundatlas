@@ -52,7 +52,7 @@
       "branch": "feat/adr-168-s2-audit-rust-scan",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T12:00:00Z"
       },
@@ -66,7 +66,7 @@
           "scripts/run-groundatlas-differential.sh",
           "scripts/differential/**"
         ],
-        "staleReason": "rej-010 re-audit — prior authority_rust lacked SHA-bound differential proof",
+        "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
         "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
       },
       "notes": "S2 init slice: npm CLI init hot path defaults to Rust scan authority; check-no-ts-init-backend gate blocks unconditional TS fallback. TS scan retained for library/export until S3 ts_deleted."
@@ -83,7 +83,7 @@
       "branch": "feat/adr-168-s2-audit-rust-scan",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T12:00:00Z"
       },
@@ -96,7 +96,7 @@
           "scripts/run-groundatlas-differential.sh",
           "scripts/differential/**"
         ],
-        "staleReason": "rej-010 re-audit — prior authority_rust lacked SHA-bound differential proof",
+        "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
         "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
       },
       "notes": "S2 update slice: npm CLI update hot path defaults to Rust scan authority; check-no-ts-update-backend gate blocks unconditional TS fallback. TS scan retained for library/export until S3 ts_deleted."
@@ -113,7 +113,7 @@
       "branch": "feat/adr-168-s1-scan-parity",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T12:00:00Z"
       },
@@ -128,7 +128,7 @@
           "scripts/differential/**",
           "scripts/run-groundatlas-differential.sh"
         ],
-        "staleReason": "rej-010 re-audit — prior authority_rust lacked SHA-bound differential proof",
+        "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
         "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
       },
       "notes": "S2: Published npm CLI scan hot path defaults GROUNDATLAS_RUST_SCANNER=1 to Rust. check-no-ts-scan-backend gate blocks unconditional TS fallback. TS scanner retained for library/export until S3 ts_deleted."
@@ -145,7 +145,7 @@
       "branch": "feat/adr-168-s2-audit-rust-scan",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: audit freshness differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: audit freshness differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T12:00:00Z"
       },
@@ -159,10 +159,10 @@
           "scripts/differential/fixtures/basic-audit-corpus.json",
           "scripts/run-groundatlas-differential.sh"
         ],
-        "staleReason": "rej-010: audit freshness differential harness landed — awaiting differential_green at bound SHAs",
+        "staleReason": "rej-010: audit freshness differential harness landed \u2014 awaiting differential_green at bound SHAs",
         "verificationRef": "verification/groundatlas-cycle38-cli-audit-freshness-rust-impl.json"
       },
-      "notes": "Cycle-27 / Cycle-38 slice: Rust freshness_fingerprint + TS audit oracle differential on basic fixture (fresh + stale cases). cycle38 on-disk verify — audit.rs + audit_differential.rs + 2-case corpus confirmed. auditFreshness defaults to Rust scan authority; banner/schema/policy checks remain TS until S3."
+      "notes": "Cycle-27 / Cycle-38 slice: Rust freshness_fingerprint + TS audit oracle differential on basic fixture (fresh + stale cases). cycle38 on-disk verify \u2014 audit.rs + audit_differential.rs + 2-case corpus confirmed. auditFreshness defaults to Rust scan authority; banner/schema/policy checks remain TS until S3."
     },
     {
       "id": "cli/explain",
@@ -175,7 +175,7 @@
       "differentialTest": "crates/groundatlas-scanner/tests/explain_differential.rs#cli_explain_differential_matches_ts_oracle; scripts/run-groundatlas-differential.sh --slice cli/explain",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T32:00:00Z"
       },
@@ -189,10 +189,10 @@
           "scripts/differential/fixtures/basic-explain-corpus.json",
           "scripts/run-groundatlas-differential.sh"
         ],
-        "staleReason": "rej-010: cli/explain differential harness landed — awaiting differential_green at bound SHAs",
+        "staleReason": "rej-010: cli/explain differential harness landed \u2014 awaiting differential_green at bound SHAs",
         "verificationRef": "verification/groundatlas-cycle51-cli-explain-rust-impl.json"
       },
-      "notes": "Cycle51 rej-010: cli/explain query scoring rust_impl + TS oracle differential (5 cases on basic atlas golden). rust_impl ONLY — proof.status missing until differential_green."
+      "notes": "Cycle51 rej-010: cli/explain query scoring rust_impl + TS oracle differential (5 cases on basic atlas golden). rust_impl ONLY \u2014 proof.status missing until differential_green."
     },
     {
       "id": "cli/impact",
@@ -206,7 +206,7 @@
       "branch": "feat/adr-168-s2-audit-rust-scan",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T12:00:00Z"
       },
@@ -218,7 +218,7 @@
           "crates/groundatlas-scanner/src/scan.rs",
           "scripts/run-groundatlas-differential.sh"
         ],
-        "staleReason": "rej-010 re-audit — prior authority_rust lacked SHA-bound differential proof",
+        "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
         "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
       },
       "notes": "S2 impact slice: CLI impact atlas scan defaults to Rust scan authority; check-no-ts-impact-backend gate blocks unconditional TS scan fallback. TS git diff + analyzeImpact retained for library/export until S3 ts_deleted."
@@ -231,13 +231,13 @@
       "tsSurface": "src/application/fleet.ts#adoptionStatus;summarizeFleet",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: rust_impl only — no parity_proven/authority_rust/ts_deleted",
+        "reason": "rej-010: rust_impl only \u2014 no parity_proven/authority_rust/ts_deleted",
         "rejectionRef": "rej-010",
         "since": "2026-07-12T03:02:48Z"
       },
-      "rustSurface": "crates/groundatlas-scanner/src/fleet.rs#adoption_status;summarize_fleet;unique_sorted_issues",
+      "rustSurface": "crates/groundatlas-scanner/src/fleet.rs#adoption_status;summarize_fleet;unique_sorted_issues; crates/groundatlas-scanner/src/adoption.rs",
       "parityTest": "crates/groundatlas-scanner/src/fleet.rs unit tests",
-      "notes": " TICK038: pure fleet scoring rust_impl; scan/audit I/O still TS bridge. rej-010 hold.",
+      "notes": " TICK038: pure fleet scoring rust_impl; scan/audit I/O still TS bridge. rej-010 hold. [FLEET35] adoption_status pure residual.",
       "proof": {
         "status": "missing"
       }
@@ -254,7 +254,7 @@
       "branch": "feat/adr-168-s2-audit-rust-scan",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T12:00:00Z"
       },
@@ -266,7 +266,7 @@
           "crates/groundatlas-scanner/src/scan.rs",
           "scripts/run-groundatlas-differential.sh"
         ],
-        "staleReason": "rej-010 re-audit — prior authority_rust lacked SHA-bound differential proof",
+        "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
         "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
       },
       "notes": "S2 manifest slice: CLI manifest discovery defaults to Rust scan authority; check-no-ts-manifest-backend gate blocks unconditional TS discovery fallback. TS manifest validation retained for explicit path + library/export until S3 ts_deleted."
@@ -284,7 +284,7 @@
       "baseBranch": "feat/adr-168-s0-ci-bridge",
       "promotionHold": {
         "active": true,
-        "reason": "rej-010: differential harness landed — awaiting differential_green at bound SHAs; NO auto-promotion",
+        "reason": "rej-010: differential harness landed \u2014 awaiting differential_green at bound SHAs; NO auto-promotion",
         "rejectionRef": "rej-010",
         "since": "2026-07-10T12:00:00Z"
       },
@@ -300,7 +300,7 @@
           "scripts/differential/**",
           "scripts/run-groundatlas-differential.sh"
         ],
-        "staleReason": "rej-010 re-audit — prior parity_proven lacked SHA-bound differential proof",
+        "staleReason": "rej-010 re-audit \u2014 prior parity_proven lacked SHA-bound differential proof",
         "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
       },
       "notes": "ADR-168 S1 deterministic AtlasMap parity on test/fixtures/basic corpus. rej-010: SHA-bound differential harness (TS scan oracle vs native Rust) at scripts/run-groundatlas-differential.sh."
@@ -348,48 +348,54 @@
       "rust_impl_verified": 1,
       "slice": "cli/audit:freshness_fingerprint",
       "verificationRef": "verification/groundatlas-cycle38-cli-audit-freshness-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY — cli/audit freshness on-disk verify; audit.rs + audit-oracle + 2-case corpus confirmed; differential_green pending shell/CI execution"
+      "notes": "rej-010 rust_impl ONLY \u2014 cli/audit freshness on-disk verify; audit.rs + audit-oracle + 2-case corpus confirmed; differential_green pending shell/CI execution"
     },
     "cycle40_delta": {
       "rust_impl_verified": 1,
       "slice": "cli/audit:freshness_fingerprint",
       "verificationRef": "verification/groundatlas-cycle40-cli-audit-freshness-rust-impl.json",
-      "notes": "cycle40 rej-010 re-verify — cli/audit freshness rust_impl harness confirmed on disk; differential_green pending shell/CI execution"
+      "notes": "cycle40 rej-010 re-verify \u2014 cli/audit freshness rust_impl harness confirmed on disk; differential_green pending shell/CI execution"
     },
     "cycle43_delta": {
       "rust_impl_verified": 1,
       "slice": "cli/audit:freshness_fingerprint",
       "verificationRef": "verification/groundatlas-cycle43-cli-audit-freshness-rust-impl.json",
-      "notes": "cycle43 rej-010 re-verify — cli/audit freshness rust_impl harness confirmed on disk; differential_green pending shell/CI execution (rej-007 gen-7)"
+      "notes": "cycle43 rej-010 re-verify \u2014 cli/audit freshness rust_impl harness confirmed on disk; differential_green pending shell/CI execution (rej-007 gen-7)"
     },
     "cycle49_delta": {
       "rust_impl_verified": 1,
       "slice": "scanner/rust-scan",
       "verificationRef": "verification/groundatlas-cycle49-scanner-rust-scan-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY — cycle49 highest-value unimplemented slice: scanner/rust-scan bounded differential (1 basic-fixture atlas-map case)"
+      "notes": "rej-010 rust_impl ONLY \u2014 cycle49 highest-value unimplemented slice: scanner/rust-scan bounded differential (1 basic-fixture atlas-map case)"
     },
     "cycle51_delta": {
       "rust_impl_verified": 1,
       "slice": "cli/explain",
       "verificationRef": "verification/groundatlas-cycle51-cli-explain-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY — cycle51 next ts_only slice: cli/explain bounded differential (5 query cases)"
+      "notes": "rej-010 rust_impl ONLY \u2014 cycle51 next ts_only slice: cli/explain bounded differential (5 query cases)"
     },
     "cycle63_delta": {
       "action": "skip",
       "slice": "cli/fleet",
       "verificationRef": "verification/groundatlas-cycle63-cli-fleet-skip.json",
-      "notes": "rej-010 cycle63 — cli/fleet ts_only deferred"
+      "notes": "rej-010 cycle63 \u2014 cli/fleet ts_only deferred"
     },
     "cycle64_delta": {
       "ts_only_deferred": 1,
       "slice": "contracts/proto-ssot",
       "verificationRef": "verification/groundatlas-cycle64-proto-ssot-skip.json",
-      "notes": "rej-010 cycle64 — contracts/proto-ssot ts_only deferred"
+      "notes": "rej-010 cycle64 \u2014 contracts/proto-ssot ts_only deferred"
+    },
+    "fleet35_delta": {
+      "slice": "cli/fleet:adoption_status_pure",
+      "state": "rust_impl",
+      "proof": "missing",
+      "at": "2026-07-13T19:30:14Z"
     }
   },
   "promotionFreeze": {
     "active": true,
-    "reason": "rej-010 promotion freeze — 0 capabilities with differential_green or canary_green proof",
+    "reason": "rej-010 promotion freeze \u2014 0 capabilities with differential_green or canary_green proof",
     "rejectionRef": "rej-010",
     "since": "2026-07-10T12:00:00Z"
   },
@@ -452,7 +458,7 @@
         "proof.status missing on all rust_impl capabilities until CI differential_green"
       ],
       "nextCandidates": [
-        "scanner/ts_deleted — delete src/application/scan.ts + src/domain/classify.ts after library/export migrate"
+        "scanner/ts_deleted \u2014 delete src/application/scan.ts + src/domain/classify.ts after library/export migrate"
       ],
       "notes": "ts_deleted prep: migrate remaining scanRepository call sites to Rust bridge; add deletion gate; retain golden parity corpus."
     }
@@ -463,7 +469,7 @@
     "reauditRef": "rej-010",
     "evidenceRef": "/tmp/grok-goal-729a939ec6e2/implementer/cycle40-apps-mcp.json",
     "verificationRef": "verification/groundatlas-cycle40-cli-audit-freshness-rust-impl.json",
-    "notes": "cycle40 rej-010: cli/audit freshness_fingerprint rust_impl re-verified on disk. rust_impl ONLY — proof.status missing until differential_green at bound SHAs."
+    "notes": "cycle40 rej-010: cli/audit freshness_fingerprint rust_impl re-verified on disk. rust_impl ONLY \u2014 proof.status missing until differential_green at bound SHAs."
   },
   "cycle43": {
     "boundedSlice": "cli/audit:freshness_fingerprint",
@@ -480,9 +486,9 @@
     "caseCounts": {
       "auditFreshness": 2
     },
-    "notes": "cycle43 rej-010: cli/audit freshness_fingerprint rust_impl re-verified on disk. rust_impl ONLY — proof.status missing until differential_green at bound SHAs. Shell unavailable (rej-007 gen-7)."
+    "notes": "cycle43 rej-010: cli/audit freshness_fingerprint rust_impl re-verified on disk. rust_impl ONLY \u2014 proof.status missing until differential_green at bound SHAs. Shell unavailable (rej-007 gen-7)."
   },
-  "cycle49Slice": "scanner/rust-scan — bounded differential; bash scripts/run-groundatlas-differential.sh",
+  "cycle49Slice": "scanner/rust-scan \u2014 bounded differential; bash scripts/run-groundatlas-differential.sh",
   "cycle49": {
     "boundedSlice": "scanner/rust-scan",
     "status": "rust_impl_on_disk_verified",
@@ -501,9 +507,9 @@
     "caseCounts": {
       "scannerRustScan": 1
     },
-    "notes": "cycle49 rej-010: scanner/rust-scan bounded differential harness on-disk verify. rust_impl ONLY — proof.status missing until differential_green at bound SHAs."
+    "notes": "cycle49 rej-010: scanner/rust-scan bounded differential harness on-disk verify. rust_impl ONLY \u2014 proof.status missing until differential_green at bound SHAs."
   },
-  "cycle51Slice": "cli/explain — bounded --slice entrypoint; bash scripts/run-groundatlas-differential.sh --slice cli/explain",
+  "cycle51Slice": "cli/explain \u2014 bounded --slice entrypoint; bash scripts/run-groundatlas-differential.sh --slice cli/explain",
   "cycle51": {
     "boundedSlice": "cli/explain",
     "status": "rust_impl_on_disk_verified",
@@ -520,10 +526,10 @@
     "caseCounts": {
       "explainQuery": 5
     },
-    "notes": "cycle51 rej-010: cli/explain ts_only→rust_impl bounded differential harness on-disk verify. rust_impl ONLY — proof.status missing until differential_green at bound SHAs."
+    "notes": "cycle51 rej-010: cli/explain ts_only\u2192rust_impl bounded differential harness on-disk verify. rust_impl ONLY \u2014 proof.status missing until differential_green at bound SHAs."
   },
-  "cycle63Slice": "cli/fleet — cycle63 skip; cli/explain re-verify via bash scripts/run-groundatlas-differential.sh --slice cli/explain",
-  "cycle64Slice": "contracts/proto-ssot — cycle64 skip; cli/audit re-verify via bash scripts/run-groundatlas-differential.sh --slice cli/audit",
+  "cycle63Slice": "cli/fleet \u2014 cycle63 skip; cli/explain re-verify via bash scripts/run-groundatlas-differential.sh --slice cli/explain",
+  "cycle64Slice": "contracts/proto-ssot \u2014 cycle64 skip; cli/audit re-verify via bash scripts/run-groundatlas-differential.sh --slice cli/audit",
   "cycle63": {
     "action": "skip",
     "boundedSlice": "cli/fleet",
@@ -532,7 +538,7 @@
     "verificationRef": "verification/groundatlas-cycle63-cli-fleet-skip.json",
     "harnessPath": "scripts/run-groundatlas-differential.sh --slice cli/explain",
     "skipReason": "cli/fleet requires fleet manifest renderer + scanRepository call-site migration",
-    "notes": "cycle63 rej-010: cli/fleet ts_only deferred — harness metadata only."
+    "notes": "cycle63 rej-010: cli/fleet ts_only deferred \u2014 harness metadata only."
   },
   "cycle64": {
     "boundedSlice": "contracts/proto-ssot",
@@ -543,7 +549,7 @@
     "skipReason": "contracts/proto-ssot proto SSOT migration deferred",
     "harnessPath": "scripts/run-groundatlas-differential.sh --slice cli/audit",
     "reverifySlice": "cli/audit",
-    "notes": "cycle64 rej-010: contracts/proto-ssot ts_only deferred — harness metadata only."
+    "notes": "cycle64 rej-010: contracts/proto-ssot ts_only deferred \u2014 harness metadata only."
   },
   "tick038Slice": {
     "packet": "NONMCP-SITES-TICK038",
