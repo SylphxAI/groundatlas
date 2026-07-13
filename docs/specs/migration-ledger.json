@@ -19,9 +19,7 @@
   ],
   "reauditRef": "rej-010",
   "verificationRef": "verification/groundatlas-cycle38-cli-audit-freshness-rust-impl.json",
-  "inventorySource": [
-    "manual"
-  ],
+  "inventorySource": ["manual"],
   "inScopeBoundary": {
     "includeGlobs": [
       "src/**",
@@ -549,9 +547,7 @@
   },
   "tick038Slice": {
     "packet": "NONMCP-SITES-TICK038",
-    "capabilities": [
-      "cli/fleet"
-    ],
+    "capabilities": ["cli/fleet"],
     "at": "2026-07-12T03:02:48Z"
   }
 }

@@ -2,9 +2,7 @@
   "packet": "NONMCP-SITES-TICK038",
   "at": "2026-07-12T03:07:10Z",
   "transition": "ts_only\u2192rust_impl",
-  "capabilities": [
-    "cli/fleet"
-  ],
+  "capabilities": ["cli/fleet"],
   "localTests": "cargo test -p groundatlas-scanner --lib fleet \u2192 6 passed",
   "claims": {
     "rust_impl": true,
