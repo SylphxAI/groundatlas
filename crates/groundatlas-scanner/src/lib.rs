@@ -1,5 +1,6 @@
 //! groundatlas-scanner — ADR-168 Rust scanner (S0 health + S1 scan parity).
 
+mod adoption;
 mod audit;
 mod classify;
 mod explain;
@@ -9,9 +10,13 @@ mod git;
 mod scan;
 mod types;
 
+pub use adoption::{adoption_issues, AdoptionStatus};
 pub use audit::freshness_fingerprint;
 pub use explain::explain_query;
-pub use fleet::{adoption_status, summarize_fleet, unique_sorted_issues, FleetAdoptionStatus, FleetIssue, FleetSummary, DOGFOOD_BLOCKING_RISK_CODES};
+pub use fleet::{
+    adoption_status, summarize_fleet, unique_sorted_issues, FleetAdoptionStatus, FleetIssue,
+    FleetSummary, DOGFOOD_BLOCKING_RISK_CODES,
+};
 pub use scan::{scan_repository, scan_repository_json, ScanError};
 pub use types::{
     health_body, health_json, AtlasMap, HealthBody, ScanOptions, SourceEntry, ATLAS_SCHEMA_VERSION,
@@ -49,12 +54,10 @@ mod tests {
 
         assert_eq!(atlas.schema_version, ATLAS_SCHEMA_VERSION);
         assert_eq!(atlas.repository.name, "fixture-basic");
-        assert!(
-            atlas
-                .sources
-                .iter()
-                .any(|source| source.path == "PROJECT.md")
-        );
+        assert!(atlas
+            .sources
+            .iter()
+            .any(|source| source.path == "PROJECT.md"));
         assert!(!atlas.sources.iter().any(|source| source.path == ".env"));
     }
 }
