@@ -227,8 +227,20 @@
       "id": "cli/fleet",
       "domain": "cli",
       "weight": 4,
-      "state": "ts_only",
-      "tsSurface": "src/application/fleet.ts; src/renderers/markdown.ts"
+      "state": "rust_impl",
+      "tsSurface": "src/application/fleet.ts#adoptionStatus;summarizeFleet",
+      "promotionHold": {
+        "active": true,
+        "reason": "rej-010: rust_impl only — no parity_proven/authority_rust/ts_deleted",
+        "rejectionRef": "rej-010",
+        "since": "2026-07-12T03:02:48Z"
+      },
+      "rustSurface": "crates/groundatlas-scanner/src/fleet.rs#adoption_status;summarize_fleet;unique_sorted_issues",
+      "parityTest": "crates/groundatlas-scanner/src/fleet.rs unit tests",
+      "notes": " TICK038: pure fleet scoring rust_impl; scan/audit I/O still TS bridge. rej-010 hold.",
+      "proof": {
+        "status": "missing"
+      }
     },
     {
       "id": "cli/manifest",
@@ -505,7 +517,9 @@
       "scripts/differential/fixtures/basic-explain-corpus.json",
       "scripts/run-groundatlas-differential.sh"
     ],
-    "caseCounts": { "explainQuery": 5 },
+    "caseCounts": {
+      "explainQuery": 5
+    },
     "notes": "cycle51 rej-010: cli/explain ts_only→rust_impl bounded differential harness on-disk verify. rust_impl ONLY — proof.status missing until differential_green at bound SHAs."
   },
   "cycle63Slice": "cli/fleet — cycle63 skip; cli/explain re-verify via bash scripts/run-groundatlas-differential.sh --slice cli/explain",
@@ -530,5 +544,10 @@
     "harnessPath": "scripts/run-groundatlas-differential.sh --slice cli/audit",
     "reverifySlice": "cli/audit",
     "notes": "cycle64 rej-010: contracts/proto-ssot ts_only deferred — harness metadata only."
+  },
+  "tick038Slice": {
+    "packet": "NONMCP-SITES-TICK038",
+    "capabilities": ["cli/fleet"],
+    "at": "2026-07-12T03:02:48Z"
   }
 }
