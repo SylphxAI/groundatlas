@@ -1,18 +1,17 @@
-# Agent Instructions — GroundAtlas
+# groundatlas — local agent notes only
 
-Engineering doctrine: https://github.com/SylphxAI/doctrine
+Doctrine and fleet delivery law live in the **host always-on constitution**
+(`~/.grok/AGENTS.md` / Doctrine template). This file must **not** restate,
+weaken, or fork that law (including PR-vs-direct-trunk delivery).
 
-Before changing behavior, read:
+Local truth: `PROJECT.md`, `.doctrine/project.json` when present.
 
-1. `PROJECT.md` for this repository's goal, lifecycle, boundary, public
-   surfaces, and delivery proof.
-2. `.doctrine/project.json` for the machine-readable project manifest.
-3. The generated `doctrine-router` Agent Skill from `SylphxAI/doctrine` when
-   supported; otherwise read doctrine `AGENTS.md`, `PRINCIPLES.md`, `ADR.md`,
-   and triggered `standards/*.md`.
+## Boundary hazards
 
-This file is a thin runtime adapter. Do not copy enterprise doctrine into this
-repository.
+- GroundAtlas generated output is not SSOT. Never move project truth into
+- The CLI must not read secrets or `.env` files.
+- The CLI must not mutate source files, ADRs, schemas, tests, `AGENTS.md`, or
+- Keep writes bounded to the configured output directory, plus
 
 ## Local commands
 
@@ -24,18 +23,10 @@ repository.
 - `bun run check`
 - `bun run src/cli.ts update`
 - `bun run src/cli.ts audit`
+- Prefer the **narrowest** affected check before full workspace runs.
+- Report layers honestly: local diff · trunk FF · deploy · prod proof (do not collapse).
 
-## Local hazards
+## Validation notes
 
-- GroundAtlas generated output is not SSOT. Never move project truth into
-  `.groundatlas/`.
-- The CLI must not read secrets or `.env` files.
-- The CLI must not mutate source files, ADRs, schemas, tests, `AGENTS.md`, or
-  `CLAUDE.md`.
-- Keep writes bounded to the configured output directory, plus
-  `groundatlas.config.json` during `init`.
-
-## Reporting
-
-Separate local diff, commit state, push state, PR/CI state, package publication,
-and runtime proof. This initial repository is not yet package-published.
+- Prefer the **narrowest** affected check before full workspace runs.
+- Report layers honestly: local diff · trunk FF · deploy · prod proof (do not collapse).
