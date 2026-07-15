@@ -31,6 +31,8 @@ export function resolveRustScannerBinary(): string | null {
   }
 
   const candidates = [
+    // Published npm pack path (must ship with the package)
+    path.join(PACKAGE_ROOT, "bin/native/groundatlas-scanner"),
     path.join(PACKAGE_ROOT, "target/release/groundatlas-scanner"),
     path.join(PACKAGE_ROOT, "target/debug/groundatlas-scanner"),
   ];

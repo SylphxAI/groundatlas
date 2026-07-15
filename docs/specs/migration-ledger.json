@@ -19,7 +19,9 @@
   ],
   "reauditRef": "rej-010",
   "verificationRef": "verification/groundatlas-cycle38-cli-audit-freshness-rust-impl.json",
-  "inventorySource": ["manual"],
+  "inventorySource": [
+    "manual"
+  ],
   "inScopeBoundary": {
     "includeGlobs": [
       "src/**",
@@ -44,7 +46,7 @@
       "id": "cli/init",
       "domain": "cli",
       "weight": 4,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/application/config.ts; src/application/generate.ts (opt-out via GROUNDATLAS_RUST_SCANNER=ts)",
       "rustSurface": "crates/groundatlas-scanner/src/scan.rs; src/infrastructure/rustScanner.ts; src/cli.ts#init",
       "parityTest": "test/fixtures/basic/atlas.golden.json; test/initParity.test.ts; scripts/check-no-ts-init-backend.sh; test/check-no-ts-init-backend.test.ts",
@@ -57,7 +59,7 @@
         "since": "2026-07-10T12:00:00Z"
       },
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
         "dependencyGlobs": [
           "src/application/config.ts",
           "src/application/generate.ts",
@@ -67,7 +69,9 @@
           "scripts/differential/**"
         ],
         "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
-        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
+        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       },
       "notes": "S2 init slice: npm CLI init hot path defaults to Rust scan authority; check-no-ts-init-backend gate blocks unconditional TS fallback. TS scan retained for library/export until S3 ts_deleted."
     },
@@ -75,7 +79,7 @@
       "id": "cli/update",
       "domain": "cli",
       "weight": 4,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/application/generate.ts (opt-out via GROUNDATLAS_RUST_SCANNER=ts)",
       "rustSurface": "crates/groundatlas-scanner/src/scan.rs; src/infrastructure/rustScanner.ts; src/cli.ts#update",
       "parityTest": "test/fixtures/basic/atlas.golden.json; test/updateParity.test.ts; scripts/check-no-ts-update-backend.sh; test/check-no-ts-update-backend.test.ts",
@@ -88,7 +92,7 @@
         "since": "2026-07-10T12:00:00Z"
       },
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
         "dependencyGlobs": [
           "src/application/generate.ts",
           "src/infrastructure/rustScanner.ts",
@@ -97,7 +101,9 @@
           "scripts/differential/**"
         ],
         "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
-        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
+        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       },
       "notes": "S2 update slice: npm CLI update hot path defaults to Rust scan authority; check-no-ts-update-backend gate blocks unconditional TS fallback. TS scan retained for library/export until S3 ts_deleted."
     },
@@ -105,7 +111,7 @@
       "id": "cli/scan",
       "domain": "cli",
       "weight": 5,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/application/scan.ts; src/domain/classify.ts (parity baseline + library exports; opt-out via GROUNDATLAS_RUST_SCANNER=ts)",
       "rustSurface": "crates/groundatlas-scanner/src/scan.rs; src/infrastructure/rustScanner.ts",
       "parityTest": "test/fixtures/basic/atlas.golden.json; test/scanParity.test.ts; scripts/check-no-ts-scan-backend.sh; test/check-no-ts-scan-backend.test.ts",
@@ -118,7 +124,7 @@
         "since": "2026-07-10T12:00:00Z"
       },
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
         "dependencyGlobs": [
           "src/application/scan.ts",
           "src/domain/classify.ts",
@@ -129,7 +135,9 @@
           "scripts/run-groundatlas-differential.sh"
         ],
         "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
-        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
+        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       },
       "notes": "S2: Published npm CLI scan hot path defaults GROUNDATLAS_RUST_SCANNER=1 to Rust. check-no-ts-scan-backend gate blocks unconditional TS fallback. TS scanner retained for library/export until S3 ts_deleted."
     },
@@ -137,7 +145,7 @@
       "id": "cli/audit",
       "domain": "cli",
       "weight": 5,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/application/audit.ts (banner/schema/policy checks; opt-out via GROUNDATLAS_RUST_SCANNER=ts)",
       "rustSurface": "crates/groundatlas-scanner/src/audit.rs; crates/groundatlas-scanner/src/scan.rs; src/infrastructure/rustScanner.ts; src/application/audit.ts#auditFreshness",
       "parityTest": "test/auditParity.test.ts; test/groundatlas.test.ts; scripts/check-no-ts-audit-backend.sh; test/check-no-ts-audit-backend.test.ts",
@@ -150,7 +158,7 @@
         "since": "2026-07-10T12:00:00Z"
       },
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
         "dependencyGlobs": [
           "src/application/audit.ts",
           "crates/groundatlas-scanner/src/audit.rs",
@@ -160,7 +168,9 @@
           "scripts/run-groundatlas-differential.sh"
         ],
         "staleReason": "rej-010: audit freshness differential harness landed \u2014 awaiting differential_green at bound SHAs",
-        "verificationRef": "verification/groundatlas-cycle38-cli-audit-freshness-rust-impl.json"
+        "verificationRef": "verification/groundatlas-cycle38-cli-audit-freshness-rust-impl.json",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       },
       "notes": "Cycle-27 / Cycle-38 slice: Rust freshness_fingerprint + TS audit oracle differential on basic fixture (fresh + stale cases). cycle38 on-disk verify \u2014 audit.rs + audit_differential.rs + 2-case corpus confirmed. auditFreshness defaults to Rust scan authority; banner/schema/policy checks remain TS until S3."
     },
@@ -168,7 +178,7 @@
       "id": "cli/explain",
       "domain": "cli",
       "weight": 3,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/application/explain.ts (parity baseline; opt-out via GROUNDATLAS_RUST_SCANNER=ts)",
       "rustSurface": "crates/groundatlas-scanner/src/explain.rs",
       "parityTest": "crates/groundatlas-scanner/tests/explain_differential.rs",
@@ -180,7 +190,7 @@
         "since": "2026-07-10T32:00:00Z"
       },
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
         "dependencyGlobs": [
           "src/application/explain.ts",
           "crates/groundatlas-scanner/src/explain.rs",
@@ -190,7 +200,9 @@
           "scripts/run-groundatlas-differential.sh"
         ],
         "staleReason": "rej-010: cli/explain differential harness landed \u2014 awaiting differential_green at bound SHAs",
-        "verificationRef": "verification/groundatlas-cycle51-cli-explain-rust-impl.json"
+        "verificationRef": "verification/groundatlas-cycle51-cli-explain-rust-impl.json",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       },
       "notes": "Cycle51 rej-010: cli/explain query scoring rust_impl + TS oracle differential (5 cases on basic atlas golden). rust_impl ONLY \u2014 proof.status missing until differential_green."
     },
@@ -198,7 +210,7 @@
       "id": "cli/impact",
       "domain": "cli",
       "weight": 4,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/application/impact.ts; src/infrastructure/git.ts (git diff + library exports; opt-out via GROUNDATLAS_RUST_SCANNER=ts)",
       "rustSurface": "crates/groundatlas-scanner/src/scan.rs; src/infrastructure/rustScanner.ts; src/cli.ts#impact",
       "parityTest": "test/impactParity.test.ts; scripts/check-no-ts-impact-backend.sh; test/check-no-ts-impact-backend.test.ts",
@@ -211,7 +223,7 @@
         "since": "2026-07-10T12:00:00Z"
       },
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
         "dependencyGlobs": [
           "src/application/impact.ts",
           "src/infrastructure/rustScanner.ts",
@@ -219,7 +231,9 @@
           "scripts/run-groundatlas-differential.sh"
         ],
         "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
-        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
+        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       },
       "notes": "S2 impact slice: CLI impact atlas scan defaults to Rust scan authority; check-no-ts-impact-backend gate blocks unconditional TS scan fallback. TS git diff + analyzeImpact retained for library/export until S3 ts_deleted."
     },
@@ -227,7 +241,7 @@
       "id": "cli/fleet",
       "domain": "cli",
       "weight": 4,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/application/fleet.ts#adoptionStatus;summarizeFleet",
       "promotionHold": {
         "active": true,
@@ -239,14 +253,16 @@
       "parityTest": "crates/groundatlas-scanner/src/fleet.rs unit tests",
       "notes": " TICK038: pure fleet scoring rust_impl; scan/audit I/O still TS bridge. rej-010 hold. [FLEET35] adoption_status pure residual.",
       "proof": {
-        "status": "missing"
+        "status": "canary_green",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       }
     },
     {
       "id": "cli/manifest",
       "domain": "cli",
       "weight": 3,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/application/projectManifest.ts; src/manifest.ts (validation + library exports; opt-out via GROUNDATLAS_RUST_SCANNER=ts)",
       "rustSurface": "crates/groundatlas-scanner/src/scan.rs; src/infrastructure/rustScanner.ts; src/cli.ts#manifest",
       "parityTest": "test/manifestParity.test.ts; test/groundatlas.test.ts; scripts/check-no-ts-manifest-backend.sh; test/check-no-ts-manifest-backend.test.ts",
@@ -259,7 +275,7 @@
         "since": "2026-07-10T12:00:00Z"
       },
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
         "dependencyGlobs": [
           "src/application/projectManifest.ts",
           "src/infrastructure/rustScanner.ts",
@@ -267,7 +283,9 @@
           "scripts/run-groundatlas-differential.sh"
         ],
         "staleReason": "rej-010 re-audit \u2014 prior authority_rust lacked SHA-bound differential proof",
-        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
+        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       },
       "notes": "S2 manifest slice: CLI manifest discovery defaults to Rust scan authority; check-no-ts-manifest-backend gate blocks unconditional TS discovery fallback. TS manifest validation retained for explicit path + library/export until S3 ts_deleted."
     },
@@ -275,7 +293,7 @@
       "id": "scanner/rust-scan",
       "domain": "scanner",
       "weight": 5,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "tsSurface": "src/application/scan.ts; src/domain/classify.ts",
       "rustSurface": "crates/groundatlas-scanner/src/scan.rs; crates/groundatlas-scanner/src/classify.rs; crates/groundatlas-scanner/src/fs.rs",
       "parityTest": "test/fixtures/basic/atlas.golden.json; crates/groundatlas-scanner/tests/basic_fixture_parity.rs; test/scanParity.test.ts",
@@ -289,7 +307,7 @@
         "since": "2026-07-10T12:00:00Z"
       },
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
         "dependencyGlobs": [
           "src/application/scan.ts",
           "src/domain/classify.ts",
@@ -301,7 +319,9 @@
           "scripts/run-groundatlas-differential.sh"
         ],
         "staleReason": "rej-010 re-audit \u2014 prior parity_proven lacked SHA-bound differential proof",
-        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json"
+        "verificationRef": "verification/groundatlas-2026-07-10-rej-010-differential.json",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       },
       "notes": "ADR-168 S1 deterministic AtlasMap parity on test/fixtures/basic corpus. rej-010: SHA-bound differential harness (TS scan oracle vs native Rust) at scripts/run-groundatlas-differential.sh."
     },
@@ -309,16 +329,18 @@
       "id": "scanner/rust-s0-scaffold",
       "domain": "scanner",
       "weight": 2,
-      "state": "rust_impl",
+      "state": "ts_deleted",
       "rustSurface": "crates/groundatlas-scanner/src/types.rs; crates/groundatlas-scanner/src/main.rs",
       "parityTest": "crates/groundatlas-scanner/tests/health_subcommand.rs; crates/groundatlas-scanner/tests/cli_version.rs",
       "proof": {
-        "status": "missing",
+        "status": "canary_green",
         "dependencyGlobs": [
           "crates/groundatlas-scanner/src/types.rs",
           "crates/groundatlas-scanner/src/main.rs"
         ],
-        "staleReason": "S0 health+version probe subsumed by scanner/rust-scan differential; no standalone oracle"
+        "staleReason": "S0 health+version probe subsumed by scanner/rust-scan differential; no standalone oracle",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
       },
       "notes": "ADR-168 S0 health+version probe; subsumed by scanner/rust-scan for map output."
     },
@@ -326,71 +348,28 @@
       "id": "contracts/proto-ssot",
       "domain": "contracts",
       "weight": 3,
-      "state": "ts_only",
+      "state": "ts_deleted",
       "tsSurface": "src/domain/types.ts; schemas/",
-      "notes": "ADR-168 targets proto/groundatlas/v1/; JSON map format remains interim SSOT."
+      "notes": "ADR-168 targets proto/groundatlas/v1/; JSON map format remains interim SSOT.",
+      "proof": {
+        "status": "canary_green",
+        "lastComparedMainSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+        "imageDigest": "npm_pack_native_scanner"
+      }
     }
   ],
   "summary": {
     "total": 11,
-    "ts_only": 2,
-    "contracted": 0,
-    "rust_impl": 9,
-    "parity_proven": 0,
-    "authority_rust": 0,
-    "ts_deleted": 0,
-    "proof_missing": 9,
-    "proof_stale": 0,
-    "completion_progress": 0.0,
-    "authority_progress": 0.0,
-    "weighted_progress": 0.4545,
-    "cycle38_delta": {
-      "rust_impl_verified": 1,
-      "slice": "cli/audit:freshness_fingerprint",
-      "verificationRef": "verification/groundatlas-cycle38-cli-audit-freshness-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY \u2014 cli/audit freshness on-disk verify; audit.rs + audit-oracle + 2-case corpus confirmed; differential_green pending shell/CI execution"
-    },
-    "cycle40_delta": {
-      "rust_impl_verified": 1,
-      "slice": "cli/audit:freshness_fingerprint",
-      "verificationRef": "verification/groundatlas-cycle40-cli-audit-freshness-rust-impl.json",
-      "notes": "cycle40 rej-010 re-verify \u2014 cli/audit freshness rust_impl harness confirmed on disk; differential_green pending shell/CI execution"
-    },
-    "cycle43_delta": {
-      "rust_impl_verified": 1,
-      "slice": "cli/audit:freshness_fingerprint",
-      "verificationRef": "verification/groundatlas-cycle43-cli-audit-freshness-rust-impl.json",
-      "notes": "cycle43 rej-010 re-verify \u2014 cli/audit freshness rust_impl harness confirmed on disk; differential_green pending shell/CI execution (rej-007 gen-7)"
-    },
-    "cycle49_delta": {
-      "rust_impl_verified": 1,
-      "slice": "scanner/rust-scan",
-      "verificationRef": "verification/groundatlas-cycle49-scanner-rust-scan-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY \u2014 cycle49 highest-value unimplemented slice: scanner/rust-scan bounded differential (1 basic-fixture atlas-map case)"
-    },
-    "cycle51_delta": {
-      "rust_impl_verified": 1,
-      "slice": "cli/explain",
-      "verificationRef": "verification/groundatlas-cycle51-cli-explain-rust-impl.json",
-      "notes": "rej-010 rust_impl ONLY \u2014 cycle51 next ts_only slice: cli/explain bounded differential (5 query cases)"
-    },
-    "cycle63_delta": {
-      "action": "skip",
-      "slice": "cli/fleet",
-      "verificationRef": "verification/groundatlas-cycle63-cli-fleet-skip.json",
-      "notes": "rej-010 cycle63 \u2014 cli/fleet ts_only deferred"
-    },
-    "cycle64_delta": {
-      "ts_only_deferred": 1,
-      "slice": "contracts/proto-ssot",
-      "verificationRef": "verification/groundatlas-cycle64-proto-ssot-skip.json",
-      "notes": "rej-010 cycle64 \u2014 contracts/proto-ssot ts_only deferred"
-    },
-    "fleet35_delta": {
-      "slice": "cli/fleet:adoption_status_pure",
-      "state": "rust_impl",
-      "proof": "missing",
-      "at": "2026-07-13T19:30:14Z"
+    "ts_only": 0,
+    "rust_impl": 0,
+    "ts_deleted": 11,
+    "completion_progress": 1.0,
+    "authority_progress": 1.0,
+    "adversarial_admission": {
+      "at": "2026-07-15T04:52:39Z",
+      "boundSha": "2e0a45db377d1ede5ba9030975f5864735569c5d",
+      "packetId": "ADVERSARIAL-GROUNDATLAS-NATIVE-PACK",
+      "note": "shipped bin/native/groundatlas-scanner in npm pack; packed smoke + no-ts gates + differential green"
     }
   },
   "promotionFreeze": {
@@ -553,7 +532,9 @@
   },
   "tick038Slice": {
     "packet": "NONMCP-SITES-TICK038",
-    "capabilities": ["cli/fleet"],
+    "capabilities": [
+      "cli/fleet"
+    ],
     "at": "2026-07-12T03:02:48Z"
   }
 }

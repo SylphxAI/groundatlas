@@ -10,3 +10,4 @@ coverage/
 .dogfood-targets/
 *.tgz
 /target/
+target/
