@@ -3,7 +3,7 @@
 > **RETIRING PRODUCT (2026-07-17).** The independent OSS product thesis is
 > **rejected**. Repository scanning is absorbed as Control Plane **Repository
 > Ingestion**. See
-> [ADR-DRAFT-product-retirement-into-control-plane](./docs/adr/ADR-DRAFT-product-retirement-into-control-plane.md)
+> [ADR-37-product-retirement-into-control-plane](./docs/adr/ADR-37-product-retirement-into-control-plane.md)
 > and Control Plane ADR-0014.
 >
 > Do **not** start new product features, fleet dogfood expansions, or committed-atlas

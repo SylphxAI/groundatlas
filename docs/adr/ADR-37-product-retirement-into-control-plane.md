@@ -1,6 +1,6 @@
-# ADR-DRAFT: GroundAtlas product retirement into Control Plane Repository Ingestion
+# ADR-37: GroundAtlas product retirement into Control Plane Repository Ingestion
 
-- Status: **draft** (rename to `ADR-N-*` with introducing PR number)
+- Status: **proposed** (introducing PR #37; accepted when merged)
 - Date: 2026-07-17
 - Owner: SylphxAI/groundatlas
 - Portable slug: `SylphxAI/groundatlas:product-retirement-into-control-plane`

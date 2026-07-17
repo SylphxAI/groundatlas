@@ -12,7 +12,7 @@
 > Work Graph, and reconcile. This repository remains for compatibility until
 > Yes-class reverse dependencies are unhooked, then archives.
 >
-> Local draft: [docs/adr/ADR-DRAFT-product-retirement-into-control-plane.md](./docs/adr/ADR-DRAFT-product-retirement-into-control-plane.md)
+> Local draft: [docs/adr/ADR-37-product-retirement-into-control-plane.md](./docs/adr/ADR-37-product-retirement-into-control-plane.md)
 
 **Legacy:** source-grounded repository scanner CLI (compatibility only).
 
