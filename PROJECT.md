@@ -1,38 +1,39 @@
 # GroundAtlas Project
 
-GroundAtlas is an open-source, CLI-first knowledge control plane that generates
-source-grounded repository maps for humans and AI agents.
+> **RETIRING PRODUCT (2026-07-17).** The independent OSS product thesis is
+> **rejected**. Repository scanning is absorbed as Control Plane **Repository
+> Ingestion**. See
+> [ADR-DRAFT-product-retirement-into-control-plane](./docs/adr/ADR-DRAFT-product-retirement-into-control-plane.md)
+> and Control Plane ADR-0014.
+>
+> Do **not** start new product features, fleet dogfood expansions, or committed-atlas
+> SSOT work. Compatibility maintenance only until Yes-class consumers unhook.
+
+GroundAtlas was an open-source, CLI-first scanner that generated source-grounded
+repository maps. That packaging is deprecated as a sold product.
 
 ## Lifecycle
 
-- State: `active`, with public npm package `groundatlas@0.1.3`
-- Layer: `tooling`
+- State: **`retiring`** (public npm `groundatlas@0.1.3` still published; no new feature investment)
+- Layer: `tooling` (legacy)
 - Policy pool: `agent-tool`
-- Local machine manifest: [`.doctrine/project.json`](./.doctrine/project.json) (SylphxAI Doctrine adapter; not a public GroundAtlas requirement)
+- Target absorption: SylphxAI Control Plane Repository Ingestion
+- Local machine manifest: [`.doctrine/project.json`](./.doctrine/project.json)
 
-## Final goals
+## Final goals (retirement path)
 
-- Help humans and agents enter unfamiliar repositories faster without treating
-  generated prose as truth.
-- Produce deterministic maps over source code, schemas, tests, specs, ADRs,
-  manifests, workflows, docs, runbooks, and package metadata.
-- Provide safe CLI primitives for init, update, audit, explain, scan, impact,
-  ingest, map, query, validate, and export workflows.
-- Expose a typed library API so other tools can use GroundAtlas without shelling
-  out to the CLI.
-- Build toward claim/citation graph extraction, stronger freshness/citation gates,
-  CI impact checks, fleet scorecards, MCP/query surfaces, and optional AI
-  adapters over deterministic source manifests.
-- Publish as an open npm library/CLI with provenance and registry readback.
-- Keep generated maps reproducible, source-linked, and deletable.
+- Complete orderly consumer unhook (Doctrine dogfood, skills, tsnum, consultant-mcp, …).
+- Preserve scanner algorithms as potential Control Plane internal engine inputs.
+- Deprecate npm package with replacement pointer to Control Plane SaaS.
+- Archive this repository only after honest Yes-class reverse deps are zero.
+- Stop selling per-repo CLI install + committed maps as customer outcome.
 
 ## Non-goals
 
-- GroundAtlas does not own downstream repository architecture decisions.
-- GroundAtlas does not replace ADRs, specs, schemas, tests, project manifests,
-  runbooks, package manifests, CI workflows, or source code.
-- GroundAtlas does not mutate source files or root agent prompts.
-- GroundAtlas does not require LLM/provider credentials in the deterministic scan/audit path.
+- New product features, public marketplace growth, or dual-engine product investment.
+- Treating committed `.groundatlas/**` maps as source of truth.
+- Owning Work Graph / claims / live portfolio state (Control Plane).
+- Mutating scanned repository source files.
 
 ## Boundary
 

@@ -2,13 +2,23 @@
 
 [![CI](https://github.com/SylphxAI/groundatlas/actions/workflows/ci.yml/badge.svg)](https://github.com/SylphxAI/groundatlas/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 
-**The source-grounded repository control plane for humans and agents.**
+> ## ⚠ Product status: **RETIRING**
+>
+> The independent GroundAtlas OSS product thesis is **rejected** (Control Plane
+> [ADR-0014](https://github.com/SylphxAI/control-plane/blob/main/docs/adr/ADR-0014-groundatlas-product-retirement-cp-ingestion.md)).
+> Repository scanning is absorbed as **Control Plane Repository Ingestion**.
+> Do not adopt this package for new repositories. Prefer connecting a GitHub App
+> to Control Plane SaaS for continuous org-wide inventory, capability graphs,
+> Work Graph, and reconcile. This repository remains for compatibility until
+> Yes-class reverse dependencies are unhooked, then archives.
+>
+> Local draft: [docs/adr/ADR-DRAFT-product-retirement-into-control-plane.md](./docs/adr/ADR-DRAFT-product-retirement-into-control-plane.md)
 
-GroundAtlas turns a repository into a deterministic, auditable map of where
-truth lives before a human or AI agent changes code. It is deliberately **not a
-wiki**, **not an AI memory store**, and **not a second source of truth**. It is
-the layer underneath those experiences: the map, truth routing, freshness gate,
-and change-control surface that keeps generated context honest.
+**Legacy:** source-grounded repository scanner CLI (compatibility only).
+
+GroundAtlas historically turned a repository into a deterministic map of where
+truth lives. It is deliberately **not a wiki**, **not an AI memory store**, and
+**not a second source of truth**. New product investment is frozen.
 
 > OpenWiki can write a wiki. GroundAtlas tells you which source owns the truth,
 > whether the generated map is fresh, and what an agent must inspect before it
