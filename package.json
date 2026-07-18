@@ -1,7 +1,7 @@
 {
   "name": "groundatlas",
   "version": "0.1.3",
-  "description": "Source-grounded repository control plane for humans and agents.",
+  "description": "DEPRECATED: independent product thesis rejected. Use Control Plane Repository Ingestion (SylphxAI/control-plane ADR-0014). Do not install for new work. Source-grounded repository control plane for humans and agents.",
   "license": "MIT",
   "type": "module",
   "homepage": "https://github.com/SylphxAI/groundatlas#readme",
