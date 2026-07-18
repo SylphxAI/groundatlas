@@ -1,0 +1,33 @@
+name: npm-deprecate
+
+# One-shot registry deprecation for product retirement (CP ADR-0014).
+on:
+  workflow_dispatch:
+    inputs:
+      message:
+        description: Deprecation message
+        required: true
+        default: "DEPRECATED: independent product thesis rejected. Use Control Plane Repository Ingestion (SylphxAI/control-plane ADR-0014). Do not install for new work."
+
+permissions:
+  contents: read
+
+jobs:
+  deprecate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deprecate all published versions
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "NPM_TOKEN secret missing" >&2
+            exit 1
+          fi
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+          npm whoami
+          npm deprecate "groundatlas@*" "${{ inputs.message }}"
+          echo "deprecate command completed"
+          npm view groundatlas deprecated || true
